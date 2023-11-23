@@ -4,5 +4,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	base: "https://eurydia.github.io/nassi-shneiderman-diagram-builder-online/",
 	plugins: [react(), tsconfigPaths()],
 });

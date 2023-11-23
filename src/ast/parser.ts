@@ -321,7 +321,10 @@ const buildIfElseNode = (
 
 	node["bodyIf"] = innerNodes;
 
-	if (p.tokens[p.cursor].text !== "else") {
+	if (
+		p.cursor < p.tokenLength &&
+		p.tokens[p.cursor].text !== "else"
+	) {
 		return node;
 	}
 

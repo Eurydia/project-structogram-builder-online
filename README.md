@@ -1,1 +1,1 @@
-# nassi-shneiderman-diagram-online-builder
+# nassi-shneiderman-diagram-builder-online
