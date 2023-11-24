@@ -1,21 +1,5 @@
 import { Token, TokenKind } from "ast/lexer";
 
-export type Parser = {
-	tokens: Token[];
-	tokenLength: number;
-	cursor: number;
-};
-
-export const parserInit = (
-	tokens: Token[],
-): Parser => {
-	return {
-		tokens: tokens,
-		tokenLength: tokens.length,
-		cursor: 0,
-	};
-};
-
 export enum ASTNodeKind {
 	END,
 	PROCESS,
@@ -59,6 +43,38 @@ export type ASTNode =
 	| ASTNodeLoopLast
 	| ASTNodeIfElse;
 
+export type Parser = {
+	tokens: Token[];
+	tokenLength: number;
+	cursor: number;
+};
+
+export const parserInit = (
+	tokens: Token[],
+): Parser => {
+	return {
+		tokens: tokens,
+		tokenLength: tokens.length,
+		cursor: 0,
+	};
+};
+
+const parserGetNextTokenThenAdvance = (
+	p: Parser,
+): Token => {
+	if (p.cursor < p.tokenLength) {
+		const token = p.tokens[p.cursor];
+		p.cursor++;
+
+		return token;
+	}
+
+	return {
+		kind: TokenKind.END,
+		text: "",
+	};
+};
+
 const parserBuildLoopFirstNode = (
 	p: Parser,
 ): ASTNodeLoopFirst => {
@@ -68,72 +84,89 @@ const parserBuildLoopFirstNode = (
 		control: [],
 	};
 
-	// skip left paren
-	p.cursor++;
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_PAREN
+	) {
+		return node;
+	}
 
-	let parenPair = -1;
-	while (p.cursor < p.tokenLength) {
-		switch (p.tokens[p.cursor].kind) {
+	const controlTokens: Token[] = [];
+	let controlToken: Token;
+	let parenDepth = -1;
+	while (
+		(controlToken =
+			parserGetNextTokenThenAdvance(p)).kind !==
+		TokenKind.END
+	) {
+		switch (controlToken.kind) {
 			case TokenKind.LEFT_PAREN:
-				parenPair--;
+				parenDepth--;
 				break;
 			case TokenKind.RIGHT_PAREN:
-				parenPair++;
+				parenDepth++;
 				break;
 			default:
 				break;
 		}
+		console.debug(
+			"depth",
+			parenDepth,
+			controlToken,
+		);
 
-		if (parenPair === 0) {
+		if (parenDepth === 0) {
 			break;
 		}
-
-		node["control"].push(p.tokens[p.cursor]);
-		p.cursor++;
+		controlTokens.push(controlToken);
 	}
 
-	// skip left curly
-	p.cursor++;
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_CURLY
+	) {
+		return node;
+	}
 
 	const bodyTokens: Token[] = [];
-
-	let curlyPair = -1;
-	while (p.cursor < p.tokenLength) {
-		switch (p.tokens[p.cursor].kind) {
+	let bodyToken: Token;
+	let curltyDepth = -1;
+	while (
+		(bodyToken = parserGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
+	) {
+		switch (bodyToken.kind) {
 			case TokenKind.LEFT_CURLY:
-				curlyPair--;
+				curltyDepth--;
 				break;
 			case TokenKind.RIGHT_CURLY:
-				curlyPair++;
+				curltyDepth++;
 				break;
 			default:
 				break;
 		}
 
-		if (curlyPair === 0) {
+		if (curltyDepth === 0) {
 			break;
 		}
 
-		bodyTokens.push(p.tokens[p.cursor]);
-		p.cursor++;
+		bodyTokens.push(bodyToken);
 	}
-
-	// skip right curly
-	p.cursor++;
 
 	// recursively parse tokens inside loop body
-	const innerParser = parserInit(bodyTokens);
-	const innerNodes: ASTNode[] = [];
-
-	let innerNode: ASTNode;
+	const bodyParser = parserInit(bodyTokens);
+	const bodyNodes: ASTNode[] = [];
+	let bodyNode: ASTNode;
 	while (
-		(innerNode = parserNext(innerParser)).kind !==
-		ASTNodeKind.END
+		(bodyNode =
+			parserGetNextNodeThenAdvance(bodyParser))
+			.kind !== ASTNodeKind.END
 	) {
-		innerNodes.push(innerNode);
+		bodyNodes.push(bodyNode);
 	}
 
-	node["body"] = innerNodes;
+	node["body"] = bodyNodes;
+	node["control"] = controlTokens;
 
 	return node;
 };
@@ -147,85 +180,99 @@ const parserBuildLoopLastNode = (
 		control: [],
 	};
 
-	const bodyTokens: Token[] = [];
-
-	let curlyPair = -1;
-	// skip left curly
-	p.cursor++;
-
-	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_CURLY
-		) {
-			curlyPair--;
-		}
-
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_CURLY
-		) {
-			curlyPair++;
-		}
-
-		if (curlyPair === 0) {
-			break;
-		}
-
-		bodyTokens.push(p.tokens[p.cursor]);
-		p.cursor++;
-	}
-
-	// skip right curly
-	p.cursor++;
-
-	const parser = parserInit(bodyTokens);
-	const innerNodes: ASTNode[] = [];
-	let innerNode: ASTNode;
-	while (
-		(innerNode = parserNext(parser)).kind !==
-		ASTNodeKind.END
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_CURLY
 	) {
-		innerNodes.push(innerNode);
+		return node;
 	}
 
-	node["body"] = innerNodes;
-
-	// skip while keyword
-	p.cursor++;
-
-	let parenPair = -1;
-	// skip left paren
-	p.cursor++;
-
-	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_PAREN
-		) {
-			parenPair--;
+	const bodyTokens: Token[] = [];
+	let bodyToken: Token;
+	let curlyDepth = -1;
+	while (
+		(bodyToken = parserGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
+	) {
+		switch (bodyToken.kind) {
+			case TokenKind.LEFT_CURLY:
+				curlyDepth--;
+				break;
+			case TokenKind.RIGHT_CURLY:
+				curlyDepth++;
+				break;
+			default:
+				break;
 		}
 
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_PAREN
-		) {
-			parenPair++;
-		}
-
-		if (parenPair === 0) {
+		if (curlyDepth === 0) {
 			break;
 		}
 
-		node["control"].push(p.tokens[p.cursor]);
-		p.cursor++;
+		bodyTokens.push(bodyToken);
 	}
 
-	// skip right paren
-	p.cursor++;
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+			TokenKind.KEYWORD ||
+		p.tokens[p.cursor].text !== "while"
+	) {
+		return node;
+	}
 
-	// skip semicolon
-	p.cursor++;
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_PAREN
+	) {
+		return node;
+	}
+
+	const controlTokens: Token[] = [];
+	let controlToken: Token;
+	let parenDepth = -1;
+	while (
+		(controlToken =
+			parserGetNextTokenThenAdvance(p)).kind !==
+		TokenKind.END
+	) {
+		switch (controlToken.kind) {
+			case TokenKind.LEFT_PAREN:
+				parenDepth--;
+				break;
+			case TokenKind.RIGHT_PAREN:
+				parenDepth++;
+				break;
+			default:
+				break;
+		}
+
+		if (parenDepth === 0) {
+			break;
+		}
+
+		controlTokens.push(controlToken);
+	}
+
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.SEMICOLON
+	) {
+		return node;
+	}
+
+	const bodyParser = parserInit(bodyTokens);
+	const bodyNodes: ASTNode[] = [];
+	let bodyNode: ASTNode;
+	while (
+		(bodyNode =
+			parserGetNextNodeThenAdvance(bodyParser))
+			.kind !== ASTNodeKind.END
+	) {
+		bodyNodes.push(bodyNode);
+	}
+
+	node["control"] = controlTokens;
+	node["body"] = bodyNodes;
 
 	return node;
 };
@@ -239,136 +286,139 @@ const parseBuildIfElseNode = (
 		bodyIf: [],
 		bodyElse: [],
 	};
-
-	let parenPair = -1;
-	// skip left paren
-	p.cursor++;
-
-	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_PAREN
-		) {
-			parenPair--;
-		}
-
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_PAREN
-		) {
-			parenPair++;
-		}
-
-		if (parenPair === 0) {
-			break;
-		}
-
-		node["control"].push(p.tokens[p.cursor]);
-		p.cursor++;
-	}
-
-	// skip right paren
-	p.cursor++;
-
-	let bodyTokens: Token[] = [];
-
-	let curlyPair = -1;
-	// skip left curly
-	p.cursor++;
-
-	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_CURLY
-		) {
-			curlyPair--;
-		}
-
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_CURLY
-		) {
-			curlyPair++;
-		}
-
-		if (curlyPair === 0) {
-			break;
-		}
-
-		bodyTokens.push(p.tokens[p.cursor]);
-		p.cursor++;
-	}
-
-	// skip right curly
-	p.cursor++;
-
-	let parser = parserInit(bodyTokens);
-	let innerNodes: ASTNode[] = [];
-	let innerNode: ASTNode;
-	while (
-		(innerNode = parserNext(parser)).kind !==
-		ASTNodeKind.END
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_PAREN
 	) {
-		innerNodes.push(innerNode);
+		return node;
 	}
 
-	node["bodyIf"] = innerNodes;
+	const controlTokens: Token[] = [];
+	let controlToken: Token;
+	let parenDepth = -1;
+	while (
+		(controlToken =
+			parserGetNextTokenThenAdvance(p)).kind !==
+		TokenKind.END
+	) {
+		switch (controlToken.kind) {
+			case TokenKind.LEFT_PAREN:
+				parenDepth--;
+				break;
+			case TokenKind.RIGHT_PAREN:
+				parenDepth++;
+				break;
+			default:
+				break;
+		}
+
+		if (parenDepth === 0) {
+			break;
+		}
+
+		controlTokens.push(controlToken);
+	}
 
 	if (
-		p.cursor < p.tokenLength &&
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_CURLY
+	) {
+		return node;
+	}
+
+	const bodyIfTokens: Token[] = [];
+	let bodyIfToken: Token;
+	let curlyDepth = -1;
+	while (
+		(bodyIfToken =
+			parserGetNextTokenThenAdvance(p)).kind !==
+		TokenKind.END
+	) {
+		switch (bodyIfToken.kind) {
+			case TokenKind.LEFT_CURLY:
+				curlyDepth--;
+				break;
+			case TokenKind.RIGHT_CURLY:
+				curlyDepth++;
+				break;
+			default:
+				break;
+		}
+		if (curlyDepth === 0) {
+			break;
+		}
+		bodyIfTokens.push(bodyIfToken);
+	}
+
+	const bodyIfParser = parserInit(bodyIfTokens);
+	const bodyIfNodes: ASTNode[] = [];
+	let bodyIfNode: ASTNode;
+	while (
+		(bodyIfNode =
+			parserGetNextNodeThenAdvance(bodyIfParser))
+			.kind !== ASTNodeKind.END
+	) {
+		bodyIfNodes.push(bodyIfNode);
+	}
+
+	node["control"] = controlTokens;
+	node["bodyIf"] = bodyIfNodes;
+
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+			TokenKind.KEYWORD ||
 		p.tokens[p.cursor].text !== "else"
 	) {
 		return node;
 	}
 
-	// skip else keyword
-	p.cursor++;
+	if (
+		parserGetNextTokenThenAdvance(p).kind !==
+		TokenKind.LEFT_CURLY
+	) {
+		return node;
+	}
 
-	bodyTokens = [];
-	curlyPair = -1;
-	// skip left curly
-	p.cursor++;
-
-	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_CURLY
-		) {
-			curlyPair--;
+	const bodyElseTokens: Token[] = [];
+	let bodyElseToken: Token;
+	curlyDepth = -1;
+	while (
+		(bodyElseToken =
+			parserGetNextTokenThenAdvance(p)).kind !==
+		TokenKind.END
+	) {
+		switch (bodyElseToken.kind) {
+			case TokenKind.LEFT_CURLY:
+				curlyDepth--;
+				break;
+			case TokenKind.RIGHT_CURLY:
+				curlyDepth++;
+				break;
+			default:
+				break;
 		}
-
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_CURLY
-		) {
-			curlyPair++;
-		}
-
-		if (curlyPair === 0) {
+		if (curlyDepth === 0) {
 			break;
 		}
-
-		bodyTokens.push(p.tokens[p.cursor]);
-		p.cursor++;
+		bodyElseTokens.push(bodyElseToken);
 	}
 
-	// skip right curly
-	p.cursor++;
-
-	parser = parserInit(bodyTokens);
-	innerNodes = [];
+	const bodyElseParser = parserInit(bodyIfTokens);
+	const bodyElseNodes: ASTNode[] = [];
+	let bodyElseNode: ASTNode;
 	while (
-		(innerNode = parserNext(parser)).kind !==
-		ASTNodeKind.END
+		(bodyElseNode = parserGetNextNodeThenAdvance(
+			bodyElseParser,
+		)).kind !== ASTNodeKind.END
 	) {
-		innerNodes.push(innerNode);
+		bodyElseNodes.push(bodyElseNode);
 	}
 
-	node["bodyElse"] = innerNodes;
+	node["bodyElse"] = bodyIfNodes;
 	return node;
 };
 
-export const parserNext = (
+export const parserGetNextNodeThenAdvance = (
 	p: Parser,
 ): ASTNode => {
 	if (p.cursor >= p.tokenLength) {
@@ -376,40 +426,44 @@ export const parserNext = (
 			kind: ASTNodeKind.END,
 		};
 	}
-
-	const token = p.tokens[p.cursor];
-	p.cursor++;
+	const token = parserGetNextTokenThenAdvance(p);
 
 	if (token.kind === TokenKind.KEYWORD) {
-		if (
-			token.text === "for" ||
-			token.text === "while"
-		) {
-			return parserBuildLoopFirstNode(p);
-		}
-
-		if (token.text === "do") {
-			return parserBuildLoopLastNode(p);
-		}
-
-		if (token.text === "if") {
-			return parseBuildIfElseNode(p);
+		switch (token.text) {
+			case "for":
+			case "while":
+				return parserBuildLoopFirstNode(p);
+			case "do":
+				return parserBuildLoopLastNode(p);
+			case "if":
+				return parseBuildIfElseNode(p);
+			default:
+				break;
 		}
 	}
 
 	const node: ASTNodeProcess = {
 		kind: ASTNodeKind.PROCESS,
-		body: [token],
+		body: [],
 	};
-	while (
-		p.cursor < p.tokenLength &&
-		p.tokens[p.cursor].kind !==
-			TokenKind.SEMICOLON
-	) {
-		node["body"].push(p.tokens[p.cursor]);
-		p.cursor++;
+
+	if (token.kind === TokenKind.SEMICOLON) {
+		return node;
 	}
-	// skip semicolon
-	p.cursor++;
+
+	node["body"].push(token);
+
+	let bodyToken: Token;
+
+	while (
+		(bodyToken = parserGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.SEMICOLON
+	) {
+		if (bodyToken.kind === TokenKind.END) {
+			return node;
+		}
+		node["body"].push(bodyToken);
+	}
+
 	return node;
 };

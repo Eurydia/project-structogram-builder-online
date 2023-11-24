@@ -49,7 +49,7 @@ export const lexerInit = (
 	};
 };
 
-const lexerTrimeLeft = (l: Lexer): void => {
+const lexerTrimLeft = (l: Lexer): void => {
 	while (
 		l.cursor < l.contentLength &&
 		/\s/.test(l.content[l.cursor])
@@ -59,7 +59,7 @@ const lexerTrimeLeft = (l: Lexer): void => {
 };
 
 export const lexerNext = (l: Lexer): Token => {
-	lexerTrimeLeft(l);
+	lexerTrimLeft(l);
 
 	const token = {
 		kind: TokenKind.END,
@@ -78,18 +78,11 @@ export const lexerNext = (l: Lexer): Token => {
 		return token;
 	}
 
-	token["kind"] = TokenKind.SYMBOL;
 	while (
 		l.cursor < l.contentLength &&
-		!(l.content[l.cursor] in LITERAL_TOKENS)
+		!(l.content[l.cursor] in LITERAL_TOKENS) &&
+		!/\s/.test(l.content[l.cursor])
 	) {
-		if (
-			l.content[l.cursor] === "\\" &&
-			l.cursor + 1 < l.contentLength
-		) {
-			l.cursor++;
-		}
-
 		token["text"] += l.content[l.cursor];
 		l.cursor++;
 	}
@@ -100,5 +93,6 @@ export const lexerNext = (l: Lexer): Token => {
 		return token;
 	}
 
+	token["kind"] = TokenKind.SYMBOL;
 	return token;
 };

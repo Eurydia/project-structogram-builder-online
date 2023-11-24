@@ -30,7 +30,7 @@ import {
 } from "ast/lexer";
 import {
 	Parser,
-	parserNext,
+	parserGetNextNodeThenAdvance,
 	parserInit,
 	ASTNode,
 	ASTNodeKind,
@@ -86,8 +86,8 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 	);
 
 	useEffect(() => {
-		const tokens: Token[] = [];
 		const lexer: Lexer = lexerInit(content);
+		const tokens: Token[] = [];
 		let token: Token;
 		while (
 			(token = lexerNext(lexer)).kind !==
@@ -95,17 +95,21 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 		) {
 			tokens.push(token);
 		}
+		console.log(content);
+		console.log(tokens);
 
 		const parser: Parser = parserInit(tokens);
 
 		const nodes: ASTNode[] = [];
 		let node: ASTNode;
 		while (
-			(node = parserNext(parser)).kind !==
-			ASTNodeKind.END
+			(node =
+				parserGetNextNodeThenAdvance(parser))
+				.kind !== ASTNodeKind.END
 		) {
 			nodes.push(node);
 		}
+
 		setNodes(nodes);
 	}, [content]);
 
