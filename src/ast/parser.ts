@@ -59,7 +59,7 @@ export type ASTNode =
 	| ASTNodeLoopLast
 	| ASTNodeIfElse;
 
-const buildLoopFirstNode = (
+const parserBuildLoopFirstNode = (
 	p: Parser,
 ): ASTNodeLoopFirst => {
 	const node: ASTNodeLoopFirst = {
@@ -68,23 +68,20 @@ const buildLoopFirstNode = (
 		control: [],
 	};
 
-	let parenPair = -1;
 	// skip left paren
 	p.cursor++;
 
+	let parenPair = -1;
 	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_PAREN
-		) {
-			parenPair--;
-		}
-
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_PAREN
-		) {
-			parenPair++;
+		switch (p.tokens[p.cursor].kind) {
+			case TokenKind.LEFT_PAREN:
+				parenPair--;
+				break;
+			case TokenKind.RIGHT_PAREN:
+				parenPair++;
+				break;
+			default:
+				break;
 		}
 
 		if (parenPair === 0) {
@@ -95,28 +92,22 @@ const buildLoopFirstNode = (
 		p.cursor++;
 	}
 
-	// skip right paren
+	// skip left curly
 	p.cursor++;
 
 	const bodyTokens: Token[] = [];
 
 	let curlyPair = -1;
-	// skip left curly
-	p.cursor++;
-
 	while (p.cursor < p.tokenLength) {
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.LEFT_CURLY
-		) {
-			curlyPair--;
-		}
-
-		if (
-			p.tokens[p.cursor].kind ===
-			TokenKind.RIGHT_CURLY
-		) {
-			curlyPair++;
+		switch (p.tokens[p.cursor].kind) {
+			case TokenKind.LEFT_CURLY:
+				curlyPair--;
+				break;
+			case TokenKind.RIGHT_CURLY:
+				curlyPair++;
+				break;
+			default:
+				break;
 		}
 
 		if (curlyPair === 0) {
@@ -130,11 +121,13 @@ const buildLoopFirstNode = (
 	// skip right curly
 	p.cursor++;
 
-	const parser = parserInit(bodyTokens);
+	// recursively parse tokens inside loop body
+	const innerParser = parserInit(bodyTokens);
 	const innerNodes: ASTNode[] = [];
+
 	let innerNode: ASTNode;
 	while (
-		(innerNode = parserNext(parser)).kind !==
+		(innerNode = parserNext(innerParser)).kind !==
 		ASTNodeKind.END
 	) {
 		innerNodes.push(innerNode);
@@ -145,7 +138,7 @@ const buildLoopFirstNode = (
 	return node;
 };
 
-const buildLoopLastNode = (
+const parserBuildLoopLastNode = (
 	p: Parser,
 ): ASTNodeLoopLast => {
 	const node: ASTNodeLoopLast = {
@@ -237,7 +230,7 @@ const buildLoopLastNode = (
 	return node;
 };
 
-const buildIfElseNode = (
+const parseBuildIfElseNode = (
 	p: Parser,
 ): ASTNodeIfElse => {
 	const node: ASTNodeIfElse = {
@@ -392,15 +385,15 @@ export const parserNext = (
 			token.text === "for" ||
 			token.text === "while"
 		) {
-			return buildLoopFirstNode(p);
+			return parserBuildLoopFirstNode(p);
 		}
 
 		if (token.text === "do") {
-			return buildLoopLastNode(p);
+			return parserBuildLoopLastNode(p);
 		}
 
 		if (token.text === "if") {
-			return buildIfElseNode(p);
+			return parseBuildIfElseNode(p);
 		}
 	}
 

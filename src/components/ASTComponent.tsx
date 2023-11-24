@@ -11,7 +11,7 @@ import {
 import { ASTNode, ASTNodeKind } from "ast/parser";
 import { TokenKind } from "ast/lexer";
 
-export const ArrowBottomLeftTopRight: FC<
+const ArrowBottomLeftTopRight: FC<
 	SvgIconProps
 > = (props) => {
 	return (
@@ -43,7 +43,7 @@ export const ArrowBottomLeftTopRight: FC<
 	);
 };
 
-export const ArrowTopLeftBottomRight: FC<
+const ArrowTopLeftBottomRight: FC<
 	SvgIconProps
 > = (props) => {
 	return (
@@ -135,9 +135,7 @@ export const ASTComponent: FC<
 					paddingLeft={paddingSize * 2}
 					fontFamily="monospace"
 					sx={{
-						wordWrap: "break-word",
-						wordBreak: "break-all",
-						lineBreak: "anywhere",
+						wordBreak: "keep-all",
 					}}
 				>
 					{node.control
