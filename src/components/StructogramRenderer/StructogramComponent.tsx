@@ -93,6 +93,7 @@ const StructogramComponentText: FC<
 > = (props) => {
 	return (
 		<Typography
+			component="p"
 			padding={1}
 			paddingLeft={2}
 			fontFamily="monospace"
@@ -258,7 +259,6 @@ export const StructogramComponent: FC<
 			<StructogramComponent
 				node={MOCK_NODE}
 				borderTop
-				borderRight
 			/>
 		);
 		if (node.bodyElse.length > 0) {
@@ -268,7 +268,6 @@ export const StructogramComponent: FC<
 						key={index}
 						node={node}
 						borderTop
-						borderRight
 					/>
 				),
 			);
@@ -288,16 +287,17 @@ export const StructogramComponent: FC<
 					item
 					xs={6}
 				>
-					<Typography
+					<Box
 						display="flex"
 						alignItems="center"
 						justifyContent="center"
-						fontFamily="monospace"
-						padding={paddingSize}
 						position="relative"
+						padding={paddingSize}
 					>
 						<ArrowTopLeftBottomRight color="inherit" />
 						<Typography
+							component="p"
+							fontFamily="monospace"
 							sx={{
 								zIndex: 1,
 								backgroundColor,
@@ -305,23 +305,23 @@ export const StructogramComponent: FC<
 						>
 							True
 						</Typography>
-					</Typography>
+					</Box>
 				</Grid>
 				<Grid
 					item
 					xs={6}
 				>
-					<Typography
-						component="div"
+					<Box
 						display="flex"
 						alignItems="center"
 						justifyContent="center"
-						fontFamily="monospace"
-						padding={paddingSize}
 						position="relative"
+						padding={paddingSize}
 					>
 						<ArrowBottomLeftTopRight color="inherit" />
 						<Typography
+							component="p"
+							fontFamily="monospace"
 							sx={{
 								zIndex: 1,
 								backgroundColor,
@@ -329,7 +329,7 @@ export const StructogramComponent: FC<
 						>
 							False
 						</Typography>
-					</Typography>
+					</Box>
 				</Grid>
 				<Grid
 					item

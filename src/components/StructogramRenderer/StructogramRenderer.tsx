@@ -25,7 +25,7 @@ export const StructogramRenderer: FC<
 	}
 
 	return (
-		<Box>
+		<Box padding={2}>
 			{nodes.map((node, index) => (
 				<StructogramComponent
 					key={index}

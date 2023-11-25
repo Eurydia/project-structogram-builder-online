@@ -1,17 +1,15 @@
 import {
 	useCallback,
-	useEffect,
 	useState,
+	Fragment,
+	FC,
 } from "react";
 import {
-	Box,
 	Container,
 	CssBaseline,
-	Grid,
 	ThemeProvider,
 	createTheme,
 	GlobalStyles,
-	Typography,
 } from "@mui/material";
 import {
 	blue,
@@ -19,26 +17,12 @@ import {
 	pink,
 } from "@mui/material/colors";
 
-import {
-	Lexer,
-	Token,
-	TokenKind,
-	lexerNext,
-	lexerInit,
-} from "ast/lexer";
-import {
-	Parser,
-	parserGetNextNodeThenAdvance,
-	parserInit,
-	ASTNode,
-	ASTNodeKind,
-} from "ast/parser";
+import { Navigation } from "components/Navigation";
 
-import { StructogramRenderer } from "components/StructogramRenderer";
-import { StyledAppBar } from "components/StyledAppBar";
-import { StructogramEditor } from "components/StructogramEditor";
+import { PageHome } from "pages/PageHome";
+import { PageDocumentation } from "pages/PageDocumentation";
 
-const theme = createTheme({
+const themeLight = createTheme({
 	palette: {
 		mode: "light",
 		primary: {
@@ -51,6 +35,23 @@ const theme = createTheme({
 			primary: grey[800],
 		},
 	},
+
+	components: {
+		MuiTypography: {
+			styleOverrides: {
+				root: ({ ownerState }) => {
+					if (
+						ownerState.fontFamily !== "monospace"
+					) {
+						return;
+					}
+					return {
+						fontFamily: "Fira Code",
+					};
+				},
+			},
+		},
+	},
 });
 
 const globalStyles = (
@@ -58,125 +59,37 @@ const globalStyles = (
 		styles={{
 			body: {
 				backgroundColor:
-					theme.palette.primary.main,
+					themeLight.palette.primary.main,
+				color: themeLight.palette.text.primary,
 			},
 		}}
 	/>
 );
 
-export const App = () => {
-	const [nodes, setNodes] = useState<ASTNode[]>(
-		[],
-	);
-	const [content, setContent] = useState(() => {
-		const savedContent: null | string =
-			window.localStorage.getItem("content");
-		if (savedContent !== null) {
-			return savedContent;
-		}
-		return "";
-	});
+export const App: FC = () => {
+	const [page, setPage] = useState<number>(0);
 
-	const onTextChange = useCallback(
-		(v: string) => {
-			setContent(v);
-			window.localStorage.setItem("content", v);
+	const onPageChange = useCallback(
+		(page: number) => {
+			setPage(page);
 		},
 		[],
 	);
 
-	useEffect(() => {
-		const lexer: Lexer = lexerInit(content);
-		const tokens: Token[] = [];
-		let token: Token;
-		while (
-			(token = lexerNext(lexer)).kind !==
-			TokenKind.END
-		) {
-			tokens.push(token);
-		}
-
-		const parser: Parser = parserInit(tokens);
-
-		const nodes: ASTNode[] = [];
-		let node: ASTNode;
-		while (
-			(node =
-				parserGetNextNodeThenAdvance(parser))
-				.kind !== ASTNodeKind.END
-		) {
-			nodes.push(node);
-		}
-
-		setNodes(nodes);
-	}, [content]);
-
 	return (
-		<ThemeProvider theme={theme}>
+		<Fragment>
 			<CssBaseline />
-			{globalStyles}
-			<StyledAppBar />
-			<Container
-				maxWidth="xl"
-				component="main"
-			>
-				<Box padding={4}>
-					<Grid
-						container
-						spacing={2}
-					>
-						<Grid
-							item
-							xs={6}
-						>
-							<Box
-								borderRadius={4}
-								padding={2}
-								bgcolor={
-									theme.palette.background.paper
-								}
-								component="section"
-							>
-								<Typography
-									component="h2"
-									fontWeight={700}
-									variant="h5"
-								>
-									Editor
-								</Typography>
-								<StructogramEditor
-									content={content}
-									onContentChange={onTextChange}
-								/>
-							</Box>
-						</Grid>
-						<Grid
-							item
-							xs={6}
-						>
-							<Box
-								borderRadius={4}
-								padding={2}
-								bgcolor={
-									theme.palette.background.paper
-								}
-								component="section"
-							>
-								<Typography
-									component="h2"
-									fontWeight={700}
-									variant="h5"
-								>
-									Preview
-								</Typography>
-								<StructogramRenderer
-									nodes={nodes}
-								/>
-							</Box>
-						</Grid>
-					</Grid>
-				</Box>
-			</Container>
-		</ThemeProvider>
+			<ThemeProvider theme={themeLight}>
+				{globalStyles}
+				<Navigation onPageChange={onPageChange} />
+				<Container
+					maxWidth="xl"
+					component="main"
+				>
+					{page === 0 && <PageHome />}
+					{page === 1 && <PageDocumentation />}
+				</Container>
+			</ThemeProvider>
+		</Fragment>
 	);
 };
