@@ -19,8 +19,6 @@ import {
 	pink,
 } from "@mui/material/colors";
 
-import ReactCodeMirror from "@uiw/react-codemirror";
-
 import {
 	Lexer,
 	Token,
@@ -35,7 +33,10 @@ import {
 	ASTNode,
 	ASTNodeKind,
 } from "ast/parser";
-import { ASTComponent } from "components/ASTComponent";
+
+import { StructogramRenderer } from "components/StructogramRenderer";
+import { StyledAppBar } from "components/StyledAppBar";
+import { Editor } from "components/Editor";
 
 const theme = createTheme({
 	palette: {
@@ -95,8 +96,6 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 		) {
 			tokens.push(token);
 		}
-		console.log(content);
-		console.log(tokens);
 
 		const parser: Parser = parserInit(tokens);
 
@@ -117,6 +116,7 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
 			{globalStyles}
+			<StyledAppBar />
 			<Container maxWidth="xl">
 				<Box padding={4}>
 					<Grid
@@ -149,51 +149,18 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 							item
 							xs={6}
 						>
-							<Box
-								borderRadius={4}
-								padding={2}
-								bgcolor={
-									theme.palette.background.paper
-								}
-							>
-								<ReactCodeMirror
-									value={content}
-									onChange={onTextChange}
-									theme="light"
-								/>
-							</Box>
+							<Editor
+								content={content}
+								onContentChange={onTextChange}
+							/>
 						</Grid>
 						<Grid
 							item
 							xs={6}
 						>
-							<Box
-								borderRadius={4}
-								padding={4}
-								bgcolor={
-									theme.palette.background.paper
-								}
-							>
-								{nodes.length > 0 ? (
-									nodes.map((node, index) => (
-										<ASTComponent
-											key={index}
-											node={node}
-											borderLeft
-											borderTop
-											borderRight
-											borderBottom={
-												index === nodes.length - 1
-											}
-										/>
-									))
-								) : (
-									<Typography fontStyle="italic">
-										Start typing to see the
-										preview.
-									</Typography>
-								)}
-							</Box>
+							<StructogramRenderer
+								nodes={nodes}
+							/>
 						</Grid>
 					</Grid>
 				</Box>
