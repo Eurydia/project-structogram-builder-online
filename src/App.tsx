@@ -36,7 +36,7 @@ import {
 
 import { StructogramRenderer } from "components/StructogramRenderer";
 import { StyledAppBar } from "components/StyledAppBar";
-import { Editor } from "components/Editor";
+import { StructogramEditor } from "components/StructogramEditor";
 
 const theme = createTheme({
 	palette: {
@@ -149,7 +149,7 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 							item
 							xs={6}
 						>
-							<Editor
+							<StructogramEditor
 								content={content}
 								onContentChange={onTextChange}
 							/>
