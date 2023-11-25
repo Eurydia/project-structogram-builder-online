@@ -116,6 +116,8 @@ const parserBuildLoopFirstNode = (
 		controlTokens.push(controlToken);
 	}
 
+	node["control"] = controlTokens;
+
 	if (
 		parserGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
@@ -148,7 +150,6 @@ const parserBuildLoopFirstNode = (
 		bodyTokens.push(bodyToken);
 	}
 
-	// recursively parse tokens inside loop body
 	const bodyParser = parserInit(bodyTokens);
 	const bodyNodes: ASTNode[] = [];
 	let bodyNode: ASTNode;
@@ -161,7 +162,6 @@ const parserBuildLoopFirstNode = (
 	}
 
 	node["body"] = bodyNodes;
-	node["control"] = controlTokens;
 
 	return node;
 };
@@ -207,10 +207,22 @@ const parserBuildLoopLastNode = (
 		bodyTokens.push(bodyToken);
 	}
 
+	const bodyParser = parserInit(bodyTokens);
+	const bodyNodes: ASTNode[] = [];
+	let bodyNode: ASTNode;
+	while (
+		(bodyNode =
+			parserGetNextNodeThenAdvance(bodyParser))
+			.kind !== ASTNodeKind.END
+	) {
+		bodyNodes.push(bodyNode);
+	}
+
+	node["body"] = bodyNodes;
+
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
-			TokenKind.KEYWORD ||
-		p.tokens[p.cursor].text !== "while"
+		parserGetNextTokenThenAdvance(p).text !==
+		"while"
 	) {
 		return node;
 	}
@@ -255,19 +267,7 @@ const parserBuildLoopLastNode = (
 		return node;
 	}
 
-	const bodyParser = parserInit(bodyTokens);
-	const bodyNodes: ASTNode[] = [];
-	let bodyNode: ASTNode;
-	while (
-		(bodyNode =
-			parserGetNextNodeThenAdvance(bodyParser))
-			.kind !== ASTNodeKind.END
-	) {
-		bodyNodes.push(bodyNode);
-	}
-
 	node["control"] = controlTokens;
-	node["body"] = bodyNodes;
 
 	return node;
 };
@@ -314,6 +314,8 @@ const parseBuildIfElseNode = (
 		controlTokens.push(controlToken);
 	}
 
+	node["control"] = controlTokens;
+
 	if (
 		parserGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
@@ -356,7 +358,6 @@ const parseBuildIfElseNode = (
 		bodyIfNodes.push(bodyIfNode);
 	}
 
-	node["control"] = controlTokens;
 	node["bodyIf"] = bodyIfNodes;
 
 	if (
@@ -462,4 +463,19 @@ export const parserGetNextNodeThenAdvance = (
 	}
 
 	return node;
+};
+
+export const parserGetAllNodes = (
+	p: Parser,
+): ASTNode[] => {
+	const nodes: ASTNode[] = [];
+	let node: ASTNode;
+	while (
+		(node = parserGetNextNodeThenAdvance(p))
+			.kind !== ASTNodeKind.END
+	) {
+		nodes.push(node);
+	}
+
+	return nodes;
 };

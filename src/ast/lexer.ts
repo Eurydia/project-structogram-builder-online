@@ -49,6 +49,18 @@ export const lexerInit = (
 	};
 };
 
+const lexerSafeGetNextCharThenAdvance = (
+	l: Lexer,
+): string => {
+	if (l.cursor >= l.contentLength) {
+		return "";
+	}
+
+	const char = l.content[l.cursor];
+	l.cursor++;
+	return char;
+};
+
 const lexerTrimLeft = (l: Lexer): void => {
 	while (
 		l.cursor < l.contentLength &&
@@ -58,7 +70,9 @@ const lexerTrimLeft = (l: Lexer): void => {
 	}
 };
 
-export const lexerNext = (l: Lexer): Token => {
+export const lexerSafeGetNextTokenThenAdvance = (
+	l: Lexer,
+): Token => {
 	lexerTrimLeft(l);
 
 	const token = {
@@ -70,11 +84,11 @@ export const lexerNext = (l: Lexer): Token => {
 		return token;
 	}
 
-	token["text"] = l.content[l.cursor];
-	l.cursor++;
+	token["text"] =
+		lexerSafeGetNextCharThenAdvance(l);
 
-	if (token.text in LITERAL_TOKENS) {
-		token["kind"] = LITERAL_TOKENS[token.text];
+	if (token["text"] in LITERAL_TOKENS) {
+		token["kind"] = LITERAL_TOKENS[token["text"]];
 		return token;
 	}
 
@@ -87,12 +101,25 @@ export const lexerNext = (l: Lexer): Token => {
 		l.cursor++;
 	}
 
-	if (KEYWORDS.includes(token.text.trim())) {
+	if (KEYWORDS.includes(token.text)) {
 		token["kind"] = TokenKind.KEYWORD;
-		token["text"] = token.text.trim();
 		return token;
 	}
 
 	token["kind"] = TokenKind.SYMBOL;
 	return token;
+};
+
+export const lexerGetAllTokens = (
+	l: Lexer,
+): Token[] => {
+	const tokens: Token[] = [];
+	let token: Token;
+	while (
+		(token = lexerSafeGetNextTokenThenAdvance(l))
+			.kind !== TokenKind.END
+	) {
+		tokens.push(token);
+	}
+	return tokens;
 };

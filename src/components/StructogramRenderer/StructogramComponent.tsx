@@ -97,7 +97,6 @@ const StructogramComponentText: FC<
 			padding={1}
 			paddingLeft={2}
 			fontFamily="monospace"
-			whiteSpace="pre"
 		>
 			{props.text}
 		</Typography>
@@ -199,7 +198,7 @@ export const StructogramComponent: FC<
 		let bodyNode: ReactNode = (
 			<StructogramComponent
 				node={MOCK_NODE}
-				borderTop
+				borderBottom
 				borderLeft
 			/>
 		);
@@ -210,7 +209,7 @@ export const StructogramComponent: FC<
 						<StructogramComponent
 							key={index}
 							node={n}
-							borderTop
+							borderBottom
 							borderLeft
 						/>
 					))}

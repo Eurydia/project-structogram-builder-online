@@ -1,32 +1,31 @@
 import {
-	Box,
-	Grid,
-	Typography,
-	useTheme,
-} from "@mui/material";
-import {
-	Token,
-	TokenKind,
-	lexerInit,
-	lexerNext,
-} from "ast/lexer";
-import {
-	ASTNode,
-	ASTNodeKind,
-	parserGetNextNodeThenAdvance,
-	parserInit,
-} from "ast/parser";
-import { StructogramEditor } from "components/StructogramEditor";
-import { StructogramRenderer } from "components/StructogramRenderer";
-import {
 	FC,
 	useCallback,
 	useEffect,
 	useState,
 } from "react";
+import {
+	Box,
+	Grid,
+	Typography,
+	useTheme,
+} from "@mui/material";
+
+import {
+	lexerGetAllTokens,
+	lexerInit,
+} from "ast/lexer";
+import {
+	ASTNode,
+	parserGetAllNodes,
+	parserInit,
+} from "ast/parser";
+import { StructogramEditor } from "components/StructogramEditor";
+import { StructogramRenderer } from "components/StructogramRenderer";
 
 export const PageHome: FC = () => {
 	const theme = useTheme();
+
 	const [nodes, setNodes] = useState<ASTNode[]>(
 		[],
 	);
@@ -48,28 +47,11 @@ export const PageHome: FC = () => {
 	);
 
 	useEffect(() => {
-		const lexer = lexerInit(content);
-		const tokens: Token[] = [];
-		let token: Token;
-		while (
-			(token = lexerNext(lexer)).kind !==
-			TokenKind.END
-		) {
-			tokens.push(token);
-		}
-
-		const parser = parserInit(tokens);
-
-		const nodes: ASTNode[] = [];
-		let node: ASTNode;
-		while (
-			(node =
-				parserGetNextNodeThenAdvance(parser))
-				.kind !== ASTNodeKind.END
-		) {
-			nodes.push(node);
-		}
-
+		const nodes: ASTNode[] = parserGetAllNodes(
+			parserInit(
+				lexerGetAllTokens(lexerInit(content)),
+			),
+		);
 		setNodes(nodes);
 	}, [content]);
 
@@ -113,9 +95,24 @@ export const PageHome: FC = () => {
 						>
 							Editor
 						</Typography>
+						<Typography
+							paragraph
+							component="p"
+						>
+							Visit the{" "}
+							<a
+								href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
+								hrefLang="en"
+								target="_blank"
+							>
+								project GitHub repository
+							</a>{" "}
+							for more information about the
+							syntax.
+						</Typography>
 						<StructogramEditor
-							content={content}
-							onContentChange={onTextChange}
+							value={content}
+							onValueChange={onTextChange}
 						/>
 					</Box>
 				</Grid>
