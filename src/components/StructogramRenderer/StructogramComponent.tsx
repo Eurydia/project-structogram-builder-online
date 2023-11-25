@@ -148,77 +148,83 @@ export const StructogramComponent: FC<
 	let preparedNode: ReactNode = <Fragment />;
 
 	if (node.kind === ASTNodeKind.LOOP_FIRST) {
-		preparedNode = (
+		let nodeText: string = "...";
+		if (node.control.length > 0) {
+			nodeText = node.control
+				.map((t) => t.text)
+				.join(" ");
+		}
+
+		let bodyNode: ReactNode = (
 			<StructogramComponent
 				node={MOCK_NODE}
 				borderTop
 				borderLeft
 			/>
 		);
-
-		let nodeText: string = "...";
 		if (node.body.length > 0) {
-			nodeText = node.control
-				.map((t) => t.text)
-				.join(" ");
-		}
-
-		if (node.control.length > 0) {
-			preparedNode = (
+			bodyNode = (
 				<Fragment>
-					<StructogramComponentText
-						text={nodeText}
-					/>
-					<Box paddingLeft={2}>
-						{node.body.map((n, index) => (
-							<StructogramComponent
-								key={index}
-								node={n}
-								borderTop
-								borderLeft
-							/>
-						))}
-					</Box>
+					{node.body.map((n, index) => (
+						<StructogramComponent
+							key={index}
+							node={n}
+							borderTop
+							borderLeft
+						/>
+					))}
 				</Fragment>
 			);
 		}
+
+		preparedNode = (
+			<Fragment>
+				<StructogramComponentText
+					text={nodeText}
+				/>
+				<Box paddingLeft={2}>{bodyNode}</Box>
+			</Fragment>
+		);
 	}
 
 	if (node.kind === ASTNodeKind.LOOP_LAST) {
-		preparedNode = (
+		let nodeText: string = "...";
+		if (node.control.length > 0) {
+			nodeText = node.control
+				.map((t) => t.text)
+				.join(" ");
+		}
+
+		let bodyNode: ReactNode = (
 			<StructogramComponent
 				node={MOCK_NODE}
 				borderTop
 				borderLeft
 			/>
 		);
-
-		let nodeText: string = "...";
 		if (node.body.length > 0) {
-			nodeText = node.control
-				.map((t) => t.text)
-				.join(" ");
-		}
-
-		if (node.control.length > 0) {
-			preparedNode = (
+			bodyNode = (
 				<Fragment>
-					<Box paddingLeft={2}>
-						{node.body.map((n, index) => (
-							<StructogramComponent
-								key={index}
-								node={n}
-								borderTop
-								borderLeft
-							/>
-						))}
-					</Box>
-					<StructogramComponentText
-						text={nodeText}
-					/>
+					{node.body.map((n, index) => (
+						<StructogramComponent
+							key={index}
+							node={n}
+							borderTop
+							borderLeft
+						/>
+					))}
 				</Fragment>
 			);
 		}
+
+		preparedNode = (
+			<Fragment>
+				<Box paddingLeft={2}>{bodyNode}</Box>
+				<StructogramComponentText
+					text={nodeText}
+				/>
+			</Fragment>
+		);
 	}
 
 	if (node.kind === ASTNodeKind.IF_ELSE) {

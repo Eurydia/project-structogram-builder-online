@@ -9,9 +9,9 @@ import {
 	CssBaseline,
 	Grid,
 	ThemeProvider,
-	Typography,
 	createTheme,
 	GlobalStyles,
+	Typography,
 } from "@mui/material";
 import {
 	blue,
@@ -74,8 +74,7 @@ export const App = () => {
 		if (savedContent !== null) {
 			return savedContent;
 		}
-		return "x := 1;\ny := 2;\nz := x + y;\n\nfor (i=1..3) {x := x + 1;}\ndo {y := y + 1;} while (y < 2);\nwhile(z<3){z := z + 1;}\n\
-if (x < y) {y := y + 1} else {z := z + 1;}";
+		return "";
 	});
 
 	const onTextChange = useCallback(
@@ -117,7 +116,10 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 			<CssBaseline />
 			{globalStyles}
 			<StyledAppBar />
-			<Container maxWidth="xl">
+			<Container
+				maxWidth="xl"
+				component="main"
+			>
 				<Box padding={4}>
 					<Grid
 						container
@@ -125,42 +127,52 @@ if (x < y) {y := y + 1} else {z := z + 1;}";
 					>
 						<Grid
 							item
-							xs={12}
+							xs={6}
 						>
-							<Typography
-								variant="h4"
+							<Box
 								borderRadius={4}
 								padding={2}
 								bgcolor={
 									theme.palette.background.paper
 								}
+								component="section"
 							>
-								<a
-									hrefLang="en"
-									target="_blank"
-									href="https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram"
+								<Typography
+									component="h2"
+									fontWeight={700}
+									variant="h5"
 								>
-									Structogram
-								</a>{" "}
-								Builder
-							</Typography>
+									Editor
+								</Typography>
+								<StructogramEditor
+									content={content}
+									onContentChange={onTextChange}
+								/>
+							</Box>
 						</Grid>
 						<Grid
 							item
 							xs={6}
 						>
-							<StructogramEditor
-								content={content}
-								onContentChange={onTextChange}
-							/>
-						</Grid>
-						<Grid
-							item
-							xs={6}
-						>
-							<StructogramRenderer
-								nodes={nodes}
-							/>
+							<Box
+								borderRadius={4}
+								padding={2}
+								bgcolor={
+									theme.palette.background.paper
+								}
+								component="section"
+							>
+								<Typography
+									component="h2"
+									fontWeight={700}
+									variant="h5"
+								>
+									Preview
+								</Typography>
+								<StructogramRenderer
+									nodes={nodes}
+								/>
+							</Box>
 						</Grid>
 					</Grid>
 				</Box>

@@ -109,11 +109,6 @@ const parserBuildLoopFirstNode = (
 			default:
 				break;
 		}
-		console.debug(
-			"depth",
-			parenDepth,
-			controlToken,
-		);
 
 		if (parenDepth === 0) {
 			break;
@@ -365,9 +360,8 @@ const parseBuildIfElseNode = (
 	node["bodyIf"] = bodyIfNodes;
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
-			TokenKind.KEYWORD ||
-		p.tokens[p.cursor].text !== "else"
+		parserGetNextTokenThenAdvance(p).text !==
+		"else"
 	) {
 		return node;
 	}
@@ -403,7 +397,9 @@ const parseBuildIfElseNode = (
 		bodyElseTokens.push(bodyElseToken);
 	}
 
-	const bodyElseParser = parserInit(bodyIfTokens);
+	const bodyElseParser = parserInit(
+		bodyElseTokens,
+	);
 	const bodyElseNodes: ASTNode[] = [];
 	let bodyElseNode: ASTNode;
 	while (
@@ -414,7 +410,7 @@ const parseBuildIfElseNode = (
 		bodyElseNodes.push(bodyElseNode);
 	}
 
-	node["bodyElse"] = bodyIfNodes;
+	node["bodyElse"] = bodyElseNodes;
 	return node;
 };
 

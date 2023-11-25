@@ -12,7 +12,7 @@ type StyledAppBarProps = {
 };
 export const StyledAppBar: FC<
 	StyledAppBarProps
-> = (props) => {
+> = () => {
 	const theme = useTheme();
 
 	return (
@@ -24,7 +24,16 @@ export const StyledAppBar: FC<
 			}}
 		>
 			<Toolbar variant="dense">
-				<Typography>Photos</Typography>
+				<Typography>
+					<a
+						hrefLang="en"
+						target="_blank"
+						href="https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram"
+					>
+						Structogram
+					</a>{" "}
+					Builder
+				</Typography>
 			</Toolbar>
 		</AppBar>
 	);
