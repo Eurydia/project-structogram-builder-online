@@ -69,7 +69,14 @@ export const PageHome: FC = () => {
 				variant="h4"
 				marginBottom={2}
 			>
-				Builder
+				<a
+					target="_blank"
+					hrefLang="en"
+					href="https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram"
+				>
+					Structogram
+				</a>{" "}
+				builder
 			</Typography>
 			<Grid
 				container
