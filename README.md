@@ -21,7 +21,7 @@ if (condition goes here) {
 }
 ```
 
-![An image a simple diagram which consists of a single if-statement.](./images/diagram_simple_if_statement.png)
+![An image a simple diagram which consists of a single if-statement.](./examples/images//diagram_simple_if_statement.png)
 
 In this case the else branch is empty so it is displayed as triple dots.
 
@@ -35,7 +35,7 @@ if (condition goes here) {
 }
 ```
 
-![An image a simple diagram which consists of a single if-else statement.](./images/diagram_simple_if_else_statement.png)
+![An image a simple diagram which consists of a single if-else statement.](./examples/images//diagram_simple_if_else_statement.png)
 
 Keywords inside condition components are suppressed and do not carry special meaning.
 
@@ -48,7 +48,7 @@ in conditional component
 }
 ```
 
-![An image a simple diagram which consists of a single if-statement. ](./images/diagram_simple_if_statement_with_keyword.png)
+![An image a simple diagram which consists of a single if-statement. ](./examples/images//diagram_simple_if_statement_with_keyword.png)
 
 Keywords inside body component are not suppressed and will be treated as keywords.
 
@@ -60,7 +60,7 @@ if (condition goes here) {
 }
 ```
 
-![An image a simple diagram which consists of a single if-statement. ](./images/diagram_simple_if_statement_with_keyword_in_body.png)
+![An image a simple diagram which consists of a single if-statement. ](./examples/images//diagram_simple_if_statement_with_keyword_in_body.png)
 
 ### For loops and while loops
 
@@ -78,7 +78,7 @@ for (condition goes here) {
 }
 ```
 
-![An image a simple diagram which consists of a single for loop.](./images/diagram_simple_for_loop.png)
+![An image a simple diagram which consists of a single for loop.](./examples/images//diagram_simple_for_loop.png)
 
 Keywords inside condition components are suppressed and do not carry special meaning.
 
@@ -90,7 +90,7 @@ in conditional component) {
 }
 ```
 
-![An image a simple diagram which consists of a single for loop.](./images/diagram_simple_for_loop_with_keyword.png)
+![An image a simple diagram which consists of a single for loop.](./examples/images//diagram_simple_for_loop_with_keyword.png)
 
 Keywords inside body component are not suppressed and will be treated as keywords.
 
@@ -102,7 +102,7 @@ for (condition goes here) {
 }
 ```
 
-![An image a simple diagram which consists of a single for loop.](./images/diagram_simple_for_loop_with_keyword_in_body.png)
+![An image a simple diagram which consists of a single for loop.](./examples/images//diagram_simple_for_loop_with_keyword_in_body.png)
 
 ### Do-while loops
 
@@ -117,7 +117,7 @@ do {
 } while (condition goes here);
 ```
 
-![An image a simple diagram which consists of a single do-while loop.](./images/diagram_simple_do_while_loop.png)
+![An image a simple diagram which consists of a single do-while loop.](./examples/images//diagram_simple_do_while_loop.png)
 
 Keywords inside condition components are suppressed and do not carry special meaning.
 
@@ -129,7 +129,7 @@ keywords do not have special meaning
 in conditional component);
 ```
 
-![An image a simple diagram which consists of a single do-while loop.](./images/diagram_simple_do_while_loop_with_keyword.png)
+![An image a simple diagram which consists of a single do-while loop.](./examples/images//diagram_simple_do_while_loop_with_keyword.png)
 
 Keywords inside body component are not suppressed and will be treated as keywords.
 
@@ -141,7 +141,7 @@ do {
 } while (condition goes here);
 ```
 
-![An image a simple diagram which consists of a single do-while loop.](./images/diagram_simple_do_while_loop_with_keyword_in_body.png)
+![An image a simple diagram which consists of a single do-while loop.](./examples/images//diagram_simple_do_while_loop_with_keyword_in_body.png)
 
 ### Processes
 
@@ -151,7 +151,7 @@ Regular statements which do not fall into any of the above categories are treate
 process goes here;
 ```
 
-![An image a simple diagram which consists of a single process.](./images/diagram_simple_process.png)
+![An image a simple diagram which consists of a single process.](./examples/images//diagram_simple_process.png)
 
 Processes are separated by semicolons.
 
@@ -160,7 +160,7 @@ process goes here;
 another process goes here;
 ```
 
-![An image a simple diagram which consists of two processes.](./images/diagram_simple_process_multiple.png)
+![An image a simple diagram which consists of two processes.](./examples/images//diagram_simple_process_multiple.png)
 
 In the case of syntax errors, the parser defaults to simple process nodes.
 This means that the diagram may not be accurate if there are syntax errors.
@@ -171,7 +171,7 @@ for e(condition) {
 }
 ```
 
-![An image a simple diagram which consists of a single process.](./images/diagram_simple_process_syntax_error.png)
+![An image a simple diagram which consists of a single process.](./examples/images//diagram_simple_process_syntax_error.png)
 
 ## Implementation
 
