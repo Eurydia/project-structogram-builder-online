@@ -358,5 +358,12 @@ export const StructogramComponent: FC<
 			<StructogramComponentText text={nodeText} />
 		);
 	}
-	return <Box sx={{ ...sx }}>{preparedNode}</Box>;
+	return (
+		<Box
+			height="100%"
+			sx={{ ...sx }}
+		>
+			{preparedNode}
+		</Box>
+	);
 };
