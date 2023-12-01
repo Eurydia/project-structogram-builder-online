@@ -15,22 +15,22 @@ import {
 import { PageHome } from "pages/PageHome";
 
 const themeLightComponent = createTheme({
-	components: {
-		MuiTypography: {
-			styleOverrides: {
-				root: ({ ownerState }) => {
-					if (
-						ownerState.fontFamily !== "monospace"
-					) {
-						return;
-					}
-					return {
-						fontFamily: "Fira Code",
-					};
-				},
-			},
-		},
-	},
+	// components: {
+	// 	MuiTypography: {
+	// 		styleOverrides: {
+	// 			root: ({ ownerState }) => {
+	// 				if (
+	// 					ownerState.fontFamily !== "monospace"
+	// 				) {
+	// 					return;
+	// 				}
+	// 				return {
+	// 					fontFamily: "Fira Code",
+	// 				};
+	// 			},
+	// 		},
+	// 	},
+	// },
 });
 
 const themeLightPalette = createTheme({

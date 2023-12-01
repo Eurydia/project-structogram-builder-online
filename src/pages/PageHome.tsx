@@ -3,13 +3,19 @@ import {
 	useCallback,
 	useEffect,
 	useState,
+	Fragment,
 } from "react";
 import {
 	Box,
+	Button,
 	Grid,
 	Typography,
 	useTheme,
+	Snackbar,
+	Stack,
 } from "@mui/material";
+import { toBlob } from "html-to-image";
+import { saveAs } from "file-saver";
 
 import {
 	lexerGetAllTokens,
@@ -23,17 +29,40 @@ import {
 import { StructogramEditor } from "components/StructogramEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";
 
+const copyURLToClipboard = (
+	content: string,
+): void => {
+	const url = new URL(window.location.href);
+	url.searchParams.set("content", content);
+	navigator.clipboard.writeText(url.toString());
+};
+
 export const PageHome: FC = () => {
 	const theme = useTheme();
 
+	const [snackbarOpen, setSnackbarState] =
+		useState<boolean>(false);
 	const [nodes, setNodes] = useState<ASTNode[]>(
 		[],
 	);
 	const [content, setContent] = useState(() => {
-		const savedContent: null | string =
+		if (window.location.search !== "") {
+			const url = new URL(window.location.href);
+			const contentParam =
+				url.searchParams.get("content");
+			if (contentParam !== null) {
+				localStorage.setItem(
+					"content",
+					contentParam,
+				);
+				return contentParam;
+			}
+		}
+
+		const content =
 			window.localStorage.getItem("content");
-		if (savedContent !== null) {
-			return savedContent;
+		if (content !== null) {
+			return content;
 		}
 		return "";
 	});
@@ -46,6 +75,41 @@ export const PageHome: FC = () => {
 		[],
 	);
 
+	const onImageSave = useCallback(async () => {
+		const node = document.getElementById(
+			"structogram-preview-region",
+		);
+
+		if (node === null) {
+			return;
+		}
+		toBlob(node, {
+			style: {
+				backgroundColor:
+					theme.palette.background.default,
+			},
+		}).then((blob) => {
+			if (blob === null) {
+				return;
+			}
+
+			if (window.saveAs) {
+				window.saveAs(blob, "structogram.png");
+			} else {
+				saveAs(blob, "structogram.png");
+			}
+		});
+	}, [theme.palette.background.default]);
+
+	const onCopyLink = useCallback(() => {
+		copyURLToClipboard(content);
+		setSnackbarState(true);
+	}, [content]);
+
+	const onSnackbarClose = useCallback(() => {
+		setSnackbarState(false);
+	}, []);
+
 	useEffect(() => {
 		const nodes: ASTNode[] = parserGetAllNodes(
 			parserInit(
@@ -56,97 +120,140 @@ export const PageHome: FC = () => {
 	}, [content]);
 
 	return (
-		<Box
-			padding={4}
-			component="section"
-		>
-			<Typography
-				borderRadius={4}
-				bgcolor={theme.palette.background.default}
-				padding={2}
-				fontWeight={700}
-				component="h1"
-				variant="h4"
-				marginBottom={2}
+		<Fragment>
+			<Box
+				padding={4}
+				component="section"
 			>
-				<a
-					target="_blank"
-					hrefLang="en"
-					href="https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram"
+				<Typography
+					borderRadius={4}
+					bgcolor={
+						theme.palette.background.default
+					}
+					padding={2}
+					fontWeight={700}
+					component="h1"
+					variant="h4"
+					marginBottom={2}
 				>
-					Structogram
-				</a>{" "}
-				builder
-			</Typography>
-			<Grid
-				container
-				spacing={2}
-			>
-				<Grid
-					item
-					xs={12}
-					sm={6}
-				>
-					<Box
-						component="section"
-						borderRadius={4}
-						padding={2}
-						bgcolor={
-							theme.palette.background.paper
-						}
+					<a
+						target="_blank"
+						hrefLang="en"
+						href="https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram"
 					>
-						<Typography
-							component="h2"
-							fontWeight={700}
-							variant="h5"
+						Structogram
+					</a>{" "}
+					builder
+				</Typography>
+				<Grid
+					container
+					spacing={2}
+				>
+					<Grid
+						item
+						xs={12}
+						sm={6}
+					>
+						<Box
+							component="section"
+							borderRadius={4}
+							padding={2}
+							bgcolor={
+								theme.palette.background.paper
+							}
 						>
-							Editor
-						</Typography>
-						<Typography
-							paragraph
-							component="p"
-						>
-							Visit the{" "}
-							<a
-								href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
-								hrefLang="en"
-								target="_blank"
+							<Typography
+								component="h2"
+								fontWeight={700}
+								variant="h5"
 							>
-								project GitHub repository
-							</a>{" "}
-							for more information about the
-							syntax.
-						</Typography>
-						<StructogramEditor
-							value={content}
-							onValueChange={onTextChange}
-						/>
-					</Box>
-				</Grid>
-				<Grid
-					item
-					xs={12}
-					sm={6}
-				>
-					<Box
-						component="section"
-						borderRadius={4}
-						padding={2}
-						bgcolor={
-							theme.palette.background.paper
-						}
+								Editor
+							</Typography>
+							<Typography
+								paragraph
+								component="p"
+							>
+								Visit the{" "}
+								<a
+									href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
+									hrefLang="en"
+									target="_blank"
+								>
+									project GitHub repository
+								</a>{" "}
+								for more information about the
+								syntax.
+							</Typography>
+							<StructogramEditor
+								value={content}
+								onValueChange={onTextChange}
+							/>
+						</Box>
+					</Grid>
+					<Grid
+						item
+						xs={12}
+						sm={6}
 					>
-						<Typography
-							component="h2"
-							fontWeight={700}
-							variant="h5"
+						<Box
+							component="section"
+							borderRadius={4}
+							padding={2}
+							bgcolor={
+								theme.palette.background.paper
+							}
 						>
-							Preview
-						</Typography>
-						<StructogramRenderer nodes={nodes} />
-					</Box>
+							<Typography
+								component="h2"
+								fontWeight={700}
+								variant="h5"
+							>
+								Preview
+							</Typography>
+							<div
+								id="structogram-preview-region"
+								style={{
+									fontFamily: "monospace",
+								}}
+							>
+								<StructogramRenderer
+									nodes={nodes}
+								/>
+							</div>
+							<Stack
+								spacing={2}
+								direction={{
+									xs: "column",
+									sm: "row",
+								}}
+							>
+								<Button
+									fullWidth
+									disableElevation
+									variant="contained"
+									onClick={onCopyLink}
+								>
+									Generate link
+								</Button>
+								<Button
+									fullWidth
+									disableElevation
+									variant="contained"
+									onClick={onImageSave}
+								>
+									Save as PNG
+								</Button>
+							</Stack>
+						</Box>
+					</Grid>
 				</Grid>
-			</Grid>
-		</Box>
+			</Box>
+			<Snackbar
+				open={snackbarOpen}
+				autoHideDuration={3000}
+				onClose={onSnackbarClose}
+				message="Link copied to clipboard"
+			/>
+		</Fragment>
 	);
 };
