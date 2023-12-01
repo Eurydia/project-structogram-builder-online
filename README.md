@@ -7,6 +7,10 @@ It is a web application that allows you to create Nassi-Shneiderman diagrams usi
 It features two main components; the editor and the preview.
 Unfortunately, there is no native ways to capture and download HTML nodes as images so users are advised to use a screenshot tool to capture the preview.
 
+The current method uses `html2image` and `file-saver` to capture and download the preview as a PNG image.
+One issue with `html2image` is that it does not campture font families correctly.
+So the captured image has a different font family (serif) than the preview (monospace).
+
 ## Syntax
 
 There are very few syntax rules that you need to follow in order to generate a valid diagram.
