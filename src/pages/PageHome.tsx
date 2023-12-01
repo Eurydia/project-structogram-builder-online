@@ -40,8 +40,12 @@ const copyURLToClipboard = (
 export const PageHome: FC = () => {
 	const theme = useTheme();
 
-	const [snackbarOpen, setSnackbarState] =
+	const [snackbarURLOpen, setSnackbarURLOpen] =
 		useState<boolean>(false);
+	const [
+		snackbarDownloadOpen,
+		setSnackbarDownloadOpen,
+	] = useState<boolean>(false);
 	const [nodes, setNodes] = useState<ASTNode[]>(
 		[],
 	);
@@ -83,6 +87,7 @@ export const PageHome: FC = () => {
 		if (node === null) {
 			return;
 		}
+		setSnackbarDownloadOpen(true);
 		toBlob(node, {
 			style: {
 				backgroundColor:
@@ -103,12 +108,8 @@ export const PageHome: FC = () => {
 
 	const onCopyLink = useCallback(() => {
 		copyURLToClipboard(content);
-		setSnackbarState(true);
+		setSnackbarURLOpen(true);
 	}, [content]);
-
-	const onSnackbarClose = useCallback(() => {
-		setSnackbarState(false);
-	}, []);
 
 	useEffect(() => {
 		const nodes: ASTNode[] = parserGetAllNodes(
@@ -249,10 +250,18 @@ export const PageHome: FC = () => {
 				</Grid>
 			</Box>
 			<Snackbar
-				open={snackbarOpen}
+				open={snackbarURLOpen}
 				autoHideDuration={3000}
-				onClose={onSnackbarClose}
+				onClose={() => setSnackbarURLOpen(false)}
 				message="Link copied to clipboard"
+			/>
+			<Snackbar
+				open={snackbarDownloadOpen}
+				autoHideDuration={3000}
+				onClose={() =>
+					setSnackbarDownloadOpen(false)
+				}
+				message="Structogram saved as PNG"
 			/>
 		</Fragment>
 	);
