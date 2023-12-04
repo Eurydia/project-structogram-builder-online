@@ -14,7 +14,7 @@ import {
 	Snackbar,
 	Stack,
 } from "@mui/material";
-import { toBlob, toSvg } from "html-to-image";
+import { toSvg } from "html-to-image";
 import { saveAs } from "file-saver";
 
 import {
@@ -243,7 +243,7 @@ export const PageHome: FC = () => {
 									variant="contained"
 									onClick={onImageSave}
 								>
-									Save as PNG
+									Save as SVG
 								</Button>
 							</Stack>
 						</Box>
