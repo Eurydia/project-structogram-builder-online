@@ -2,6 +2,7 @@ import { FC, Fragment, ReactNode } from "react";
 import {
 	Box,
 	Grid,
+	Stack,
 	SvgIcon,
 	SvgIconProps,
 	Typography,
@@ -239,7 +240,6 @@ export const StructogramComponent: FC<
 			<StructogramComponent
 				node={MOCK_NODE}
 				borderTop
-				borderRight
 			/>
 		);
 		if (node.bodyIf.length > 0) {
@@ -249,7 +249,6 @@ export const StructogramComponent: FC<
 						key={index}
 						node={node}
 						borderTop
-						borderRight
 					/>
 				),
 			);
@@ -273,7 +272,11 @@ export const StructogramComponent: FC<
 		}
 
 		preparedNode = (
-			<Grid container>
+			<Grid
+				container
+				height="100%"
+				// alignItems="baseline"
+			>
 				<Grid
 					item
 					xs={12}
@@ -287,6 +290,7 @@ export const StructogramComponent: FC<
 					xs={6}
 				>
 					<Box
+						height="100%"
 						display="flex"
 						alignItems="center"
 						justifyContent="center"
@@ -311,6 +315,7 @@ export const StructogramComponent: FC<
 					xs={6}
 				>
 					<Box
+						height="100%"
 						display="flex"
 						alignItems="center"
 						justifyContent="center"
@@ -334,13 +339,24 @@ export const StructogramComponent: FC<
 					item
 					xs={6}
 				>
-					{bodyIfNode}
+					<Stack
+						height="100%"
+						sx={{
+							borderRightWidth: borderWidth,
+							borderRightStyle: "solid",
+							borderRightColor: borderColor,
+						}}
+					>
+						{bodyIfNode}
+					</Stack>
 				</Grid>
 				<Grid
 					item
 					xs={6}
 				>
-					{bodyElseNode}
+					<Stack height="100%">
+						{bodyElseNode}
+					</Stack>
 				</Grid>
 			</Grid>
 		);

@@ -14,7 +14,7 @@ import {
 	Snackbar,
 	Stack,
 } from "@mui/material";
-import { toBlob } from "html-to-image";
+import { toBlob, toSvg } from "html-to-image";
 import { saveAs } from "file-saver";
 
 import {
@@ -87,8 +87,7 @@ export const PageHome: FC = () => {
 		if (node === null) {
 			return;
 		}
-		setSnackbarDownloadOpen(true);
-		toBlob(node, {
+		toSvg(node, {
 			style: {
 				backgroundColor:
 					theme.palette.background.default,
@@ -99,11 +98,13 @@ export const PageHome: FC = () => {
 			}
 
 			if (window.saveAs) {
-				window.saveAs(blob, "structogram.png");
+				window.saveAs(blob, "structogram");
 			} else {
-				saveAs(blob, "structogram.png");
+				saveAs(blob, "structogram");
 			}
 		});
+
+		setSnackbarDownloadOpen(true);
 	}, [theme.palette.background.default]);
 
 	const onCopyLink = useCallback(() => {
