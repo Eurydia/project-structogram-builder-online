@@ -99,7 +99,6 @@ const StructogramComponentText: FC<
 			component="p"
 			padding={1}
 			paddingLeft={2}
-			fontFamily="monospace"
 		>
 			<Latex
 				delimiters={[
@@ -312,7 +311,6 @@ export const StructogramComponent: FC<
 						<ArrowTopLeftBottomRight color="inherit" />
 						<Typography
 							component="p"
-							fontFamily="monospace"
 							sx={{
 								zIndex: 1,
 								backgroundColor,
@@ -337,7 +335,6 @@ export const StructogramComponent: FC<
 						<ArrowBottomLeftTopRight color="inherit" />
 						<Typography
 							component="p"
-							fontFamily="monospace"
 							sx={{
 								zIndex: 1,
 								backgroundColor,

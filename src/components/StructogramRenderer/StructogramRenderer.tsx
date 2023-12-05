@@ -1,9 +1,8 @@
 import { FC } from "react";
+import { Box, Typography } from "@mui/material";
 
 import { ASTNode } from "ast/parser";
-
 import { StructogramComponent } from "./StructogramComponent";
-import { Box, Typography } from "@mui/material";
 
 type StructogramRendererProps = {
 	nodes: ASTNode[];
@@ -16,6 +15,7 @@ export const StructogramRenderer: FC<
 	if (nodes.length === 0) {
 		return (
 			<Typography
+				fontFamily="monospace"
 				fontStyle="italic"
 				component="p"
 			>

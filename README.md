@@ -21,8 +21,7 @@ There are very few syntax rules that you need to follow in order to generate a v
 
 <program> ::= <statement>
 
-<statement> ::=   ';' |
-                  <statement> |
+<statement> ::=   <tokens>* ';' |
                   <for-statement> |
                   <while-statement> |
                   <do-while-statement> |

@@ -87,15 +87,12 @@ export const PageHome: FC = () => {
 		if (node === null) {
 			return;
 		}
-		toSvg(node, {
-			style: {
-				backgroundColor:
-					theme.palette.background.default,
-			},
-		}).then((blob) => {
+
+		toSvg(node).then((blob) => {
 			if (blob === null) {
 				return;
 			}
+			console.log(blob);
 
 			if (window.saveAs) {
 				window.saveAs(blob, "structogram");
@@ -105,7 +102,7 @@ export const PageHome: FC = () => {
 		});
 
 		setSnackbarDownloadOpen(true);
-	}, [theme.palette.background.default]);
+	}, []);
 
 	const onCopyLink = useCallback(() => {
 		copyURLToClipboard(content);
@@ -212,12 +209,8 @@ export const PageHome: FC = () => {
 							>
 								Preview
 							</Typography>
-							<div
-								id="structogram-preview-region"
-								style={{
-									fontFamily: "monospace",
-								}}
-							>
+
+							<div id="structogram-preview-region">
 								<StructogramRenderer
 									nodes={nodes}
 								/>

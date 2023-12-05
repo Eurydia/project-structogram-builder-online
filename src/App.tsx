@@ -33,6 +33,8 @@ const themeLightComponent = createTheme({
 	// },
 });
 
+const themeTypography = createTheme({});
+
 const themeLightPalette = createTheme({
 	palette: {
 		mode: "light",
@@ -51,6 +53,7 @@ const themeLightPalette = createTheme({
 const themeLight = createTheme(
 	themeLightComponent,
 	themeLightPalette,
+	themeTypography,
 );
 
 const globalStyles = (
