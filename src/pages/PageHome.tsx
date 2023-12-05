@@ -262,7 +262,7 @@ export const PageHome: FC = () => {
 				onClose={() =>
 					setSnackbarDownloadOpen(false)
 				}
-				message="Structogram saved as PNG"
+				message="Saved structogram"
 			/>
 		</Fragment>
 	);

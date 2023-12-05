@@ -8,6 +8,7 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
+import Latex from "react-latex-next";
 
 import { ASTNode, ASTNodeKind } from "ast/parser";
 import { TokenKind } from "ast/lexer";
@@ -92,6 +93,7 @@ type StructogramComponentTextProps = {
 const StructogramComponentText: FC<
 	StructogramComponentTextProps
 > = (props) => {
+	const { text } = props;
 	return (
 		<Typography
 			component="p"
@@ -99,7 +101,7 @@ const StructogramComponentText: FC<
 			paddingLeft={2}
 			fontFamily="monospace"
 		>
-			{props.text}
+			<Latex>{text}</Latex>
 		</Typography>
 	);
 };
