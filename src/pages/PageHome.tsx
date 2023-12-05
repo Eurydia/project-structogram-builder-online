@@ -8,12 +8,22 @@ import {
 import {
 	Box,
 	Button,
+	Collapse,
 	Grid,
 	Typography,
 	useTheme,
 	Snackbar,
 	Stack,
+	IconButton,
+	Tooltip,
 } from "@mui/material";
+import {
+	LinkRounded,
+	FileDownloadRounded,
+	UnfoldLessRounded,
+	UnfoldMoreRounded,
+} from "@mui/icons-material";
+
 import { toSvg } from "html-to-image";
 import { saveAs } from "file-saver";
 
@@ -34,12 +44,25 @@ const copyURLToClipboard = (
 ): void => {
 	const url = new URL(window.location.href);
 	url.searchParams.set("content", content);
+	url.searchParams.set("preview", "true");
+
 	navigator.clipboard.writeText(url.toString());
 };
 
 export const PageHome: FC = () => {
 	const theme = useTheme();
 
+	const [editorOpen, setEditorOpen] =
+		useState<boolean>(() => {
+			const url = new URL(window.location.href);
+			const previewParam =
+				url.searchParams.get("preview");
+			if (previewParam !== null) {
+				return previewParam !== "true";
+			}
+
+			return true;
+		});
 	const [snackbarURLOpen, setSnackbarURLOpen] =
 		useState<boolean>(false);
 	const [
@@ -150,7 +173,6 @@ export const PageHome: FC = () => {
 					<Grid
 						item
 						xs={12}
-						sm={6}
 					>
 						<Box
 							component="section"
@@ -164,34 +186,59 @@ export const PageHome: FC = () => {
 								component="h2"
 								fontWeight={700}
 								variant="h5"
+								alignItems="center"
 							>
+								<Tooltip
+									title={
+										editorOpen
+											? "Collapse editor"
+											: "Expand editor"
+									}
+								>
+									<IconButton
+										onClick={() =>
+											setEditorOpen(!editorOpen)
+										}
+									>
+										{editorOpen ? (
+											<UnfoldLessRounded />
+										) : (
+											<UnfoldMoreRounded />
+										)}
+									</IconButton>
+								</Tooltip>
 								Editor
 							</Typography>
-							<Typography
-								paragraph
-								component="p"
+
+							<Collapse
+								in={editorOpen}
+								orientation="vertical"
 							>
-								Visit the{" "}
-								<a
-									href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
-									hrefLang="en"
-									target="_blank"
+								<Typography
+									paragraph
+									component="p"
 								>
-									project GitHub repository
-								</a>{" "}
-								for more information about the
-								syntax.
-							</Typography>
-							<StructogramEditor
-								value={content}
-								onValueChange={onTextChange}
-							/>
+									Visit the{" "}
+									<a
+										href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
+										hrefLang="en"
+										target="_blank"
+									>
+										project GitHub repository
+									</a>{" "}
+									for more information about the
+									syntax.
+								</Typography>
+								<StructogramEditor
+									value={content}
+									onValueChange={onTextChange}
+								/>
+							</Collapse>
 						</Box>
 					</Grid>
 					<Grid
 						item
 						xs={12}
-						sm={6}
 					>
 						<Box
 							component="section"
@@ -209,13 +256,7 @@ export const PageHome: FC = () => {
 								Preview
 							</Typography>
 
-							<div
-								id="structogram-preview-region"
-								style={{
-									fontFamily: "monospace",
-									// color: "red",
-								}}
-							>
+							<div id="structogram-preview-region">
 								<StructogramRenderer
 									nodes={nodes}
 								/>
@@ -232,14 +273,18 @@ export const PageHome: FC = () => {
 									disableElevation
 									variant="contained"
 									onClick={onCopyLink}
+									startIcon={<LinkRounded />}
 								>
-									Generate link
+									Share URL
 								</Button>
 								<Button
 									fullWidth
 									disableElevation
 									variant="contained"
 									onClick={onImageSave}
+									startIcon={
+										<FileDownloadRounded />
+									}
 								>
 									Save as SVG
 								</Button>

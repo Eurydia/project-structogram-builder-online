@@ -13,7 +13,8 @@
 	"dependencies": {
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
-		"@mui/material": "^5.14.18",
+		"@mui/icons-material": "^5.14.19",
+		"@mui/material": "^5.14.20",
 		"@uiw/react-codemirror": "^4.21.20",
 		"html2canvas": "^1.4.1",
 		"katex": "^0.16.9",
