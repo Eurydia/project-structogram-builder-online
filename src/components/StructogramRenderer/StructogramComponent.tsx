@@ -98,7 +98,8 @@ const StructogramComponentText: FC<
 	const { text, ...rest } = props;
 	return (
 		<Typography
-			fontFamily="monospace"
+			fontFamily="inherit"
+			fontWeight="inherit"
 			component="p"
 			padding={1}
 			paddingLeft={2}
