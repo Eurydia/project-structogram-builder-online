@@ -6,14 +6,15 @@ import {
 	Fragment,
 } from "react";
 import {
+	Stack,
 	Box,
+	ButtonGroup,
 	Button,
 	Collapse,
 	Grid,
 	Typography,
 	useTheme,
 	Snackbar,
-	Stack,
 	IconButton,
 	Tooltip,
 } from "@mui/material";
@@ -24,7 +25,7 @@ import {
 	UnfoldMoreRounded,
 } from "@mui/icons-material";
 
-import { toSvg } from "html-to-image";
+import { toPng, toSvg } from "html-to-image";
 import { saveAs } from "file-saver";
 
 import {
@@ -102,7 +103,7 @@ export const PageHome: FC = () => {
 		[],
 	);
 
-	const onImageSave = useCallback(async () => {
+	const onImageSaveSVG = useCallback(async () => {
 		const node = document.getElementById(
 			"structogram-preview-region",
 		);
@@ -112,6 +113,30 @@ export const PageHome: FC = () => {
 		}
 
 		toSvg(node).then((blob) => {
+			if (blob === null) {
+				return;
+			}
+
+			if (window.saveAs) {
+				window.saveAs(blob, "structogram");
+			} else {
+				saveAs(blob, "structogram");
+			}
+		});
+
+		setSnackbarDownloadOpen(true);
+	}, []);
+
+	const onImageSavePNG = useCallback(async () => {
+		const node = document.getElementById(
+			"structogram-preview-region",
+		);
+
+		if (node === null) {
+			return;
+		}
+
+		toPng(node).then((blob) => {
 			if (blob === null) {
 				return;
 			}
@@ -253,41 +278,49 @@ export const PageHome: FC = () => {
 								fontWeight={700}
 								variant="h5"
 							>
+								<Tooltip title="Share diagram">
+									<IconButton
+										onClick={onCopyLink}
+									>
+										<LinkRounded />
+									</IconButton>
+								</Tooltip>
 								Preview
 							</Typography>
 
-							<div id="structogram-preview-region">
+							<div
+								id="structogram-preview-region"
+								style={{
+									paddingTop: theme.spacing(2),
+									paddingBottom: theme.spacing(2),
+								}}
+							>
 								<StructogramRenderer
 									nodes={nodes}
 								/>
 							</div>
 							<Stack
+								direction="row"
 								spacing={2}
-								direction={{
-									xs: "column",
-									sm: "row",
-								}}
 							>
-								<Button
-									fullWidth
+								<ButtonGroup
 									disableElevation
 									variant="contained"
-									onClick={onCopyLink}
-									startIcon={<LinkRounded />}
 								>
-									Share URL
-								</Button>
-								<Button
-									fullWidth
-									disableElevation
-									variant="contained"
-									onClick={onImageSave}
-									startIcon={
-										<FileDownloadRounded />
-									}
-								>
-									Save as SVG
-								</Button>
+									<Button
+										onClick={onImageSaveSVG}
+										startIcon={
+											<FileDownloadRounded />
+										}
+									>
+										Save as SVG
+									</Button>
+									<Button
+										onClick={onImageSavePNG}
+									>
+										Save as PNG
+									</Button>
+								</ButtonGroup>
 							</Stack>
 						</Box>
 					</Grid>

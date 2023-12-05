@@ -13,7 +13,7 @@ export const StructogramEditor: FC<
 	const { value, onValueChange } = props;
 
 	return (
-		<Box padding={2}>
+		<Box>
 			<ReactCodeMirror
 				value={value}
 				onChange={onValueChange}

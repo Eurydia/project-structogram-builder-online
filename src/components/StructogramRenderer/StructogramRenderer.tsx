@@ -25,10 +25,7 @@ export const StructogramRenderer: FC<
 	}
 
 	return (
-		<Box
-			padding={2}
-			fontFamily="Consolas"
-		>
+		<Box fontFamily="Consolas">
 			{nodes.map((node, index) => (
 				<StructogramComponent
 					key={index}
