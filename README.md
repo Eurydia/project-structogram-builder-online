@@ -15,6 +15,28 @@ So the captured image has a different font family (serif) than the preview (mono
 
 There are very few syntax rules that you need to follow in order to generate a valid diagram.
 
+### BNF
+
+```text
+
+<program> ::= <statement>
+
+<statement> ::=   ';' |
+                  <statement> |
+                  <for-statement> |
+                  <while-statement> |
+                  <do-while-statement> |
+                  <if-statement>
+
+<for-statement> ::= 'for' '(' <token>* ')' '{' <statement>* '}'
+<while-statement> ::= 'while' '(' <token>* ')' '{' <statement>* '}'
+<do-while-statement> ::= 'do' '{' <statement>* '}' 'while' '(' <token>* ')' ';'
+<if-statement> ::= 'if' '(' <token>* ')' '{' <statement>* '}' ['else' '{'[<statement>* '}']
+
+<token> ::= <any-character>+
+<any-character> ::= <letter> | <digits> | <symbols>
+```
+
 ### If statements and if-else statements
 
 If-statements are triggered by the `if` keyword followed by a condition in parentheses and a body in curly braces.

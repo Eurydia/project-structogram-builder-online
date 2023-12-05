@@ -101,7 +101,17 @@ const StructogramComponentText: FC<
 			paddingLeft={2}
 			fontFamily="monospace"
 		>
-			<Latex>{text}</Latex>
+			<Latex
+				delimiters={[
+					{
+						left: "$",
+						right: "$",
+						display: false,
+					},
+				]}
+			>
+				{text}
+			</Latex>
 		</Typography>
 	);
 };
