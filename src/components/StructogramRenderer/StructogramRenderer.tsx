@@ -15,7 +15,7 @@ export const StructogramRenderer: FC<
 	if (nodes.length === 0) {
 		return (
 			<Typography
-				fontFamily="monospace"
+				fontFamily="inherit"
 				fontStyle="italic"
 				component="p"
 			>

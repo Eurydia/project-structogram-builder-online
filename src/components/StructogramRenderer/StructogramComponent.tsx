@@ -6,6 +6,7 @@ import {
 	SvgIcon,
 	SvgIconProps,
 	Typography,
+	TypographyProps,
 	useTheme,
 } from "@mui/material";
 import Latex from "react-latex-next";
@@ -87,18 +88,21 @@ const MOCK_NODE: ASTNode = {
 	],
 };
 
-type StructogramComponentTextProps = {
-	text: string;
-};
+type StructogramComponentTextProps =
+	TypographyProps & {
+		text: string;
+	};
 const StructogramComponentText: FC<
 	StructogramComponentTextProps
 > = (props) => {
-	const { text } = props;
+	const { text, ...rest } = props;
 	return (
 		<Typography
+			fontFamily="monospace"
 			component="p"
 			padding={1}
 			paddingLeft={2}
+			{...rest}
 		>
 			<Latex
 				delimiters={[
@@ -309,15 +313,13 @@ export const StructogramComponent: FC<
 						padding={paddingSize}
 					>
 						<ArrowTopLeftBottomRight color="inherit" />
-						<Typography
-							component="p"
+						<StructogramComponentText
+							text="True"
 							sx={{
 								zIndex: 1,
 								backgroundColor,
 							}}
-						>
-							True
-						</Typography>
+						/>
 					</Box>
 				</Grid>
 				<Grid
@@ -333,15 +335,13 @@ export const StructogramComponent: FC<
 						padding={paddingSize}
 					>
 						<ArrowBottomLeftTopRight color="inherit" />
-						<Typography
-							component="p"
+						<StructogramComponentText
+							text="False"
 							sx={{
 								zIndex: 1,
 								backgroundColor,
 							}}
-						>
-							False
-						</Typography>
+						/>
 					</Box>
 				</Grid>
 				<Grid

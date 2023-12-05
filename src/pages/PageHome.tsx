@@ -92,7 +92,6 @@ export const PageHome: FC = () => {
 			if (blob === null) {
 				return;
 			}
-			console.log(blob);
 
 			if (window.saveAs) {
 				window.saveAs(blob, "structogram");
@@ -210,7 +209,13 @@ export const PageHome: FC = () => {
 								Preview
 							</Typography>
 
-							<div id="structogram-preview-region">
+							<div
+								id="structogram-preview-region"
+								style={{
+									fontFamily: "monospace",
+									// color: "red",
+								}}
+							>
 								<StructogramRenderer
 									nodes={nodes}
 								/>
