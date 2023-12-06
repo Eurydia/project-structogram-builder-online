@@ -1,7 +1,7 @@
 {
 	"name": "nassi-shneiderman-diagram-builder-online",
 	"private": true,
-	"version": "0.0.5",
+	"version": "0.0.7",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
