@@ -10,20 +10,11 @@ import {
 	Box,
 	ButtonGroup,
 	Button,
-	Collapse,
 	Grid,
 	Typography,
 	useTheme,
 	Snackbar,
-	IconButton,
-	Tooltip,
 } from "@mui/material";
-import {
-	LinkRounded,
-	FileDownloadRounded,
-	UnfoldLessRounded,
-	UnfoldMoreRounded,
-} from "@mui/icons-material";
 
 import { toPng, toSvg } from "html-to-image";
 import { saveAs } from "file-saver";
@@ -45,7 +36,6 @@ const copyURLToClipboard = (
 ): void => {
 	const url = new URL(window.location.href);
 	url.searchParams.set("content", content);
-	url.searchParams.set("preview", "true");
 
 	navigator.clipboard.writeText(url.toString());
 };
@@ -53,17 +43,6 @@ const copyURLToClipboard = (
 export const PageHome: FC = () => {
 	const theme = useTheme();
 
-	const [editorOpen, setEditorOpen] =
-		useState<boolean>(() => {
-			const url = new URL(window.location.href);
-			const previewParam =
-				url.searchParams.get("preview");
-			if (previewParam !== null) {
-				return previewParam !== "true";
-			}
-
-			return true;
-		});
 	const [snackbarURLOpen, setSnackbarURLOpen] =
 		useState<boolean>(false);
 	const [
@@ -198,6 +177,7 @@ export const PageHome: FC = () => {
 					<Grid
 						item
 						xs={12}
+						sm={6}
 					>
 						<Box
 							component="section"
@@ -211,59 +191,34 @@ export const PageHome: FC = () => {
 								component="h2"
 								fontWeight={700}
 								variant="h5"
-								alignItems="center"
 							>
-								<Tooltip
-									title={
-										editorOpen
-											? "Collapse editor"
-											: "Expand editor"
-									}
-								>
-									<IconButton
-										onClick={() =>
-											setEditorOpen(!editorOpen)
-										}
-									>
-										{editorOpen ? (
-											<UnfoldLessRounded />
-										) : (
-											<UnfoldMoreRounded />
-										)}
-									</IconButton>
-								</Tooltip>
 								Editor
 							</Typography>
-
-							<Collapse
-								in={editorOpen}
-								orientation="vertical"
+							<Typography
+								paragraph
+								component="p"
 							>
-								<Typography
-									paragraph
-									component="p"
+								Visit the{" "}
+								<a
+									href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
+									hrefLang="en"
+									target="_blank"
 								>
-									Visit the{" "}
-									<a
-										href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
-										hrefLang="en"
-										target="_blank"
-									>
-										project GitHub repository
-									</a>{" "}
-									for more information about the
-									syntax.
-								</Typography>
-								<StructogramEditor
-									value={content}
-									onValueChange={onTextChange}
-								/>
-							</Collapse>
+									project GitHub repository
+								</a>{" "}
+								for more information about the
+								syntax.
+							</Typography>
+							<StructogramEditor
+								value={content}
+								onValueChange={onTextChange}
+							/>
 						</Box>
 					</Grid>
 					<Grid
 						item
 						xs={12}
+						sm={6}
 					>
 						<Box
 							component="section"
@@ -278,16 +233,8 @@ export const PageHome: FC = () => {
 								fontWeight={700}
 								variant="h5"
 							>
-								<Tooltip title="Share diagram">
-									<IconButton
-										onClick={onCopyLink}
-									>
-										<LinkRounded />
-									</IconButton>
-								</Tooltip>
 								Preview
 							</Typography>
-
 							<div
 								id="structogram-preview-region"
 								style={{
@@ -300,18 +247,25 @@ export const PageHome: FC = () => {
 								/>
 							</div>
 							<Stack
-								direction="row"
+								direction={{
+									xs: "column",
+									sm: "row",
+								}}
 								spacing={2}
 							>
+								<Button
+									disableElevation
+									variant="contained"
+									onClick={onCopyLink}
+								>
+									Share URL
+								</Button>
 								<ButtonGroup
 									disableElevation
 									variant="contained"
 								>
 									<Button
 										onClick={onImageSaveSVG}
-										startIcon={
-											<FileDownloadRounded />
-										}
 									>
 										Save as SVG
 									</Button>
