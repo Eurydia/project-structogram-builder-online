@@ -177,7 +177,7 @@ export const PageHome: FC = () => {
 					<Grid
 						item
 						xs={12}
-						sm={6}
+						lg={6}
 					>
 						<Box
 							component="section"
@@ -218,7 +218,7 @@ export const PageHome: FC = () => {
 					<Grid
 						item
 						xs={12}
-						sm={6}
+						lg={6}
 					>
 						<Box
 							component="section"
@@ -249,7 +249,7 @@ export const PageHome: FC = () => {
 							<Stack
 								direction={{
 									xs: "column",
-									sm: "row",
+									lg: "row",
 								}}
 								spacing={2}
 							>
