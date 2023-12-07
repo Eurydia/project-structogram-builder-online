@@ -30,6 +30,10 @@ import {
 } from "ast/parser";
 import { StructogramEditor } from "components/StructogramEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";
+import {
+	DownloadRounded,
+	LinkRounded,
+} from "@mui/icons-material";
 
 const copyURLToClipboard = (
 	content: string,
@@ -257,6 +261,9 @@ export const PageHome: FC = () => {
 									disableElevation
 									variant="contained"
 									onClick={onCopyLink}
+									startIcon={
+										<LinkRounded fontSize="inherit" />
+									}
 								>
 									Share URL
 								</Button>
@@ -266,6 +273,9 @@ export const PageHome: FC = () => {
 								>
 									<Button
 										onClick={onImageSaveSVG}
+										startIcon={
+											<DownloadRounded fontSize="inherit" />
+										}
 									>
 										Save as SVG
 									</Button>

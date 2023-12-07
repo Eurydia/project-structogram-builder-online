@@ -1,7 +1,8 @@
 import { FC } from "react";
-
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { Box } from "@mui/material";
+
+import "./styles.css";
 
 type StructogramEditorProps = {
 	value: string;
