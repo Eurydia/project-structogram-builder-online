@@ -13,7 +13,11 @@ import {
 	Snackbar,
 	Stack,
 } from "@mui/material";
-
+import {
+	DownloadRounded,
+	EditOffRounded,
+	EditRounded,
+} from "@mui/icons-material";
 import {
 	toJpeg,
 	toPng,
@@ -32,11 +36,6 @@ import {
 } from "ast/parser";
 import { StructogramEditor } from "components/StructogramEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";
-import {
-	DownloadRounded,
-	EditOffRounded,
-	EditRounded,
-} from "@mui/icons-material";
 import { DropdownButton } from "components/DropdownButton";
 
 const copyToClipboard = (
