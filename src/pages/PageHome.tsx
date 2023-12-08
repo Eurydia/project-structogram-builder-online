@@ -201,7 +201,7 @@ export const PageHome: FC = () => {
 	return (
 		<Fragment>
 			<Box
-				padding={4}
+				padding={1}
 				component="section"
 			>
 				<Typography

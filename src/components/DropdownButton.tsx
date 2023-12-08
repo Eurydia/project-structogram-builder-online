@@ -74,10 +74,13 @@ export const DropdownButton: FC<
 				anchorEl={ref.current}
 				transition
 				disablePortal
+				sx={{
+					zIndex: (theme) => theme.zIndex.modal,
+				}}
 			>
 				{({ TransitionProps }) => (
 					<Grow {...TransitionProps}>
-						<Paper elevation={0}>
+						<Paper elevation={4}>
 							<ClickAwayListener
 								onClickAway={handleClose}
 							>
