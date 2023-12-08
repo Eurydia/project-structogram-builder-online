@@ -25,7 +25,12 @@ export const StructogramRenderer: FC<
 	}
 
 	return (
-		<Box fontFamily="Consolas">
+		<Box
+			fontFamily="Fira Code"
+			sx={{
+				fontVariantLigatures: "contextual",
+			}}
+		>
 			{nodes.map((node, index) => (
 				<StructogramComponent
 					key={index}

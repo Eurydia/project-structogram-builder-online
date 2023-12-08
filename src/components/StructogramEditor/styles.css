@@ -1,3 +1,7 @@
-.cm-editor .cm-content {
-	font-family: "Consolas";
+.cm-editor,
+.cm-content,
+.cm-gutterElement {
+	font-family: "Fira Code";
+	font-variant-ligatures: contextual;
+	font-feature-settings: "calt";
 }
