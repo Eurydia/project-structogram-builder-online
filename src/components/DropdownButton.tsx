@@ -6,37 +6,36 @@ import {
 	useState,
 	useCallback,
 } from "react";
-
 import {
 	Button,
-	ButtonGroup,
 	ClickAwayListener,
 	Grow,
 	Paper,
 	Popper,
 	MenuItem,
 	MenuList,
+	Stack,
+	Typography,
 } from "@mui/material";
-import { ArrowDropDownRounded } from "@mui/icons-material";
 
-type SplitButtonProps = {
-	startIcon: ReactNode;
-	text: string;
-	onClick: () => void;
+type DropdownButtonProps = {
+	children: ReactNode;
 	options: {
+		icon: ReactNode;
 		text: string;
 		onClick: () => void;
 	}[];
 };
-export const SplitButton: FC<SplitButtonProps> = (
-	props,
-) => {
-	const { text, onClick, options, startIcon } =
-		props;
+export const DropdownButton: FC<
+	DropdownButtonProps
+> = (props) => {
+	const { children, options } = props;
 
 	const [optionsOpen, setOptionsOpen] =
 		useState<boolean>(false);
-	const ref = useRef<HTMLDivElement>(null);
+	const ref = useRef<HTMLButtonElement | null>(
+		null,
+	);
 
 	const handleToggle = useCallback(() => {
 		setOptionsOpen((prevOpen) => {
@@ -62,59 +61,45 @@ export const SplitButton: FC<SplitButtonProps> = (
 
 	return (
 		<Fragment>
-			<ButtonGroup
+			<Button
+				ref={ref}
 				disableElevation
 				variant="contained"
-				ref={ref}
+				onClick={handleToggle}
 			>
-				<Button
-					fullWidth
-					disableElevation
-					size="large"
-					startIcon={startIcon}
-					onClick={onClick}
-				>
-					{text}
-				</Button>
-				<Button
-					size="small"
-					onClick={handleToggle}
-				>
-					<ArrowDropDownRounded />
-				</Button>
-			</ButtonGroup>
+				{children}
+			</Button>
 			<Popper
-				sx={{
-					zIndex: 1,
-				}}
 				open={optionsOpen}
 				anchorEl={ref.current}
-				role={undefined}
 				transition
 				disablePortal
 			>
-				{({ TransitionProps, placement }) => (
-					<Grow
-						{...TransitionProps}
-						style={{
-							transformOrigin:
-								placement === "bottom"
-									? "center top"
-									: "center bottom",
-						}}
-					>
-						<Paper>
+				{({ TransitionProps }) => (
+					<Grow {...TransitionProps}>
+						<Paper elevation={0}>
 							<ClickAwayListener
 								onClickAway={handleClose}
 							>
 								<MenuList autoFocusItem>
 									{options.map(
-										(option, index) => (
+										(
+											{ text, onClick, icon },
+											index,
+										) => (
 											<MenuItem
-												key={`${option.text}-${index}`}
-												onClick={option.onClick}
+												key={`${text}-${index}`}
+												onClick={onClick}
 											>
-												{option.text}
+												<Stack
+													spacing={1}
+													direction="row"
+												>
+													{icon}
+													<Typography>
+														{text}
+													</Typography>
+												</Stack>
 											</MenuItem>
 										),
 									)}

@@ -6,17 +6,19 @@ import {
 	Fragment,
 } from "react";
 import {
-	Stack,
 	Box,
-	ButtonGroup,
-	Button,
 	Grid,
 	Typography,
 	useTheme,
 	Snackbar,
+	Stack,
 } from "@mui/material";
 
-import { toPng, toSvg } from "html-to-image";
+import {
+	toJpeg,
+	toPng,
+	toSvg,
+} from "html-to-image";
 import { saveAs } from "file-saver";
 
 import {
@@ -32,20 +34,39 @@ import { StructogramEditor } from "components/StructogramEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";
 import {
 	DownloadRounded,
-	LinkRounded,
+	EditOffRounded,
+	EditRounded,
 } from "@mui/icons-material";
+import { DropdownButton } from "components/DropdownButton";
 
-const copyURLToClipboard = (
+const copyToClipboard = (
 	content: string,
+	preview: boolean,
 ): void => {
 	const url = new URL(window.location.href);
 	url.searchParams.set("content", content);
+	if (preview) {
+		url.searchParams.set("preview", "true");
+	}
 
 	navigator.clipboard.writeText(url.toString());
 };
 
 export const PageHome: FC = () => {
 	const theme = useTheme();
+
+	const [editorOpen] = useState<boolean>(() => {
+		if (window.location.search !== "") {
+			const url = new URL(window.location.href);
+			const previewParam =
+				url.searchParams.get("preview");
+			if (previewParam !== null) {
+				return previewParam !== "true";
+			}
+		}
+
+		return true;
+	});
 
 	const [snackbarURLOpen, setSnackbarURLOpen] =
 		useState<boolean>(false);
@@ -134,8 +155,38 @@ export const PageHome: FC = () => {
 		setSnackbarDownloadOpen(true);
 	}, []);
 
+	const onImageSaveJPEG =
+		useCallback(async () => {
+			const node = document.getElementById(
+				"structogram-preview-region",
+			);
+
+			if (node === null) {
+				return;
+			}
+
+			toJpeg(node).then((blob) => {
+				if (blob === null) {
+					return;
+				}
+
+				if (window.saveAs) {
+					window.saveAs(blob, "structogram");
+				} else {
+					saveAs(blob, "structogram");
+				}
+			});
+
+			setSnackbarDownloadOpen(true);
+		}, []);
+
+	const onCopyLinkReadonly = useCallback(() => {
+		copyToClipboard(content, true);
+		setSnackbarURLOpen(true);
+	}, [content]);
+
 	const onCopyLink = useCallback(() => {
-		copyURLToClipboard(content);
+		copyToClipboard(content, false);
 		setSnackbarURLOpen(true);
 	}, [content]);
 
@@ -179,6 +230,9 @@ export const PageHome: FC = () => {
 					spacing={2}
 				>
 					<Grid
+						display={
+							editorOpen ? "block" : "none"
+						}
 						item
 						xs={12}
 						lg={6}
@@ -222,7 +276,7 @@ export const PageHome: FC = () => {
 					<Grid
 						item
 						xs={12}
-						lg={6}
+						lg={editorOpen ? 6 : 12}
 					>
 						<Box
 							component="section"
@@ -251,40 +305,46 @@ export const PageHome: FC = () => {
 								/>
 							</div>
 							<Stack
-								direction={{
-									xs: "column",
-									lg: "row",
-								}}
 								spacing={2}
+								direction="row"
 							>
-								<Button
-									disableElevation
-									variant="contained"
-									onClick={onCopyLink}
-									startIcon={
-										<LinkRounded fontSize="inherit" />
-									}
+								<DropdownButton
+									options={[
+										{
+											icon: <EditRounded />,
+											text: "Include editor",
+											onClick: onCopyLink,
+										},
+										{
+											icon: <EditOffRounded />,
+											text: "Structogram only",
+											onClick: onCopyLinkReadonly,
+										},
+									]}
 								>
-									Share URL
-								</Button>
-								<ButtonGroup
-									disableElevation
-									variant="contained"
+									Share
+								</DropdownButton>
+								<DropdownButton
+									options={[
+										{
+											icon: <DownloadRounded />,
+											text: "Save as SVG",
+											onClick: onImageSaveSVG,
+										},
+										{
+											icon: <DownloadRounded />,
+											text: "Save as PNG",
+											onClick: onImageSavePNG,
+										},
+										{
+											icon: <DownloadRounded />,
+											text: "Save as JPG",
+											onClick: onImageSaveJPEG,
+										},
+									]}
 								>
-									<Button
-										onClick={onImageSaveSVG}
-										startIcon={
-											<DownloadRounded fontSize="inherit" />
-										}
-									>
-										Save as SVG
-									</Button>
-									<Button
-										onClick={onImageSavePNG}
-									>
-										Save as PNG
-									</Button>
-								</ButtonGroup>
+									Export
+								</DropdownButton>
 							</Stack>
 						</Box>
 					</Grid>
