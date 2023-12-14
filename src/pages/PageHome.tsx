@@ -46,6 +46,8 @@ const copyToClipboard = (
 	url.searchParams.set("content", content);
 	if (preview) {
 		url.searchParams.set("preview", "true");
+	} else {
+		url.searchParams.delete("preview");
 	}
 
 	navigator.clipboard.writeText(url.toString());
@@ -297,17 +299,33 @@ export const PageHome: FC = () => {
 							>
 								Preview
 							</Typography>
-							<div
-								id="structogram-preview-region"
-								style={{
-									paddingTop: theme.spacing(2),
-									paddingBottom: theme.spacing(2),
+							<Box
+								sx={{
+									width: "100%",
+									[theme.breakpoints.up("md")]: {
+										width: !editorOpen
+											? "60%"
+											: undefined,
+										marginX: !editorOpen
+											? "auto"
+											: undefined,
+									},
 								}}
 							>
-								<StructogramRenderer
-									nodes={nodes}
-								/>
-							</div>
+								<div
+									id="structogram-preview-region"
+									style={{
+										width: "100%",
+										paddingTop: theme.spacing(2),
+										paddingBottom:
+											theme.spacing(2),
+									}}
+								>
+									<StructogramRenderer
+										nodes={nodes}
+									/>
+								</div>
+							</Box>
 							<Stack
 								spacing={2}
 								direction="row"

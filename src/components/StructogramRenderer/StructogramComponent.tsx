@@ -291,7 +291,6 @@ export const StructogramComponent: FC<
 			<Grid
 				container
 				height="100%"
-				// alignItems="baseline"
 			>
 				<Grid
 					item

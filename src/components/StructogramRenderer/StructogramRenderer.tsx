@@ -27,7 +27,9 @@ export const StructogramRenderer: FC<
 	return (
 		<Box
 			fontFamily="Fira Code"
+			width="fit-content"
 			sx={{
+				wordBreak: "break-all",
 				fontVariantLigatures: "contextual",
 			}}
 		>
