@@ -315,7 +315,6 @@ export const PageHome: FC = () => {
 								<div
 									id="structogram-preview-region"
 									style={{
-										width: "100%",
 										paddingTop: theme.spacing(2),
 										paddingBottom:
 											theme.spacing(2),
