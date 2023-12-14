@@ -15,8 +15,8 @@ import {
 } from "@mui/material";
 import {
 	DownloadRounded,
-	EditOffRounded,
 	EditRounded,
+	ImageRounded,
 } from "@mui/icons-material";
 import {
 	toJpeg,
@@ -59,9 +59,14 @@ export const PageHome: FC = () => {
 			const url = new URL(window.location.href);
 			const previewParam =
 				url.searchParams.get("preview");
-			if (previewParam !== null) {
-				return previewParam !== "true";
+			if (previewParam === null) {
+				return true;
 			}
+
+			if (previewParam === "true") {
+				return false;
+			}
+			return true;
 		}
 
 		return true;
@@ -315,8 +320,8 @@ export const PageHome: FC = () => {
 											onClick: onCopyLink,
 										},
 										{
-											icon: <EditOffRounded />,
-											text: "Structogram only",
+											icon: <ImageRounded />,
+											text: "Preview only",
 											onClick: onCopyLinkReadonly,
 										},
 									]}
