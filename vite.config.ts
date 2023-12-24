@@ -7,16 +7,12 @@ export default defineConfig({
 	base: "https://eurydia.github.io/nassi-shneiderman-diagram-builder-online/",
 	plugins: [react(), tsconfigPaths()],
 	build: {
-		emptyOutDir: true,
 		manifest: true,
-		minify: true,
-		polyfillModulePreload: false,
 		rollupOptions: {
 			output: {
 				chunkFileNames: "chunk-[name].[hash].js",
 				entryFileNames: "entry-[name].[hash].js",
 				inlineDynamicImports: false,
-				sourcemap: true,
 			},
 		},
 		sourcemap: true,

@@ -7,24 +7,26 @@ import {
 	SvgIconProps,
 	Typography,
 	TypographyProps,
-	useTheme,
 } from "@mui/material";
 import Latex from "react-latex-next";
 
 import { ASTNode, ASTNodeKind } from "ast/parser";
 import { TokenKind } from "ast/lexer";
+import { grey } from "@mui/material/colors";
 
 const ArrowBottomLeftTopRight: FC<
 	SvgIconProps
 > = (props) => {
+	const { sx } = props;
+
 	return (
 		<SvgIcon
 			sx={{
 				position: "absolute",
 				width: "100%",
 				height: "100%",
+				...sx,
 			}}
-			{...props}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -49,13 +51,15 @@ const ArrowBottomLeftTopRight: FC<
 const ArrowTopLeftBottomRight: FC<
 	SvgIconProps
 > = (props) => {
+	const { sx } = props;
+
 	return (
 		<SvgIcon
 			sx={{
 				position: "absolute",
 				width: "100%",
 				height: "100%",
-				...props.sx,
+				...sx,
 			}}
 		>
 			<svg
@@ -100,7 +104,6 @@ const StructogramComponentText: FC<
 		<Typography
 			fontFamily="inherit"
 			fontWeight="inherit"
-			component="p"
 			padding={1}
 			paddingLeft={2}
 			{...rest}
@@ -131,8 +134,6 @@ type StructogramComponentProps = {
 export const StructogramComponent: FC<
 	StructogramComponentProps
 > = (props) => {
-	const theme = useTheme();
-
 	const {
 		node,
 		borderTop,
@@ -144,9 +145,8 @@ export const StructogramComponent: FC<
 	const paddingSize = 1;
 
 	const borderWidth = 3;
-	const backgroundColor =
-		theme.palette.background.paper;
-	const borderColor = theme.palette.text.primary;
+	const backgroundColor = grey[100];
+	const borderColor = grey[800];
 
 	const sx = {
 		backgroundColor,
