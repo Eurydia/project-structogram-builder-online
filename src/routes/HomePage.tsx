@@ -19,10 +19,7 @@ import {
 	MenuItem,
 	ListItemIcon,
 } from "@mui/material";
-import {
-	DownloadRounded,
-	LinkRounded,
-} from "@mui/icons-material";
+import { DownloadRounded } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import {
 	toJpeg,
@@ -60,11 +57,6 @@ export const HomePage: FC = () => {
 	const [
 		exportPopoverAnchor,
 		setExportPopoverAnchor,
-	] = useState<HTMLButtonElement | null>(null);
-
-	const [
-		sharePopoverAnchor,
-		setSharePopoverAnchor,
 	] = useState<HTMLButtonElement | null>(null);
 
 	const [editorTab, setEditorTab] = useState(1);
@@ -176,13 +168,6 @@ export const HomePage: FC = () => {
 		});
 	};
 
-	const onCopyPreviewLink = () => {
-		copyToClipboard(content);
-		enqueueSnackbar("Link copied to clipboard", {
-			variant: "info",
-		});
-	};
-
 	const onCopyWorkspaceLink = () => {
 		copyToClipboard(content);
 		enqueueSnackbar("Link copied to clipboard", {
@@ -197,15 +182,6 @@ export const HomePage: FC = () => {
 	};
 	const handleExportPopoverClose = () => {
 		setExportPopoverAnchor(null);
-	};
-
-	const handleShareButtonClick = (
-		event: React.MouseEvent<HTMLButtonElement>,
-	) => {
-		setSharePopoverAnchor(event.currentTarget);
-	};
-	const handleSharePopoverClose = () => {
-		setSharePopoverAnchor(null);
 	};
 
 	const handleEditorTabChange = (
@@ -264,9 +240,7 @@ export const HomePage: FC = () => {
 						>
 							export
 						</Button>
-						<Button
-							onClick={handleShareButtonClick}
-						>
+						<Button onClick={onCopyWorkspaceLink}>
 							share
 						</Button>
 					</ButtonGroup>
@@ -312,48 +286,6 @@ export const HomePage: FC = () => {
 								</ListItemIcon>
 								<ListItemText>
 									Save as SVG
-								</ListItemText>
-							</MenuItem>
-						</MenuList>
-					</Paper>
-				</Popover>
-				<Popover
-					anchorOrigin={{
-						vertical: "bottom",
-						horizontal: "left",
-					}}
-					transformOrigin={{
-						vertical: "top",
-						horizontal: "left",
-					}}
-					anchorEl={sharePopoverAnchor}
-					open={sharePopoverAnchor !== null}
-					onClose={handleSharePopoverClose}
-				>
-					<Paper
-						sx={{
-							padding: 1,
-						}}
-					>
-						<MenuList>
-							<MenuItem
-								onClick={onCopyPreviewLink}
-							>
-								<ListItemIcon>
-									<LinkRounded fontSize="small" />
-								</ListItemIcon>
-								<ListItemText>
-									Copy Preview Link
-								</ListItemText>
-							</MenuItem>
-							<MenuItem
-								onClick={onCopyWorkspaceLink}
-							>
-								<ListItemIcon>
-									<LinkRounded fontSize="small" />
-								</ListItemIcon>
-								<ListItemText>
-									Copy Link to Workspace
 								</ListItemText>
 							</MenuItem>
 						</MenuList>
