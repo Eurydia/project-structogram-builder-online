@@ -46,7 +46,7 @@ export type ASTNode =
 export type Parser = {
 	tokens: Token[];
 	tokenLength: number;
-	cursor: number;
+	cursorPos: number;
 };
 
 export const parserInit = (
@@ -55,16 +55,16 @@ export const parserInit = (
 	return {
 		tokens: tokens,
 		tokenLength: tokens.length,
-		cursor: 0,
+		cursorPos: 0,
 	};
 };
 
 const parserGetNextTokenThenAdvance = (
 	p: Parser,
 ): Token => {
-	if (p.cursor < p.tokenLength) {
-		const token = p.tokens[p.cursor];
-		p.cursor++;
+	if (p.cursorPos < p.tokenLength) {
+		const token = p.tokens[p.cursorPos];
+		p.cursorPos++;
 
 		return token;
 	}
@@ -418,7 +418,7 @@ const parseBuildIfElseNode = (
 export const parserGetNextNodeThenAdvance = (
 	p: Parser,
 ): ASTNode => {
-	if (p.cursor >= p.tokenLength) {
+	if (p.cursorPos >= p.tokenLength) {
 		return {
 			kind: ASTNodeKind.END,
 		};

@@ -1,22 +1,30 @@
 import { FC } from "react";
-import ReactCodeMirror from "@uiw/react-codemirror";
 import { Box, SxProps } from "@mui/material";
+
+import ReactCodeMirror from "@uiw/react-codemirror";
 
 import "./styles.css";
 
-type StructogramEditorProps = {
+type StructogramCodeEditorProps = {
+	previewOnly?: boolean;
 	value: string;
 	onValueChange: (content: string) => void;
 	sx?: SxProps;
 };
-export const StructogramEditor: FC<
-	StructogramEditorProps
+export const StructogramCodeEditor: FC<
+	StructogramCodeEditorProps
 > = (props) => {
-	const { value, onValueChange, sx } = props;
+	const {
+		value,
+		onValueChange,
+		sx,
+		previewOnly,
+	} = props;
 
 	return (
 		<Box sx={sx}>
 			<ReactCodeMirror
+				readOnly={previewOnly}
 				value={value}
 				onChange={onValueChange}
 				theme="dark"

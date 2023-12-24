@@ -7,7 +7,6 @@ import {
 import {
 	Box,
 	Grid,
-	Typography,
 	Stack,
 	Paper,
 	Button,
@@ -24,6 +23,7 @@ import {
 	DownloadRounded,
 	LinkRounded,
 } from "@mui/icons-material";
+import { grey } from "@mui/material/colors";
 import {
 	toJpeg,
 	toPng,
@@ -41,27 +41,20 @@ import {
 	parserGetAllNodes,
 	parserInit,
 } from "ast/parser";
-import { StructogramEditor } from "components/StructogramEditor";
+
+import { StructogramCodeEditor } from "components/StructogramCodeEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";
-import { grey } from "@mui/material/colors";
 
 const copyToClipboard = (
 	content: string,
-	preview: boolean,
 ): void => {
 	const url = new URL(window.location.href);
+	url.searchParams.delete("content");
 	url.searchParams.set("content", content);
-
-	if (preview) {
-		url.searchParams.set("preview", "true");
-	} else {
-		url.searchParams.delete("preview");
-	}
-
 	navigator.clipboard.writeText(url.toString());
 };
 
-export const Home: FC = () => {
+export const HomePage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [
@@ -74,22 +67,7 @@ export const Home: FC = () => {
 		setSharePopoverAnchor,
 	] = useState<HTMLButtonElement | null>(null);
 
-	const [editorTab, setEditorTab] = useState(
-		() => {
-			if (window.location.search !== "") {
-				const url = new URL(window.location.href);
-				const previewParam =
-					url.searchParams.get("preview");
-				if (
-					previewParam !== null &&
-					previewParam === "true"
-				) {
-					return 0;
-				}
-			}
-			return 1;
-		},
-	);
+	const [editorTab, setEditorTab] = useState(1);
 	const [nodes, setNodes] = useState<ASTNode[]>(
 		[],
 	);
@@ -199,14 +177,14 @@ export const Home: FC = () => {
 	};
 
 	const onCopyPreviewLink = () => {
-		copyToClipboard(content, true);
+		copyToClipboard(content);
 		enqueueSnackbar("Link copied to clipboard", {
 			variant: "info",
 		});
 	};
 
 	const onCopyWorkspaceLink = () => {
-		copyToClipboard(content, false);
+		copyToClipboard(content);
 		enqueueSnackbar("Link copied to clipboard", {
 			variant: "info",
 		});
@@ -279,13 +257,6 @@ export const Home: FC = () => {
 								handleEditorTabToggle(1)
 							}
 						/>
-						{/* <Tab
-							label="DnD"
-							value={2}
-							onClick={() =>
-								handleEditorTabToggle(2)
-							}
-						/> */}
 					</Tabs>
 					<ButtonGroup variant="outlined">
 						<Button
@@ -397,7 +368,7 @@ export const Home: FC = () => {
 						lg={editorTab === 0 ? 0 : 6}
 					>
 						{editorTab === 1 && (
-							<StructogramEditor
+							<StructogramCodeEditor
 								value={content}
 								onValueChange={onContentChange}
 								sx={{
@@ -405,9 +376,6 @@ export const Home: FC = () => {
 									overflowY: "auto",
 								}}
 							/>
-						)}
-						{editorTab === 2 && (
-							<Typography>Hi</Typography>
 						)}
 					</Grid>
 					<Grid
@@ -422,163 +390,12 @@ export const Home: FC = () => {
 								padding: 4,
 								height: "calc(100vh - 64px)",
 								overflowY: "auto",
-								backgroundColor: grey[100],
+								backgroundColor: grey[300],
 							}}
 						/>
 					</Grid>
 				</Grid>
 			</Box>
-
-			{/* <Typography
-				borderRadius={4}
-				bgcolor={palette.background.default}
-				padding={2}
-				fontWeight={700}
-				component="h1"
-				variant="h4"
-				marginBottom={2}
-			>
-				<a
-					target="_blank"
-					hrefLang="en"
-					href="https://en.wikipedia.org/wiki/Nassi%E2%80%93Shneiderman_diagram"
-				>
-					Structogram
-				</a>{" "}
-				builder
-			</Typography>
-			<Grid
-				container
-				spacing={2}
-			>
-				<Grid
-					display={editorOpen ? "block" : "none"}
-					item
-					xs={12}
-					lg={6}
-				>
-					<Box
-						component="section"
-						borderRadius={4}
-						padding={2}
-						bgcolor={palette.background.paper}
-					>
-						<Typography
-							component="h2"
-							fontWeight={700}
-							variant="h5"
-						>
-							Editor
-						</Typography>
-						<Typography
-							paragraph
-							component="p"
-						>
-							Visit the{" "}
-							<a
-								href="https://github.com/Eurydia/nassi-shneiderman-diagram-builder-online"
-								hrefLang="en"
-								target="_blank"
-							>
-								project GitHub repository
-							</a>{" "}
-							for more information about the
-							syntax.
-						</Typography>
-						<StructogramEditor
-							value={content}
-							onValueChange={onContentChange}
-						/>
-					</Box>
-				</Grid>
-				<Grid
-					item
-					xs={12}
-					lg={editorOpen ? 6 : 12}
-				>
-					<Box
-						component="section"
-						borderRadius={4}
-						padding={2}
-						bgcolor={palette.background.paper}
-					>
-						<Typography
-							component="h2"
-							fontWeight={700}
-							variant="h5"
-						>
-							Preview
-						</Typography>
-						<Box
-							sx={{
-								width: "100%",
-								[breakpoints.up("md")]: {
-									width: !editorOpen
-										? "60%"
-										: undefined,
-									marginX: !editorOpen
-										? "auto"
-										: undefined,
-								},
-							}}
-						>
-							<div
-								id="structogram-preview-region"
-								style={{
-									paddingTop: spacing(2),
-									paddingBottom: spacing(2),
-								}}
-							>
-								<StructogramRenderer
-									nodes={nodes}
-								/>
-							</div>
-						</Box>
-						<Stack
-							spacing={2}
-							direction="row"
-						>
-							<DropdownButton
-								options={[
-									{
-										icon: <EditRounded />,
-										text: "Include editor",
-										onClick: onCopyLink,
-									},
-									{
-										icon: <ImageRounded />,
-										text: "Preview only",
-										onClick: onCopyLinkReadonly,
-									},
-								]}
-							>
-								Share
-							</DropdownButton>
-							<DropdownButton
-								options={[
-									{
-										icon: <DownloadRounded />,
-										text: "Save as SVG",
-										onClick: onImageSaveSVG,
-									},
-									{
-										icon: <DownloadRounded />,
-										text: "Save as PNG",
-										onClick: onImageSavePNG,
-									},
-									{
-										icon: <DownloadRounded />,
-										text: "Save as JPG",
-										onClick: onImageSaveJPEG,
-									},
-								]}
-							>
-								Export
-							</DropdownButton>
-						</Stack>
-					</Box>
-				</Grid>
-			</Grid> */}
 		</Box>
 	);
 };

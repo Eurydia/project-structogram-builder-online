@@ -8,11 +8,12 @@ import {
 	Typography,
 	TypographyProps,
 } from "@mui/material";
+import { grey } from "@mui/material/colors";
+
 import Latex from "react-latex-next";
 
 import { ASTNode, ASTNodeKind } from "ast/parser";
 import { TokenKind } from "ast/lexer";
-import { grey } from "@mui/material/colors";
 
 const ArrowBottomLeftTopRight: FC<
 	SvgIconProps
@@ -143,13 +144,10 @@ export const StructogramComponent: FC<
 	} = props;
 
 	const paddingSize = 1;
-
 	const borderWidth = 3;
-	const backgroundColor = grey[100];
 	const borderColor = grey[800];
 
 	const sx = {
-		backgroundColor,
 		borderColor,
 		borderStyle: "solid",
 		borderLeftWidth: borderLeft ? borderWidth : 0,
@@ -317,7 +315,6 @@ export const StructogramComponent: FC<
 							text="True"
 							sx={{
 								zIndex: 1,
-								backgroundColor,
 							}}
 						/>
 					</Box>
@@ -339,7 +336,6 @@ export const StructogramComponent: FC<
 							text="False"
 							sx={{
 								zIndex: 1,
-								backgroundColor,
 							}}
 						/>
 					</Box>
@@ -386,7 +382,7 @@ export const StructogramComponent: FC<
 	return (
 		<Box
 			height="100%"
-			sx={{ ...sx }}
+			sx={sx}
 		>
 			{preparedNode}
 		</Box>

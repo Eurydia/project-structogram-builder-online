@@ -49,6 +49,7 @@ export const StructogramRenderer: FC<
 				sx={{
 					wordBreak: "break-all",
 					fontVariantLigatures: "contextual",
+					userSelect: "none",
 				}}
 			>
 				{component}
