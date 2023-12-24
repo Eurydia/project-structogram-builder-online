@@ -146,9 +146,11 @@ export const StructogramComponent: FC<
 	const paddingSize = 1;
 	const borderWidth = 3;
 	const borderColor = grey[800];
+	const backgroundColor = grey[300];
 
 	const sx = {
 		borderColor,
+		backgroundColor,
 		borderStyle: "solid",
 		borderLeftWidth: borderLeft ? borderWidth : 0,
 		borderTopWidth: borderTop ? borderWidth : 0,
@@ -314,7 +316,8 @@ export const StructogramComponent: FC<
 						<StructogramComponentText
 							text="True"
 							sx={{
-								zIndex: 1,
+								zIndex: 2,
+								backgroundColor,
 							}}
 						/>
 					</Box>
@@ -335,7 +338,8 @@ export const StructogramComponent: FC<
 						<StructogramComponentText
 							text="False"
 							sx={{
-								zIndex: 1,
+								zIndex: 2,
+								backgroundColor,
 							}}
 						/>
 					</Box>
@@ -347,9 +351,7 @@ export const StructogramComponent: FC<
 					<Stack
 						height="100%"
 						sx={{
-							borderRightWidth: borderWidth,
-							borderRightStyle: "solid",
-							borderRightColor: borderColor,
+							borderRight: `${borderWidth} solid ${borderColor}`,
 						}}
 					>
 						{bodyIfNode}
@@ -382,7 +384,7 @@ export const StructogramComponent: FC<
 	return (
 		<Box
 			height="100%"
-			sx={sx}
+			sx={{ ...sx }}
 		>
 			{preparedNode}
 		</Box>
