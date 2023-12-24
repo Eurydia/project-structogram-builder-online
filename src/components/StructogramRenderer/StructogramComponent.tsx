@@ -351,7 +351,9 @@ export const StructogramComponent: FC<
 					<Stack
 						height="100%"
 						sx={{
-							borderRight: `${borderWidth} solid ${borderColor}`,
+							borderRightStyle: "solid",
+							borderRightWidth: borderWidth,
+							borderRightColor: borderColor,
 						}}
 					>
 						{bodyIfNode}
