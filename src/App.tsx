@@ -1,5 +1,9 @@
 import { Fragment, FC } from "react";
 import {
+	RouterProvider,
+	createBrowserRouter,
+} from "react-router-dom";
+import {
 	CssBaseline,
 	ThemeProvider,
 	alpha,
@@ -8,9 +12,49 @@ import {
 import { grey } from "@mui/material/colors";
 import { SnackbarProvider } from "notistack";
 
-import { HomePage } from "routes/HomePage";
+import { EditorPage } from "routes/EditorPage";
+import { ErrorPage } from "routes/ErrorPage";
 
 import "katex/dist/katex.min.css";
+import { PreviewPage } from "routes/PreviewPage";
+
+const router = createBrowserRouter(
+	[
+		{
+			path: "/",
+			element: <EditorPage />,
+			errorElement: <ErrorPage />,
+		},
+		{
+			path: "editor",
+			element: <EditorPage />,
+			errorElement: <ErrorPage />,
+			children: [
+				{
+					path: ":content",
+					element: <PreviewPage />,
+					errorElement: <ErrorPage />,
+				},
+			],
+		},
+		{
+			path: "preview",
+			element: <PreviewPage />,
+			errorElement: <ErrorPage />,
+			children: [
+				{
+					path: ":content",
+					element: <PreviewPage />,
+					errorElement: <ErrorPage />,
+				},
+			],
+		},
+	],
+	{
+		basename:
+			"/project-nassi-shneiderman-diagram-builder-online",
+	},
+);
 
 const themeDark = createTheme({
 	palette: {
@@ -34,7 +78,7 @@ export const App: FC = () => {
 						horizontal: "center",
 					}}
 				>
-					<HomePage />
+					<RouterProvider router={router} />
 				</SnackbarProvider>
 			</ThemeProvider>
 		</Fragment>

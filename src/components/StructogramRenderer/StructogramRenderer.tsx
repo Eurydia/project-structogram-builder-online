@@ -9,6 +9,7 @@ import { ASTNode } from "ast/parser";
 import { StructogramComponent } from "./StructogramComponent";
 
 type StructogramRendererProps = {
+	emptyText?: string;
 	id?: string;
 	nodes: ASTNode[];
 	sx?: SxProps;
@@ -16,14 +17,15 @@ type StructogramRendererProps = {
 export const StructogramRenderer: FC<
 	StructogramRendererProps
 > = (props) => {
-	const { nodes, sx, id } = props;
+	const { nodes, sx, id, emptyText } = props;
 
 	let component: JSX.Element | JSX.Element[] = (
 		<Typography
 			fontFamily="inherit"
 			fontStyle="italic"
 		>
-			Start typing to see the preview.
+			{emptyText ??
+				"Start typing to see the preview."}
 		</Typography>
 	);
 

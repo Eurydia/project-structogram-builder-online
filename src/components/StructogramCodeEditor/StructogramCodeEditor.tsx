@@ -6,9 +6,10 @@ import ReactCodeMirror from "@uiw/react-codemirror";
 import "./styles.css";
 
 type StructogramCodeEditorProps = {
-	previewOnly?: boolean;
+	locked?: boolean;
+	placeholder?: string;
 	value: string;
-	onValueChange: (content: string) => void;
+	onValueChange?: (value: string) => void;
 	sx?: SxProps;
 };
 export const StructogramCodeEditor: FC<
@@ -18,17 +19,18 @@ export const StructogramCodeEditor: FC<
 		value,
 		onValueChange,
 		sx,
-		previewOnly,
+		locked,
+		placeholder,
 	} = props;
 
 	return (
 		<Box sx={sx}>
 			<ReactCodeMirror
-				readOnly={previewOnly}
+				readOnly={locked}
 				value={value}
 				onChange={onValueChange}
 				theme="dark"
-				placeholder="for ( i = 1..3 ) {	x := x + 1; }"
+				placeholder={placeholder}
 			/>
 		</Box>
 	);
