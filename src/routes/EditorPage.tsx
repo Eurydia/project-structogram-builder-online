@@ -291,7 +291,8 @@ export const EditorPage: FC = () => {
 								value={editorContent}
 								onValueChange={onContentChange}
 								sx={{
-									height: "calc(100vh - 62px)",
+									height:
+										"calc(100vh - 61.6833px)",
 									overflowY: "auto",
 								}}
 							/>
@@ -311,7 +312,8 @@ export const EditorPage: FC = () => {
 								nodes={nodes}
 								sx={{
 									padding: 4,
-									height: "calc(100vh - 62px)",
+									height:
+										"calc(100vh - 61.6833px)",
 									overflowY: "auto",
 									backgroundColor: grey[300],
 								}}
