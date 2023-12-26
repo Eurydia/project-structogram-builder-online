@@ -17,6 +17,8 @@ import {
 	Popover,
 	MenuItem,
 	ListItemIcon,
+	useMediaQuery,
+	Theme,
 } from "@mui/material";
 import {
 	DownloadRounded,
@@ -49,6 +51,9 @@ import { StructogramRenderer } from "components/StructogramRenderer";
 
 export const EditorPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
+	const matchBreakpointXs = useMediaQuery<Theme>(
+		(theme) => theme.breakpoints.down("md"),
+	);
 
 	const [
 		popoverExportMenuAnchor,
@@ -235,18 +240,38 @@ export const EditorPage: FC = () => {
 						</ButtonGroup>
 						<ButtonGroup variant="outlined">
 							<Button
-								startIcon={<DownloadRounded />}
+								startIcon={
+									matchBreakpointXs ? (
+										<Fragment />
+									) : (
+										<DownloadRounded />
+									)
+								}
 								onClick={
 									handlePopoverExportMenuOpen
 								}
 							>
-								export
+								{matchBreakpointXs ? (
+									<DownloadRounded />
+								) : (
+									"export"
+								)}
 							</Button>
 							<Button
-								endIcon={<SendRounded />}
+								endIcon={
+									matchBreakpointXs ? (
+										<Fragment />
+									) : (
+										<SendRounded />
+									)
+								}
 								onClick={handleCopyLink}
 							>
-								Share
+								{matchBreakpointXs ? (
+									<SendRounded />
+								) : (
+									"share"
+								)}
 							</Button>
 						</ButtonGroup>
 					</Stack>
@@ -273,7 +298,7 @@ export const EditorPage: FC = () => {
 						</Grid>
 						<Grid
 							item
-							xs
+							xs={editorOpen ? 0 : 12}
 							lg
 						>
 							<StructogramRenderer
@@ -284,6 +309,9 @@ export const EditorPage: FC = () => {
 									height: "calc(100vh - 62px)",
 									overflowY: "auto",
 									backgroundColor: grey[300],
+									display: editorOpen
+										? "none"
+										: undefined,
 								}}
 							/>
 						</Grid>
