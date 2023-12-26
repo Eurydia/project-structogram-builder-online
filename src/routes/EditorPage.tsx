@@ -19,9 +19,10 @@ import {
 	ListItemIcon,
 } from "@mui/material";
 import {
-	CodeRounded,
 	DownloadRounded,
 	SendRounded,
+	VisibilityOffRounded,
+	VisibilityRounded,
 } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import {
@@ -212,7 +213,13 @@ export const EditorPage: FC = () => {
 						<ButtonGroup variant="outlined">
 							<Button
 								onClick={handleEditorToggle}
-								startIcon={<CodeRounded />}
+								startIcon={
+									editorOpen ? (
+										<VisibilityRounded />
+									) : (
+										<VisibilityOffRounded />
+									)
+								}
 							>
 								code
 							</Button>
