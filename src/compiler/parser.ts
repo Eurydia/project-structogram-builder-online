@@ -1,4 +1,4 @@
-import { Token, TokenKind } from "ast/lexer";
+import { Token, TokenKind } from "compiler/lexer";
 
 export enum ASTNodeKind {
 	END,

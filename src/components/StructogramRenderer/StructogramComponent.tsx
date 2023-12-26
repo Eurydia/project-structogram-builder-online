@@ -12,8 +12,11 @@ import { grey } from "@mui/material/colors";
 
 import Latex from "react-latex-next";
 
-import { ASTNode, ASTNodeKind } from "ast/parser";
-import { TokenKind } from "ast/lexer";
+import {
+	ASTNode,
+	ASTNodeKind,
+} from "compiler/parser";
+import { TokenKind } from "compiler/lexer";
 
 const ArrowBottomLeftTopRight: FC<
 	SvgIconProps

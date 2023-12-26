@@ -19,8 +19,9 @@ import {
 	ListItemIcon,
 } from "@mui/material";
 import {
+	CodeRounded,
 	DownloadRounded,
-	LinkRounded,
+	SendRounded,
 } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import {
@@ -34,33 +35,22 @@ import { useSnackbar } from "notistack";
 import {
 	lexerGetAllTokens,
 	lexerInit,
-} from "ast/lexer";
+} from "compiler/lexer";
 import {
 	ASTNode,
 	parserGetAllNodes,
 	parserInit,
-} from "ast/parser";
+} from "compiler/parser";
 
 import { StructogramCodeEditor } from "components/StructogramCodeEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";
-import {
-	generatePath,
-	useLocation,
-	useParams,
-} from "react-router-dom";
 
 export const EditorPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
-	const { pathname } = useLocation();
-	const { content } = useParams();
 
 	const [
 		popoverExportMenuAnchor,
 		setPopoverExportMenuAnchor,
-	] = useState<HTMLButtonElement | null>(null);
-	const [
-		popoverShareMenuAnchor,
-		setPopoverShareMenuAnchor,
 	] = useState<HTMLButtonElement | null>(null);
 
 	const [editorOpen, setEditorOpen] =
@@ -70,13 +60,17 @@ export const EditorPage: FC = () => {
 	);
 	const [editorContent, setEditorContent] =
 		useState(() => {
-			if (content !== undefined) {
+			const url = new URL(window.location.href);
+			const content =
+				url.searchParams.get("content");
+			if (content !== null) {
 				window.localStorage.setItem(
 					"content",
 					content,
 				);
 				return content;
 			}
+
 			const savedContent =
 				window.localStorage.getItem("content");
 			if (savedContent !== null) {
@@ -96,10 +90,13 @@ export const EditorPage: FC = () => {
 		setNodes(nodes);
 	}, [editorContent]);
 
-	const onContentChange = (v: string) => {
-		setEditorContent(v);
-		window.localStorage.setItem("content", v);
-	};
+	const onContentChange = useCallback(
+		(v: string) => {
+			setEditorContent(v);
+			window.localStorage.setItem("content", v);
+		},
+		[],
+	);
 	const handleSaveSVG = useCallback(async () => {
 		const HTMLNode = document.getElementById(
 			"structogram-preview-region",
@@ -166,53 +163,21 @@ export const EditorPage: FC = () => {
 		});
 	}, [enqueueSnackbar]);
 
-	const handleCopyPreviewLink =
-		useCallback(() => {
-			const basePath =
-				window.location.href.replace(
-					pathname,
-					"",
-				);
-			navigator.clipboard.writeText(
-				generatePath(
-					`${basePath}/preview/:content`,
-					{
-						content: editorContent ?? "",
-					},
-				),
-			);
-			enqueueSnackbar(
-				"Copied preview link to clipboard",
-				{
-					variant: "info",
-				},
-			);
-		}, [
-			editorContent,
-			pathname,
-			enqueueSnackbar,
-		]);
-	const handleCopyEditorLink = useCallback(() => {
-		const basePath = window.location.href.replace(
-			pathname,
-			"",
-		);
-		navigator.clipboard.writeText(
-			generatePath(
-				`${basePath}/editor/:content`,
-				{
-					content: editorContent ?? "",
-				},
-			),
-		);
-		enqueueSnackbar("Link copied to clipboard", {
-			variant: "info",
-		});
-	}, [editorContent, pathname, enqueueSnackbar]);
-
 	const handleEditorToggle = useCallback(() => {
 		setEditorOpen((prev) => !prev);
 	}, []);
+
+	const handleCopyLink = useCallback(() => {
+		const url = new URL(window.location.href);
+		url.searchParams.set(
+			"content",
+			editorContent,
+		);
+		navigator.clipboard.writeText(url.href);
+		enqueueSnackbar("Copied link to clipboard", {
+			variant: "info",
+		});
+	}, [editorContent, enqueueSnackbar]);
 
 	const handlePopoverExportMenuOpen = useCallback(
 		(
@@ -228,20 +193,7 @@ export const EditorPage: FC = () => {
 		useCallback(() => {
 			setPopoverExportMenuAnchor(null);
 		}, []);
-	const handlePopoverShareMenuOpen = useCallback(
-		(
-			event: React.MouseEvent<HTMLButtonElement>,
-		) => {
-			setPopoverShareMenuAnchor(
-				event.currentTarget,
-			);
-		},
-		[],
-	);
-	const handlePopoverShareMenuClose =
-		useCallback(() => {
-			setPopoverShareMenuAnchor(null);
-		}, []);
+
 	return (
 		<Fragment>
 			<Box>
@@ -257,14 +209,17 @@ export const EditorPage: FC = () => {
 						direction="row"
 						justifyContent="space-between"
 					>
-						<Button
-							variant="outlined"
-							onClick={handleEditorToggle}
-						>
-							code
-						</Button>
 						<ButtonGroup variant="outlined">
 							<Button
+								onClick={handleEditorToggle}
+								startIcon={<CodeRounded />}
+							>
+								code
+							</Button>
+						</ButtonGroup>
+						<ButtonGroup variant="outlined">
+							<Button
+								startIcon={<DownloadRounded />}
 								onClick={
 									handlePopoverExportMenuOpen
 								}
@@ -272,11 +227,10 @@ export const EditorPage: FC = () => {
 								export
 							</Button>
 							<Button
-								onClick={
-									handlePopoverShareMenuOpen
-								}
+								endIcon={<SendRounded />}
+								onClick={handleCopyLink}
 							>
-								share
+								Share
 							</Button>
 						</ButtonGroup>
 					</Stack>
@@ -361,49 +315,6 @@ export const EditorPage: FC = () => {
 							</ListItemIcon>
 							<ListItemText>
 								Save as SVG
-							</ListItemText>
-						</MenuItem>
-					</MenuList>
-				</Paper>
-			</Popover>
-			<Popover
-				anchorOrigin={{
-					vertical: "bottom",
-					horizontal: "left",
-				}}
-				transformOrigin={{
-					vertical: "top",
-					horizontal: "left",
-				}}
-				anchorEl={popoverShareMenuAnchor}
-				open={popoverShareMenuAnchor !== null}
-				onClose={handlePopoverShareMenuClose}
-			>
-				<Paper
-					square
-					sx={{
-						padding: 1,
-					}}
-				>
-					<MenuList>
-						<MenuItem
-							onClick={handleCopyPreviewLink}
-						>
-							<ListItemIcon>
-								<LinkRounded fontSize="small" />
-							</ListItemIcon>
-							<ListItemText>
-								Copy Link to Preview
-							</ListItemText>
-						</MenuItem>
-						<MenuItem
-							onClick={handleCopyEditorLink}
-						>
-							<ListItemIcon>
-								<LinkRounded fontSize="small" />
-							</ListItemIcon>
-							<ListItemText>
-								Copy Link to Editor
 							</ListItemText>
 						</MenuItem>
 					</MenuList>

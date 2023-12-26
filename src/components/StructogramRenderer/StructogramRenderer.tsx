@@ -5,7 +5,7 @@ import {
 	Typography,
 } from "@mui/material";
 
-import { ASTNode } from "ast/parser";
+import { ASTNode } from "compiler/parser";
 import { StructogramComponent } from "./StructogramComponent";
 
 type StructogramRendererProps = {
