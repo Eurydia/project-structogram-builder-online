@@ -298,8 +298,13 @@ export const EditorPage: FC = () => {
 						</Grid>
 						<Grid
 							item
-							xs={editorOpen ? 0 : 12}
+							xs
 							lg
+							display={
+								editorOpen && matchBreakpointXs
+									? "none"
+									: undefined
+							}
 						>
 							<StructogramRenderer
 								id="structogram-preview-region"
@@ -309,9 +314,6 @@ export const EditorPage: FC = () => {
 									height: "calc(100vh - 62px)",
 									overflowY: "auto",
 									backgroundColor: grey[300],
-									display: editorOpen
-										? "none"
-										: undefined,
 								}}
 							/>
 						</Grid>
