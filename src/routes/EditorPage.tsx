@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import {
 	DownloadRounded,
+	LaunchRounded,
 	SendRounded,
 	VisibilityOffRounded,
 	VisibilityRounded,
@@ -222,6 +223,14 @@ export const EditorPage: FC = () => {
 								}
 							>
 								code
+							</Button>
+							<Button
+								href="https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online-docs/"
+								component="a"
+								target="_blank"
+								endIcon={<LaunchRounded />}
+							>
+								docs
 							</Button>
 						</ButtonGroup>
 						<ButtonGroup variant="outlined">
