@@ -1,7 +1,6 @@
 export enum TokenKind {
 	END = 0,
 	SYMBOL,
-	LITERAL_STRING,
 	KEYWORD,
 
 	LEFT_PAREN,
@@ -44,7 +43,7 @@ export const lexerInit = (
 ): Lexer => {
 	return {
 		content: content.normalize(),
-		contentLength: content.length,
+		contentLength: content.normalize().length,
 		cursor: 0,
 	};
 };
