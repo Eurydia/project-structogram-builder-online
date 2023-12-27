@@ -39,12 +39,12 @@ import { useSnackbar } from "notistack";
 import {
 	lexerGetAllTokens,
 	lexerInit,
-} from "compiler/lexer";
+} from "interpreter/lexer";
 import {
 	ASTNode,
 	parserGetAllNodes,
 	parserInit,
-} from "compiler/parser";
+} from "interpreter/parser";
 
 import { StructogramCodeEditor } from "components/StructogramCodeEditor";
 import { StructogramRenderer } from "components/StructogramRenderer";

@@ -15,8 +15,8 @@ import Latex from "react-latex-next";
 import {
 	ASTNode,
 	ASTNodeKind,
-} from "compiler/parser";
-import { TokenKind } from "compiler/lexer";
+} from "interpreter/parser";
+import { TokenKind } from "interpreter/lexer";
 
 const ArrowBottomLeftTopRight: FC<
 	SvgIconProps
