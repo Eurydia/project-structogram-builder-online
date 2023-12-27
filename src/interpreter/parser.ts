@@ -22,19 +22,19 @@ export type ASTNodeProcess = {
 
 export type ASTNodeLoopFirst = {
 	kind: ASTNodeKind.LOOP_FIRST;
-	control: Token[];
+	condition: Token[];
 	body: ASTNode[];
 };
 
 export type ASTNodeLoopLast = {
 	kind: ASTNodeKind.LOOP_LAST;
-	control: Token[];
+	condition: Token[];
 	body: ASTNode[];
 };
 
 export type ASTNodeIfElse = {
 	kind: ASTNodeKind.IF_ELSE;
-	control: Token[];
+	condition: Token[];
 	bodyIf: ASTNode[];
 	bodyElse: ASTNode[];
 };
@@ -62,7 +62,7 @@ export const parserInit = (
 	};
 };
 
-const parserGetNextTokenThenAdvance = (
+const parserSafeGetNextTokenThenAdvance = (
 	p: Parser,
 ): Token => {
 	if (p.cursorPos < p.tokenLength) {
@@ -84,11 +84,11 @@ const parserBuildLoopFirstNode = (
 	const node: ASTNodeLoopFirst = {
 		kind: ASTNodeKind.LOOP_FIRST,
 		body: [],
-		control: [],
+		condition: [],
 	};
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_PAREN
 	) {
 		return node;
@@ -99,8 +99,8 @@ const parserBuildLoopFirstNode = (
 	let parenDepth = -1;
 	while (
 		(controlToken =
-			parserGetNextTokenThenAdvance(p)).kind !==
-		TokenKind.END
+			parserSafeGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
 	) {
 		switch (controlToken.kind) {
 			case TokenKind.LEFT_PAREN:
@@ -119,10 +119,10 @@ const parserBuildLoopFirstNode = (
 		controlTokens.push(controlToken);
 	}
 
-	node["control"] = controlTokens;
+	node["condition"] = controlTokens;
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
 	) {
 		return node;
@@ -132,7 +132,8 @@ const parserBuildLoopFirstNode = (
 	let bodyToken: Token;
 	let curltyDepth = -1;
 	while (
-		(bodyToken = parserGetNextTokenThenAdvance(p))
+		(bodyToken =
+			parserSafeGetNextTokenThenAdvance(p))
 			.kind !== TokenKind.END
 	) {
 		switch (bodyToken.kind) {
@@ -175,11 +176,11 @@ const parserBuildLoopLastNode = (
 	const node: ASTNodeLoopLast = {
 		kind: ASTNodeKind.LOOP_LAST,
 		body: [],
-		control: [],
+		condition: [],
 	};
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
 	) {
 		return node;
@@ -189,7 +190,8 @@ const parserBuildLoopLastNode = (
 	let bodyToken: Token;
 	let curlyDepth = -1;
 	while (
-		(bodyToken = parserGetNextTokenThenAdvance(p))
+		(bodyToken =
+			parserSafeGetNextTokenThenAdvance(p))
 			.kind !== TokenKind.END
 	) {
 		switch (bodyToken.kind) {
@@ -224,14 +226,14 @@ const parserBuildLoopLastNode = (
 	node["body"] = bodyNodes;
 
 	if (
-		parserGetNextTokenThenAdvance(p).text !==
+		parserSafeGetNextTokenThenAdvance(p).text !==
 		"while"
 	) {
 		return node;
 	}
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_PAREN
 	) {
 		return node;
@@ -242,8 +244,8 @@ const parserBuildLoopLastNode = (
 	let parenDepth = -1;
 	while (
 		(controlToken =
-			parserGetNextTokenThenAdvance(p)).kind !==
-		TokenKind.END
+			parserSafeGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
 	) {
 		switch (controlToken.kind) {
 			case TokenKind.LEFT_PAREN:
@@ -264,28 +266,28 @@ const parserBuildLoopLastNode = (
 	}
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.SEMICOLON
 	) {
 		return node;
 	}
 
-	node["control"] = controlTokens;
+	node["condition"] = controlTokens;
 
 	return node;
 };
 
-const parseBuildIfElseNode = (
+const parserBuildIfElseNode = (
 	p: Parser,
 ): ASTNodeIfElse => {
 	const node: ASTNodeIfElse = {
 		kind: ASTNodeKind.IF_ELSE,
-		control: [],
+		condition: [],
 		bodyIf: [],
 		bodyElse: [],
 	};
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_PAREN
 	) {
 		return node;
@@ -296,8 +298,8 @@ const parseBuildIfElseNode = (
 	let parenDepth = -1;
 	while (
 		(controlToken =
-			parserGetNextTokenThenAdvance(p)).kind !==
-		TokenKind.END
+			parserSafeGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
 	) {
 		switch (controlToken.kind) {
 			case TokenKind.LEFT_PAREN:
@@ -317,10 +319,10 @@ const parseBuildIfElseNode = (
 		controlTokens.push(controlToken);
 	}
 
-	node["control"] = controlTokens;
+	node["condition"] = controlTokens;
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
 	) {
 		return node;
@@ -331,8 +333,8 @@ const parseBuildIfElseNode = (
 	let curlyDepth = -1;
 	while (
 		(bodyIfToken =
-			parserGetNextTokenThenAdvance(p)).kind !==
-		TokenKind.END
+			parserSafeGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
 	) {
 		switch (bodyIfToken.kind) {
 			case TokenKind.LEFT_CURLY:
@@ -364,14 +366,14 @@ const parseBuildIfElseNode = (
 	node["bodyIf"] = bodyIfNodes;
 
 	if (
-		parserGetNextTokenThenAdvance(p).text !==
+		parserSafeGetNextTokenThenAdvance(p).text !==
 		"else"
 	) {
 		return node;
 	}
 
 	if (
-		parserGetNextTokenThenAdvance(p).kind !==
+		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
 	) {
 		return node;
@@ -382,8 +384,8 @@ const parseBuildIfElseNode = (
 	curlyDepth = -1;
 	while (
 		(bodyElseToken =
-			parserGetNextTokenThenAdvance(p)).kind !==
-		TokenKind.END
+			parserSafeGetNextTokenThenAdvance(p))
+			.kind !== TokenKind.END
 	) {
 		switch (bodyElseToken.kind) {
 			case TokenKind.LEFT_CURLY:
@@ -426,7 +428,8 @@ export const parserGetNextNodeThenAdvance = (
 			kind: ASTNodeKind.END,
 		};
 	}
-	const token = parserGetNextTokenThenAdvance(p);
+	const token =
+		parserSafeGetNextTokenThenAdvance(p);
 
 	if (token.kind === TokenKind.KEYWORD) {
 		switch (token.text) {
@@ -436,7 +439,7 @@ export const parserGetNextNodeThenAdvance = (
 			case "do":
 				return parserBuildLoopLastNode(p);
 			case "if":
-				return parseBuildIfElseNode(p);
+				return parserBuildIfElseNode(p);
 			default:
 				break;
 		}
@@ -456,7 +459,8 @@ export const parserGetNextNodeThenAdvance = (
 	let bodyToken: Token;
 
 	while (
-		(bodyToken = parserGetNextTokenThenAdvance(p))
+		(bodyToken =
+			parserSafeGetNextTokenThenAdvance(p))
 			.kind !== TokenKind.SEMICOLON
 	) {
 		if (bodyToken.kind === TokenKind.END) {

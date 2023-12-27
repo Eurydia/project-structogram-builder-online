@@ -35,7 +35,7 @@ const LITERAL_TOKENS: Record<string, TokenKind> =
 export type Lexer = {
 	content: string;
 	contentLength: number;
-	cursor: number;
+	cursorPos: number;
 };
 
 export const lexerInit = (
@@ -44,28 +44,28 @@ export const lexerInit = (
 	return {
 		content: content.normalize(),
 		contentLength: content.normalize().length,
-		cursor: 0,
+		cursorPos: 0,
 	};
 };
 
 const lexerSafeGetNextCharThenAdvance = (
 	l: Lexer,
 ): string => {
-	if (l.cursor >= l.contentLength) {
+	if (l.cursorPos >= l.contentLength) {
 		return "";
 	}
 
-	const char = l.content[l.cursor];
-	l.cursor++;
+	const char = l.content[l.cursorPos];
+	l.cursorPos++;
 	return char;
 };
 
 const lexerTrimLeft = (l: Lexer): void => {
 	while (
-		l.cursor < l.contentLength &&
-		/\s/.test(l.content[l.cursor])
+		l.cursorPos < l.contentLength &&
+		/\s/.test(l.content[l.cursorPos])
 	) {
-		l.cursor++;
+		l.cursorPos++;
 	}
 };
 
@@ -79,7 +79,7 @@ export const lexerSafeGetNextTokenThenAdvance = (
 		text: "",
 	};
 
-	if (l.cursor >= l.contentLength) {
+	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
 
@@ -92,12 +92,12 @@ export const lexerSafeGetNextTokenThenAdvance = (
 	}
 
 	while (
-		l.cursor < l.contentLength &&
-		!(l.content[l.cursor] in LITERAL_TOKENS) &&
-		!/\s/.test(l.content[l.cursor])
+		l.cursorPos < l.contentLength &&
+		!(l.content[l.cursorPos] in LITERAL_TOKENS) &&
+		!/\s/.test(l.content[l.cursorPos])
 	) {
-		token["text"] += l.content[l.cursor];
-		l.cursor++;
+		token["text"] += l.content[l.cursorPos];
+		l.cursorPos++;
 	}
 
 	if (KEYWORDS.includes(token.text)) {

@@ -169,8 +169,8 @@ export const StructogramComponent: FC<
 
 	if (node.kind === ASTNodeKind.LOOP_FIRST) {
 		let nodeText: string = "...";
-		if (node.control.length > 0) {
-			nodeText = node.control
+		if (node.condition.length > 0) {
+			nodeText = node.condition
 				.map((t) => t.text)
 				.join(" ");
 		}
@@ -209,8 +209,8 @@ export const StructogramComponent: FC<
 
 	if (node.kind === ASTNodeKind.LOOP_LAST) {
 		let nodeText: string = "...";
-		if (node.control.length > 0) {
-			nodeText = node.control
+		if (node.condition.length > 0) {
+			nodeText = node.condition
 				.map((t) => t.text)
 				.join(" ");
 		}
@@ -249,8 +249,8 @@ export const StructogramComponent: FC<
 
 	if (node.kind === ASTNodeKind.IF_ELSE) {
 		let nodeText: string = "...";
-		if (node.control.length > 0) {
-			nodeText = node.control
+		if (node.condition.length > 0) {
+			nodeText = node.condition
 				.map((t) => t.text)
 				.join(" ");
 		}
