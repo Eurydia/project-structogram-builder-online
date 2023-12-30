@@ -61,7 +61,7 @@ export const EditorPage: FC = () => {
 	] = useState<HTMLButtonElement | null>(null);
 
 	const [editorOpen, setEditorOpen] =
-		useState(true);
+		useState(false);
 	const [nodes, setNodes] = useState<ASTNode[]>(
 		[],
 	);
