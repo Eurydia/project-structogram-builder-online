@@ -28,13 +28,13 @@ import {
 	VisibilityRounded,
 } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import { useSnackbar } from "notistack";
 import {
 	toJpeg,
 	toPng,
 	toSvg,
 } from "html-to-image";
 import { saveAs } from "file-saver";
-import { useSnackbar } from "notistack";
 
 import {
 	lexerGetAllTokens,
