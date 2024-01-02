@@ -48,18 +48,6 @@ export const lexerInit = (
 	};
 };
 
-const lexerSafeGetNextCharThenAdvance = (
-	l: Lexer,
-): string => {
-	if (l.cursorPos >= l.contentLength) {
-		return "";
-	}
-
-	const char = l.content[l.cursorPos];
-	l.cursorPos++;
-	return char;
-};
-
 const lexerTrimLeft = (l: Lexer): void => {
 	while (
 		l.cursorPos < l.contentLength &&
@@ -82,9 +70,8 @@ export const lexerSafeGetNextTokenThenAdvance = (
 	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
-
-	token["text"] =
-		lexerSafeGetNextCharThenAdvance(l);
+	token["text"] = l.content[l.cursorPos];
+	l.cursorPos++;
 
 	if (token["text"] in LITERAL_TOKENS) {
 		token["kind"] = LITERAL_TOKENS[token["text"]];
@@ -116,8 +103,10 @@ export const lexerGetAllTokens = (
 	let token: Token;
 	while (
 		(token = lexerSafeGetNextTokenThenAdvance(l))
-			.kind !== TokenKind.END
 	) {
+		if (token.kind === TokenKind.END) {
+			break;
+		}
 		tokens.push(token);
 	}
 	return tokens;
