@@ -87,7 +87,7 @@ export const lexerSafeGetNextTokenThenAdvance = (
 		l.cursorPos++;
 	}
 
-	if (KEYWORDS.includes(token.text)) {
+	if (KEYWORDS.includes(token["text"])) {
 		token["kind"] = TokenKind.KEYWORD;
 		return token;
 	}
