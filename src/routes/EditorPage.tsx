@@ -46,6 +46,7 @@ import {
 
 import { StructogramCodeEditor } from "components/StructogramCodeEditor";
 import { renderer } from "renderer";
+import { AdaptiveButton } from "components/AdaptiveButton";
 
 export const EditorPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
@@ -234,40 +235,22 @@ export const EditorPage: FC = () => {
 							</Button>
 						</ButtonGroup>
 						<ButtonGroup variant="outlined">
-							<Button
-								startIcon={
-									matchBreakpointXs ? (
-										<Fragment />
-									) : (
-										<DownloadRounded />
-									)
-								}
+							<AdaptiveButton
+								collapse={matchBreakpointXs}
+								startIcon={<DownloadRounded />}
 								onClick={
 									handlePopoverExportMenuOpen
 								}
 							>
-								{matchBreakpointXs ? (
-									<DownloadRounded />
-								) : (
-									"export"
-								)}
-							</Button>
-							<Button
-								endIcon={
-									matchBreakpointXs ? (
-										<Fragment />
-									) : (
-										<SendRounded />
-									)
-								}
+								export
+							</AdaptiveButton>
+							<AdaptiveButton
+								collapse={matchBreakpointXs}
+								endIcon={<SendRounded />}
 								onClick={handleCopyLink}
 							>
-								{matchBreakpointXs ? (
-									<SendRounded />
-								) : (
-									"share"
-								)}
-							</Button>
+								share
+							</AdaptiveButton>
 						</ButtonGroup>
 					</Stack>
 				</Paper>
