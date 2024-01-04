@@ -108,7 +108,7 @@ const parserBuildLoopFirstNode = (
 		return node;
 	}
 
-	const controlTokens: Token[] = [];
+	const conditionTokens: Token[] = [];
 	let controlToken: Token;
 	let parenDepth = -1;
 	while (
@@ -130,10 +130,10 @@ const parserBuildLoopFirstNode = (
 		if (parenDepth === 0) {
 			break;
 		}
-		controlTokens.push(controlToken);
+		conditionTokens.push(controlToken);
 	}
 
-	node["condition"] = controlTokens;
+	node.condition = conditionTokens;
 
 	parserSkipWhiteSpace(p);
 
@@ -146,7 +146,7 @@ const parserBuildLoopFirstNode = (
 
 	const bodyTokens: Token[] = [];
 	let bodyToken: Token;
-	let curltyDepth = -1;
+	let curlyDepth = -1;
 	while (
 		(bodyToken =
 			parserSafeGetNextTokenThenAdvance(p))
@@ -154,19 +154,17 @@ const parserBuildLoopFirstNode = (
 	) {
 		switch (bodyToken.kind) {
 			case TokenKind.LEFT_CURLY:
-				curltyDepth--;
+				curlyDepth--;
 				break;
 			case TokenKind.RIGHT_CURLY:
-				curltyDepth++;
+				curlyDepth++;
 				break;
 			default:
 				break;
 		}
-
-		if (curltyDepth === 0) {
+		if (curlyDepth === 0) {
 			break;
 		}
-
 		bodyTokens.push(bodyToken);
 	}
 
@@ -181,7 +179,7 @@ const parserBuildLoopFirstNode = (
 		bodyNodes.push(bodyNode);
 	}
 
-	node["body"] = bodyNodes;
+	node.body = bodyNodes;
 
 	return node;
 };
@@ -241,7 +239,7 @@ const parserBuildLoopLastNode = (
 		bodyNodes.push(bodyNode);
 	}
 
-	node["body"] = bodyNodes;
+	node.body = bodyNodes;
 
 	parserSkipWhiteSpace(p);
 
@@ -296,7 +294,7 @@ const parserBuildLoopLastNode = (
 		return node;
 	}
 
-	node["condition"] = controlTokens;
+	node.condition = controlTokens;
 
 	return node;
 };
@@ -346,7 +344,7 @@ const parserBuildIfElseNode = (
 		controlTokens.push(controlToken);
 	}
 
-	node["condition"] = controlTokens;
+	node.condition = controlTokens;
 
 	parserSkipWhiteSpace(p);
 
@@ -392,7 +390,7 @@ const parserBuildIfElseNode = (
 		bodyIfNodes.push(bodyIfNode);
 	}
 
-	node["bodyIf"] = bodyIfNodes;
+	node.bodyIf = bodyIfNodes;
 
 	parserSkipWhiteSpace(p);
 
@@ -449,7 +447,7 @@ const parserBuildIfElseNode = (
 		bodyElseNodes.push(bodyElseNode);
 	}
 
-	node["bodyElse"] = bodyElseNodes;
+	node.bodyElse = bodyElseNodes;
 	return node;
 };
 
@@ -490,19 +488,18 @@ export const parserGetNextNodeThenAdvance = (
 		return node;
 	}
 
-	node["body"].push(token);
+	node.body.push(token);
 
 	let bodyToken: Token;
-
 	while (
 		(bodyToken =
 			parserSafeGetNextTokenThenAdvance(p))
 			.kind !== TokenKind.SEMICOLON
 	) {
 		if (bodyToken.kind === TokenKind.END) {
-			return node;
+			break;
 		}
-		node["body"].push(bodyToken);
+		node.body.push(bodyToken);
 	}
 
 	return node;

@@ -87,14 +87,15 @@ export const EditorPage: FC = () => {
 		});
 
 	useEffect(() => {
-		const nodes: ASTNode[] = parserGetAllNodes(
-			parserInit(
-				lexerGetAllTokens(
-					lexerInit(editorContent),
-				),
-			),
+		const tokens = lexerGetAllTokens(
+			lexerInit(editorContent),
 		);
-		console.log(nodes);
+
+		const nodes: ASTNode[] = parserGetAllNodes(
+			parserInit(tokens),
+		);
+		console.info(tokens, nodes);
+
 		setNodes(nodes);
 	}, [editorContent]);
 

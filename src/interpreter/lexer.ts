@@ -43,8 +43,12 @@ export const lexerInit = (
 	content: string,
 ): Lexer => {
 	return {
-		content: content.normalize(),
-		contentLength: content.normalize().length,
+		content: content
+			.normalize()
+			.replace("\n", " "),
+		contentLength: content
+			.normalize()
+			.replace("\n", " ").length,
 		cursorPos: 0,
 	};
 };
@@ -101,10 +105,8 @@ export const lexerGetAllTokens = (
 	let token: Token;
 	while (
 		(token = lexerSafeGetNextTokenThenAdvance(l))
+			.kind !== TokenKind.END
 	) {
-		if (token.kind === TokenKind.END) {
-			break;
-		}
 		tokens.push(token);
 	}
 	return tokens;

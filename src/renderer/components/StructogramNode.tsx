@@ -1,7 +1,11 @@
 import { FC, Fragment, ReactNode } from "react";
+import { Box, Grid } from "@mui/material";
+import { grey } from "@mui/material/colors";
 
 import { StructogramNodeWrapper } from "renderer/components/StructogramNodeWrapper";
 import { StructogramComponentText } from "renderer/components/StructogramNodeText";
+import { ArrowTopLeftBottomRight } from "renderer/components/ArrowTopLeftBottomRight";
+import { ArrowBottomLeftTopRight } from "renderer/components/ArrowBottomLeftTopRight";
 import {
 	ASTNode,
 	ASTNodeIfElse,
@@ -10,10 +14,7 @@ import {
 	ASTNodeLoopLast,
 	ASTNodeProcess,
 } from "interpreter/parser";
-import { Box, Grid } from "@mui/material";
-import { ArrowTopLeftBottomRight } from "renderer/components/ArrowTopLeftBottomRight";
-import { ArrowBottomLeftTopRight } from "renderer/components/ArrowBottomLeftTopRight";
-import { grey } from "@mui/material/colors";
+import { TokenKind } from "interpreter/lexer";
 
 type StructogramNodeProcessProps = {
 	node: ASTNodeProcess;
@@ -32,6 +33,13 @@ export const StructogramNodeProcess: FC<
 		text = node.body
 			.map((token) => token.text)
 			.join("");
+	}
+
+	if (
+		text !== undefined &&
+		text.trim().length === 0
+	) {
+		text = undefined;
 	}
 
 	return (
@@ -65,10 +73,16 @@ export const StructogramNodeLoopFirst: FC<
 			borderLeft
 			node={{
 				kind: ASTNodeKind.PROCESS,
-				body: [],
+				body: [
+					{
+						kind: TokenKind.SYMBOL,
+						text: "...",
+					},
+				],
 			}}
 		/>
 	);
+
 	if (node.body.length > 0) {
 		bodyNode = node.body.map((subnode, index) => (
 			<StructogramNode
@@ -113,7 +127,12 @@ export const StructogramNodeLoopLast: FC<
 			borderLeft
 			node={{
 				kind: ASTNodeKind.PROCESS,
-				body: [],
+				body: [
+					{
+						kind: TokenKind.SYMBOL,
+						text: "...",
+					},
+				],
 			}}
 		/>
 	);
@@ -159,7 +178,12 @@ export const StructogramNodeIfElse: FC<
 			borderRight
 			node={{
 				kind: ASTNodeKind.PROCESS,
-				body: [],
+				body: [
+					{
+						kind: TokenKind.SYMBOL,
+						text: "...",
+					},
+				],
 			}}
 		/>
 	);
@@ -181,7 +205,12 @@ export const StructogramNodeIfElse: FC<
 			borderTop
 			node={{
 				kind: ASTNodeKind.PROCESS,
-				body: [],
+				body: [
+					{
+						kind: TokenKind.SYMBOL,
+						text: "...",
+					},
+				],
 			}}
 		/>
 	);
