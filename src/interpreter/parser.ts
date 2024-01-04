@@ -62,20 +62,32 @@ export const parserInit = (
 	};
 };
 
+const parserSkipWhiteSpace = (
+	p: Parser,
+): void => {
+	while (p.cursorPos < p.tokenLength) {
+		if (
+			p.tokens[p.cursorPos].kind !==
+			TokenKind.WHITE_SPACE
+		) {
+			return;
+		}
+		p.cursorPos++;
+	}
+};
+
 const parserSafeGetNextTokenThenAdvance = (
 	p: Parser,
 ): Token => {
-	if (p.cursorPos < p.tokenLength) {
-		const token = p.tokens[p.cursorPos];
-		p.cursorPos++;
-
-		return token;
+	if (p.cursorPos >= p.tokenLength) {
+		return {
+			kind: TokenKind.END,
+			text: "",
+		};
 	}
-
-	return {
-		kind: TokenKind.END,
-		text: "",
-	};
+	const token = p.tokens[p.cursorPos];
+	p.cursorPos++;
+	return token;
 };
 
 const parserBuildLoopFirstNode = (
@@ -86,6 +98,8 @@ const parserBuildLoopFirstNode = (
 		body: [],
 		condition: [],
 	};
+
+	parserSkipWhiteSpace(p);
 
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
@@ -120,6 +134,8 @@ const parserBuildLoopFirstNode = (
 	}
 
 	node["condition"] = controlTokens;
+
+	parserSkipWhiteSpace(p);
 
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
@@ -179,6 +195,8 @@ const parserBuildLoopLastNode = (
 		condition: [],
 	};
 
+	parserSkipWhiteSpace(p);
+
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_CURLY
@@ -225,12 +243,16 @@ const parserBuildLoopLastNode = (
 
 	node["body"] = bodyNodes;
 
+	parserSkipWhiteSpace(p);
+
 	if (
 		parserSafeGetNextTokenThenAdvance(p).text !==
 		"while"
 	) {
 		return node;
 	}
+
+	parserSkipWhiteSpace(p);
 
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
@@ -264,6 +286,8 @@ const parserBuildLoopLastNode = (
 
 		controlTokens.push(controlToken);
 	}
+
+	parserSkipWhiteSpace(p);
 
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
@@ -286,6 +310,9 @@ const parserBuildIfElseNode = (
 		bodyIf: [],
 		bodyElse: [],
 	};
+
+	parserSkipWhiteSpace(p);
+
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
 		TokenKind.LEFT_PAREN
@@ -320,6 +347,8 @@ const parserBuildIfElseNode = (
 	}
 
 	node["condition"] = controlTokens;
+
+	parserSkipWhiteSpace(p);
 
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
@@ -365,12 +394,16 @@ const parserBuildIfElseNode = (
 
 	node["bodyIf"] = bodyIfNodes;
 
+	parserSkipWhiteSpace(p);
+
 	if (
 		parserSafeGetNextTokenThenAdvance(p).text !==
 		"else"
 	) {
 		return node;
 	}
+
+	parserSkipWhiteSpace(p);
 
 	if (
 		parserSafeGetNextTokenThenAdvance(p).kind !==
@@ -428,6 +461,9 @@ export const parserGetNextNodeThenAdvance = (
 			kind: ASTNodeKind.END,
 		};
 	}
+
+	parserSkipWhiteSpace(p);
+
 	const token =
 		parserSafeGetNextTokenThenAdvance(p);
 

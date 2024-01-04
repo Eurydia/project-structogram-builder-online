@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ReactNode } from "react";
 import {
 	Box,
 	SxProps,
@@ -6,32 +6,25 @@ import {
 } from "@mui/material";
 
 import { ASTNode } from "interpreter/parser";
-import { StructogramComponent } from "./StructogramComponent";
+import { StructogramNode } from "renderer/components/StructogramNode";
 
-type StructogramRendererProps = {
-	emptyText?: string;
-	id?: string;
-	nodes: ASTNode[];
-	sx?: SxProps;
-};
-export const StructogramRenderer: FC<
-	StructogramRendererProps
-> = (props) => {
-	const { nodes, sx, id, emptyText } = props;
-
-	let component: JSX.Element | JSX.Element[] = (
+export const renderer = (
+	nodes: ASTNode[],
+	id: string,
+	sx: SxProps,
+) => {
+	let component: ReactNode | ReactNode[] = (
 		<Typography
 			fontFamily="inherit"
 			fontStyle="italic"
 		>
-			{emptyText ??
-				"Start typing to see the preview."}
+			Nothing to display.
 		</Typography>
 	);
 
 	if (nodes.length > 0) {
 		component = nodes.map((node, index) => (
-			<StructogramComponent
+			<StructogramNode
 				key={index}
 				node={node}
 				borderLeft

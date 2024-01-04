@@ -47,7 +47,7 @@ import {
 } from "interpreter/parser";
 
 import { StructogramCodeEditor } from "components/StructogramCodeEditor";
-import { StructogramRenderer } from "components/StructogramRenderer";
+import { renderer } from "renderer";
 
 export const EditorPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
@@ -94,6 +94,7 @@ export const EditorPage: FC = () => {
 				),
 			),
 		);
+		console.log(nodes);
 		setNodes(nodes);
 	}, [editorContent]);
 
@@ -307,17 +308,17 @@ export const EditorPage: FC = () => {
 									: undefined
 							}
 						>
-							<StructogramRenderer
-								id="structogram-preview-region"
-								nodes={nodes}
-								sx={{
+							{renderer(
+								nodes,
+								"structogram-preview-region",
+								{
 									padding: 4,
 									height:
 										"calc(100vh - 61.6833px)",
 									overflowY: "auto",
 									backgroundColor: grey[300],
-								}}
-							/>
+								},
+							)}
 						</Grid>
 					</Grid>
 				</Box>

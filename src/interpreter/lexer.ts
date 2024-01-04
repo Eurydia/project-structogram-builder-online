@@ -8,6 +8,7 @@ export enum TokenKind {
 	LEFT_CURLY,
 	RIGHT_CURLY,
 	SEMICOLON,
+	WHITE_SPACE,
 }
 
 export type Token = {
@@ -48,20 +49,9 @@ export const lexerInit = (
 	};
 };
 
-const lexerTrimLeft = (l: Lexer): void => {
-	while (
-		l.cursorPos < l.contentLength &&
-		/\s/.test(l.content[l.cursorPos])
-	) {
-		l.cursorPos++;
-	}
-};
-
 export const lexerSafeGetNextTokenThenAdvance = (
 	l: Lexer,
 ): Token => {
-	lexerTrimLeft(l);
-
 	const token = {
 		kind: TokenKind.END,
 		text: "",
@@ -70,6 +60,14 @@ export const lexerSafeGetNextTokenThenAdvance = (
 	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
+
+	if (/\s/.test(l.content[l.cursorPos])) {
+		token["kind"] = TokenKind.WHITE_SPACE;
+		token["text"] = l.content[l.cursorPos];
+		l.cursorPos++;
+		return token;
+	}
+
 	token["text"] = l.content[l.cursorPos];
 	l.cursorPos++;
 
