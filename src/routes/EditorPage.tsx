@@ -93,7 +93,6 @@ export const EditorPage: FC = () => {
 		const nodes: ASTNode[] = parserGetAllNodes(
 			parserInit(tokens),
 		);
-		console.info(tokens, nodes);
 
 		setNodes(nodes);
 	}, [editorContent]);

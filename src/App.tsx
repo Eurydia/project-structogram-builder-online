@@ -10,8 +10,6 @@ import { SnackbarProvider } from "notistack";
 
 import { EditorPage } from "routes/EditorPage";
 
-import "katex/dist/katex.min.css";
-
 const themeDark = createTheme({
 	palette: {
 		mode: "dark",

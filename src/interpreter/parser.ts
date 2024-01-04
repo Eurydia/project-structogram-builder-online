@@ -73,25 +73,23 @@ const parserCollectTokens = (
 	if (p.tokens[p.cursorPos].kind !== startToken) {
 		return [];
 	}
+	p.cursorPos++;
 	const tokens: Token[] = [];
-	let token: Token;
 	let depth = -1;
+	let token: Token;
 	while (p.cursorPos < p.tokenLength) {
 		token = p.tokens[p.cursorPos];
 		p.cursorPos++;
-		switch (token.kind) {
-			case startToken:
-				depth--;
-				break;
-			case stopToken:
-				depth++;
-				break;
-			default:
-				break;
+		if (token.kind === startToken) {
+			depth--;
+		}
+		if (token.kind === stopToken) {
+			depth++;
 		}
 		if (depth === 0) {
 			break;
 		}
+		tokens.push(token);
 	}
 	return tokens;
 };
@@ -99,13 +97,12 @@ const parserCollectTokens = (
 const parserSkipWhiteSpace = (
 	p: Parser,
 ): void => {
-	let token: Token;
-	while (p.cursorPos < p.tokenLength) {
-		token = p.tokens[p.cursorPos];
+	while (
+		p.cursorPos < p.tokenLength &&
+		p.tokens[p.cursorPos].kind ===
+			TokenKind.WHITE_SPACE
+	) {
 		p.cursorPos++;
-		if (token.kind !== TokenKind.WHITE_SPACE) {
-			return;
-		}
 	}
 };
 
@@ -316,6 +313,7 @@ export const parserGetNextNodeThenAdvance = (
 	p: Parser,
 ): ASTNode => {
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		return {
 			kind: ASTNodeKind.END,
