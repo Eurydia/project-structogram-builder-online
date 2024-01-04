@@ -1,7 +1,8 @@
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import {
 	Button,
 	ButtonProps,
+	Tooltip,
 } from "@mui/material";
 
 type AdaptiveButtonProps = ButtonProps & {
@@ -12,24 +13,28 @@ export const AdaptiveButton: FC<
 > = (props) => {
 	const { collapse, ...rest } = props;
 
+	if (collapse) {
+		return (
+			<Tooltip title={rest.children}>
+				<Button
+					{...rest}
+					startIcon={undefined}
+					endIcon={undefined}
+				>
+					{rest.startIcon}
+					{rest.endIcon}
+				</Button>
+			</Tooltip>
+		);
+	}
+
 	return (
 		<Button
 			{...rest}
-			startIcon={
-				collapse ? undefined : rest.startIcon
-			}
-			endIcon={
-				collapse ? undefined : rest.endIcon
-			}
+			startIcon={rest.startIcon}
+			endIcon={rest.endIcon}
 		>
-			{collapse ? (
-				<Fragment>
-					{rest.startIcon}
-					{rest.endIcon}
-				</Fragment>
-			) : (
-				<Fragment>{rest.children}</Fragment>
-			)}
+			{rest.children}
 		</Button>
 	);
 };

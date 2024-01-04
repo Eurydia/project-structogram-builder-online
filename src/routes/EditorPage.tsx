@@ -241,14 +241,14 @@ export const EditorPage: FC = () => {
 									handlePopoverExportMenuOpen
 								}
 							>
-								export
+								EXPORT
 							</AdaptiveButton>
 							<AdaptiveButton
 								collapse={matchBreakpointXs}
 								endIcon={<SendRounded />}
 								onClick={handleCopyLink}
 							>
-								share
+								SHARE
 							</AdaptiveButton>
 						</ButtonGroup>
 					</Stack>
