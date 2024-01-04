@@ -5,7 +5,10 @@ import {
 	Typography,
 } from "@mui/material";
 
-import { ASTNode } from "interpreter/parser";
+import {
+	ASTNode,
+	ASTNodeKind,
+} from "interpreter/parser";
 import { StructogramNode } from "renderer/components/StructogramNode";
 
 export const renderer = (
@@ -22,17 +25,30 @@ export const renderer = (
 		</Typography>
 	);
 
-	if (nodes.length > 0) {
-		component = nodes.map((node, index) => (
-			<StructogramNode
-				key={index}
-				node={node}
-				borderLeft
-				borderTop
-				borderRight
-				borderBottom={index === nodes.length - 1}
-			/>
-		));
+	const filteredNodes = nodes.filter(
+		(node) =>
+			node.kind !== ASTNodeKind.PROCESS ||
+			node.body
+				.map((token) => token.text)
+				.join("")
+				.trim().length > 0,
+	);
+
+	if (filteredNodes.length > 0) {
+		component = filteredNodes.map(
+			(node, index) => (
+				<StructogramNode
+					key={index}
+					node={node}
+					borderLeft
+					borderTop
+					borderRight
+					borderBottom={
+						index === filteredNodes.length - 1
+					}
+				/>
+			),
+		);
 	}
 
 	return (

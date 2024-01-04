@@ -6,12 +6,13 @@ import {
 
 type StructogramComponentTextProps =
 	TypographyProps & {
-		text?: string;
+		children?: string;
 	};
 export const StructogramComponentText: FC<
 	StructogramComponentTextProps
 > = (props) => {
-	const { text, ...rest } = props;
+	const { children, ...rest } = props;
+
 	return (
 		<Typography
 			fontFamily="inherit"
@@ -20,7 +21,7 @@ export const StructogramComponentText: FC<
 			paddingLeft={2}
 			{...rest}
 		>
-			{text ?? "..."}
+			{children ?? "..."}
 		</Typography>
 	);
 };

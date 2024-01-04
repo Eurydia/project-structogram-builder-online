@@ -43,12 +43,8 @@ export const lexerInit = (
 	content: string,
 ): Lexer => {
 	return {
-		content: content
-			.normalize()
-			.replace("\n", " "),
-		contentLength: content
-			.normalize()
-			.replace("\n", " ").length,
+		content: content.normalize(),
+		contentLength: content.normalize().length,
 		cursorPos: 0,
 	};
 };

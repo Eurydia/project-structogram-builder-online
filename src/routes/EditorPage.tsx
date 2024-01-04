@@ -24,8 +24,6 @@ import {
 	DownloadRounded,
 	LaunchRounded,
 	SendRounded,
-	VisibilityOffRounded,
-	VisibilityRounded,
 } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import { useSnackbar } from "notistack";
@@ -221,15 +219,10 @@ export const EditorPage: FC = () => {
 						<ButtonGroup variant="outlined">
 							<Button
 								onClick={handleEditorToggle}
-								startIcon={
-									editorOpen ? (
-										<VisibilityRounded />
-									) : (
-										<VisibilityOffRounded />
-									)
-								}
 							>
-								code
+								{editorOpen
+									? "Hide code"
+									: "Show code"}
 							</Button>
 							<Button
 								href="https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online-docs/"
