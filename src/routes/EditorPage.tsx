@@ -37,15 +37,13 @@ import { saveAs } from "file-saver";
 import {
 	lexerGetAllTokens,
 	lexerInit,
-} from "interpreter/lexer";
-import {
-	ASTNode,
+	Node,
 	parserGetAllNodes,
 	parserInit,
-} from "interpreter/parser";
+} from "interpreter";
+import { renderer } from "renderer";
 
 import { StructogramCodeEditor } from "components/StructogramCodeEditor";
-import { renderer } from "renderer";
 import { AdaptiveButton } from "components/AdaptiveButton";
 
 export const EditorPage: FC = () => {
@@ -59,11 +57,19 @@ export const EditorPage: FC = () => {
 		setPopoverExportMenuAnchor,
 	] = useState<HTMLButtonElement | null>(null);
 
-	const [editorOpen, setEditorOpen] =
-		useState(false);
-	const [nodes, setNodes] = useState<ASTNode[]>(
-		[],
+	const [previewOpen, setPreviewOpen] = useState(
+		() => {
+			const url = new URL(window.location.href);
+			const preview =
+				url.searchParams.get("preview");
+			if (preview === null) {
+				return false;
+			}
+
+			return preview === "true";
+		},
 	);
+	const [nodes, setNodes] = useState<Node[]>([]);
 	const [editorContent, setEditorContent] =
 		useState(() => {
 			const url = new URL(window.location.href);
@@ -90,7 +96,7 @@ export const EditorPage: FC = () => {
 			lexerInit(editorContent),
 		);
 
-		const nodes: ASTNode[] = parserGetAllNodes(
+		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
 
@@ -170,12 +176,13 @@ export const EditorPage: FC = () => {
 		});
 	}, [enqueueSnackbar]);
 
-	const handleEditorToggle = useCallback(() => {
-		setEditorOpen((prev) => !prev);
+	const handlePreviewToggle = useCallback(() => {
+		setPreviewOpen((prev) => !prev);
 	}, []);
 
 	const handleCopyLink = useCallback(() => {
 		const url = new URL(window.location.href);
+		url.searchParams.set("preview", "true");
 		url.searchParams.set(
 			"content",
 			editorContent,
@@ -218,11 +225,11 @@ export const EditorPage: FC = () => {
 					>
 						<ButtonGroup variant="outlined">
 							<Button
-								onClick={handleEditorToggle}
+								onClick={handlePreviewToggle}
 							>
-								{editorOpen
-									? "Hide code"
-									: "Show code"}
+								{previewOpen
+									? "Show code"
+									: "Hide code"}
 							</Button>
 							<Button
 								href="https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online-docs/"
@@ -260,17 +267,16 @@ export const EditorPage: FC = () => {
 							xs={12}
 							lg={6}
 							display={
-								editorOpen ? undefined : "none"
+								previewOpen ? "none" : undefined
 							}
 						>
 							<StructogramCodeEditor
-								placeholder="for ( i = 1..3 ) {	x := x + 1; }"
 								value={editorContent}
 								onValueChange={onContentChange}
-								sx={{
+								boxProps={{
+									overflowY: "auto",
 									height:
 										"calc(100vh - 61.6833px)",
-									overflowY: "auto",
 								}}
 							/>
 						</Grid>
@@ -279,9 +285,7 @@ export const EditorPage: FC = () => {
 							xs
 							lg
 							display={
-								editorOpen && matchBreakpointXs
-									? "none"
-									: undefined
+								previewOpen ? undefined : "none"
 							}
 						>
 							{renderer(
@@ -289,10 +293,10 @@ export const EditorPage: FC = () => {
 								"structogram-preview-region",
 								{
 									padding: 4,
-									height:
-										"calc(100vh - 61.6833px)",
 									overflowY: "auto",
 									backgroundColor: grey[300],
+									height:
+										"calc(100vh - 61.6833px)",
 								},
 							)}
 						</Grid>

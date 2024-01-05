@@ -1,15 +1,38 @@
 import { FC, Fragment, ReactNode } from "react";
-import { Box, Grid } from "@mui/material";
+import {
+	Box,
+	Grid,
+	TypographyProps,
+	Typography,
+} from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-import { StructogramNodeWrapper } from "renderer/components/StructogramNodeWrapper";
-import { StructogramComponentText } from "renderer/components/StructogramNodeText";
-import { ArrowTopLeftBottomRight } from "renderer/components/ArrowTopLeftBottomRight";
-import { ArrowBottomLeftTopRight } from "renderer/components/ArrowBottomLeftTopRight";
-import {
-	ASTNode,
-	ASTNodeKind,
-} from "interpreter/parser";
+import { StructogramNodeWrapper } from "./StructogramNodeWrapper";
+import { ArrowTopLeftBottomRight } from "./ArrowTopLeftBottomRight";
+import { ArrowBottomLeftTopRight } from "./ArrowBottomLeftTopRight";
+import { Node, NodeKind } from "interpreter";
+
+type StructogramComponentTextProps =
+	TypographyProps & {
+		children?: string;
+	};
+const StructogramComponentText: FC<
+	StructogramComponentTextProps
+> = (props) => {
+	const { children, ...rest } = props;
+
+	return (
+		<Typography
+			fontFamily="inherit"
+			fontWeight="inherit"
+			padding={1}
+			paddingLeft={2}
+			{...rest}
+		>
+			{children ?? "..."}
+		</Typography>
+	);
+};
 
 type StructogramNodeProcessProps = {
 	text?: string;
@@ -34,7 +57,7 @@ export const StructogramNodeProcess: FC<
 
 type StructogramNodeLoopFirstProps = {
 	condition?: string;
-	body: ASTNode[];
+	body: Node[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -75,7 +98,7 @@ export const StructogramNodeLoopFirst: FC<
 
 type StructogramNodeLoopLastProps = {
 	condition?: string;
-	body: ASTNode[];
+	body: Node[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -114,8 +137,8 @@ export const StructogramNodeLoopLast: FC<
 
 type StructogramNodeIfElseProps = {
 	condition?: string;
-	bodyIf: ASTNode[];
-	bodyElse: ASTNode[];
+	bodyIf: Node[];
+	bodyElse: Node[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -234,11 +257,9 @@ export const StructogramNodeIfElse: FC<
 	);
 };
 
-const fitlerEmptyNode = (
-	node: ASTNode,
-): boolean => {
+const fitlerEmptyNode = (node: Node): boolean => {
 	return (
-		node.kind !== ASTNodeKind.PROCESS ||
+		node.kind !== NodeKind.PROCESS ||
 		node.body
 			.map((token) => token.text)
 			.join("")
@@ -247,7 +268,7 @@ const fitlerEmptyNode = (
 };
 
 type StructogramNodeProps = {
-	node: ASTNode;
+	node: Node;
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -259,7 +280,7 @@ export const StructogramNode: FC<
 	const { node, ...rest } = props;
 
 	switch (node.kind) {
-		case ASTNodeKind.LOOP_FIRST: {
+		case NodeKind.LOOP_FIRST: {
 			let text: string | undefined;
 			if (node.condition.length > 0) {
 				text = node.condition
@@ -275,7 +296,7 @@ export const StructogramNode: FC<
 				/>
 			);
 		}
-		case ASTNodeKind.LOOP_LAST: {
+		case NodeKind.LOOP_LAST: {
 			let text: string | undefined;
 			if (node.condition.length > 0) {
 				text = node.condition
@@ -291,7 +312,7 @@ export const StructogramNode: FC<
 				/>
 			);
 		}
-		case ASTNodeKind.IF_ELSE: {
+		case NodeKind.IF_ELSE: {
 			let text: string | undefined;
 			if (node.condition.length > 0) {
 				text = node.condition
@@ -312,7 +333,7 @@ export const StructogramNode: FC<
 				/>
 			);
 		}
-		case ASTNodeKind.PROCESS: {
+		case NodeKind.PROCESS: {
 			let text: string | undefined = node.body
 				.map((token) => token.text)
 				.join("")

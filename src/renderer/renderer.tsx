@@ -5,16 +5,13 @@ import {
 	Typography,
 } from "@mui/material";
 
-import {
-	ASTNode,
-	ASTNodeKind,
-} from "interpreter/parser";
-import { StructogramNode } from "renderer/components/StructogramNode";
+import { Node, NodeKind } from "interpreter";
+import { StructogramNode } from "components/StructogramNode";
 
 export const renderer = (
-	nodes: ASTNode[],
+	nodes: Node[],
 	id: string,
-	sx: SxProps,
+	boxProps: SxProps,
 ) => {
 	let component: ReactNode | ReactNode[] = (
 		<Typography
@@ -27,7 +24,7 @@ export const renderer = (
 
 	const filteredNodes = nodes.filter(
 		(node) =>
-			node.kind !== ASTNodeKind.PROCESS ||
+			node.kind !== NodeKind.PROCESS ||
 			node.body
 				.map((token) => token.text)
 				.join("")
@@ -52,7 +49,7 @@ export const renderer = (
 	}
 
 	return (
-		<Box sx={sx}>
+		<Box sx={boxProps}>
 			<Box
 				id={id}
 				maxWidth="640px"

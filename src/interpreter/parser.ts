@@ -1,9 +1,6 @@
-import {
-	Token,
-	TokenKind,
-} from "interpreter/lexer";
+import { Token, TokenKind } from "./lexer";
 
-export enum ASTNodeKind {
+export enum NodeKind {
 	END,
 	PROCESS,
 	LOOP_FIRST,
@@ -11,40 +8,40 @@ export enum ASTNodeKind {
 	IF_ELSE,
 }
 
-export type ASTNodeEnd = {
-	kind: ASTNodeKind.END;
+export type NodeEnd = {
+	kind: NodeKind.END;
 };
 
-export type ASTNodeProcess = {
-	kind: ASTNodeKind.PROCESS;
+export type NodeProcess = {
+	kind: NodeKind.PROCESS;
 	body: Token[];
 };
 
-export type ASTNodeLoopFirst = {
-	kind: ASTNodeKind.LOOP_FIRST;
+export type NodeLoopFirst = {
+	kind: NodeKind.LOOP_FIRST;
 	condition: Token[];
-	body: ASTNode[];
+	body: Node[];
 };
 
-export type ASTNodeLoopLast = {
-	kind: ASTNodeKind.LOOP_LAST;
+export type NodeLoopLast = {
+	kind: NodeKind.LOOP_LAST;
 	condition: Token[];
-	body: ASTNode[];
+	body: Node[];
 };
 
-export type ASTNodeIfElse = {
-	kind: ASTNodeKind.IF_ELSE;
+export type NodeIfElse = {
+	kind: NodeKind.IF_ELSE;
 	condition: Token[];
-	bodyIf: ASTNode[];
-	bodyElse: ASTNode[];
+	bodyIf: Node[];
+	bodyElse: Node[];
 };
 
-export type ASTNode =
-	| ASTNodeEnd
-	| ASTNodeProcess
-	| ASTNodeLoopFirst
-	| ASTNodeLoopLast
-	| ASTNodeIfElse;
+export type Node =
+	| NodeEnd
+	| NodeProcess
+	| NodeLoopFirst
+	| NodeLoopLast
+	| NodeIfElse;
 
 export type Parser = {
 	tokens: Token[];
@@ -108,9 +105,9 @@ const parserSkipWhiteSpace = (
 
 const parserBuildLoopFirstNode = (
 	p: Parser,
-): ASTNodeLoopFirst => {
-	const node: ASTNodeLoopFirst = {
-		kind: ASTNodeKind.LOOP_FIRST,
+): NodeLoopFirst => {
+	const node: NodeLoopFirst = {
+		kind: NodeKind.LOOP_FIRST,
 		body: [],
 		condition: [],
 	};
@@ -158,9 +155,9 @@ const parserBuildLoopFirstNode = (
 
 const parserBuildLoopLastNode = (
 	p: Parser,
-): ASTNodeLoopLast => {
-	const node: ASTNodeLoopLast = {
-		kind: ASTNodeKind.LOOP_LAST,
+): NodeLoopLast => {
+	const node: NodeLoopLast = {
+		kind: NodeKind.LOOP_LAST,
 		body: [],
 		condition: [],
 	};
@@ -230,9 +227,9 @@ const parserBuildLoopLastNode = (
 
 const parserBuildIfElseNode = (
 	p: Parser,
-): ASTNodeIfElse => {
-	const node: ASTNodeIfElse = {
-		kind: ASTNodeKind.IF_ELSE,
+): NodeIfElse => {
+	const node: NodeIfElse = {
+		kind: NodeKind.IF_ELSE,
 		condition: [],
 		bodyIf: [],
 		bodyElse: [],
@@ -311,12 +308,12 @@ const parserBuildIfElseNode = (
 
 export const parserGetNextNodeThenAdvance = (
 	p: Parser,
-): ASTNode => {
+): Node => {
 	parserSkipWhiteSpace(p);
 
 	if (p.cursorPos >= p.tokenLength) {
 		return {
-			kind: ASTNodeKind.END,
+			kind: NodeKind.END,
 		};
 	}
 
@@ -336,8 +333,8 @@ export const parserGetNextNodeThenAdvance = (
 		}
 	}
 
-	const node: ASTNodeProcess = {
-		kind: ASTNodeKind.PROCESS,
+	const node: NodeProcess = {
+		kind: NodeKind.PROCESS,
 		body: [],
 	};
 
@@ -364,12 +361,12 @@ export const parserGetNextNodeThenAdvance = (
 
 export const parserGetAllNodes = (
 	p: Parser,
-): ASTNode[] => {
-	const nodes: ASTNode[] = [];
-	let node: ASTNode;
+): Node[] => {
+	const nodes: Node[] = [];
+	let node: Node;
 	while (
 		(node = parserGetNextNodeThenAdvance(p))
-			.kind !== ASTNodeKind.END
+			.kind !== NodeKind.END
 	) {
 		nodes.push(node);
 	}
