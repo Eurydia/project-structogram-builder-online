@@ -49,7 +49,7 @@ export const lexerInit = (
 	};
 };
 
-export const lexerSafeGetNextTokenThenAdvance = (
+export const lexerGetNextTokenThenAdvance = (
 	l: Lexer,
 ): Token => {
 	const token = {
@@ -100,7 +100,7 @@ export const lexerGetAllTokens = (
 	const tokens: Token[] = [];
 	let token: Token;
 	while (
-		(token = lexerSafeGetNextTokenThenAdvance(l))
+		(token = lexerGetNextTokenThenAdvance(l))
 			.kind !== TokenKind.END
 	) {
 		tokens.push(token);
