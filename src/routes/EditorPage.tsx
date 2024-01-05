@@ -285,7 +285,9 @@ export const EditorPage: FC = () => {
 							xs
 							lg
 							display={
-								previewOpen ? undefined : "none"
+								matchBreakpointXs && !previewOpen
+									? "none"
+									: undefined
 							}
 						>
 							{renderer(
