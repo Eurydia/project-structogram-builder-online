@@ -8,13 +8,6 @@ export default defineConfig({
 	plugins: [react(), tsconfigPaths()],
 	build: {
 		manifest: true,
-		rollupOptions: {
-			output: {
-				chunkFileNames: "chunk-[name].[hash].js",
-				entryFileNames: "entry-[name].[hash].js",
-				inlineDynamicImports: false,
-			},
-		},
 		sourcemap: true,
 	},
 });
