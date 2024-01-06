@@ -81,7 +81,7 @@ type StructogramNodeProcessProps = {
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-export const StructogramNodeProcess: FC<
+const StructogramNodeProcess: FC<
 	StructogramNodeProcessProps
 > = (props) => {
 	const { text, ...rest } = props;
