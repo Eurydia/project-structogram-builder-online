@@ -41,7 +41,7 @@ import {
 	parserGetAllNodes,
 	parserInit,
 } from "interpreter";
-import { renderer } from "renderer";
+import { renderer } from "renderer/renderer";
 
 import { StructogramCodeEditor } from "components/StructogramCodeEditor";
 import { AdaptiveButton } from "components/AdaptiveButton";
@@ -95,11 +95,9 @@ export const EditorPage: FC = () => {
 		const tokens = lexerGetAllTokens(
 			lexerInit(editorContent),
 		);
-
 		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
-
 		setNodes(nodes);
 	}, [editorContent]);
 

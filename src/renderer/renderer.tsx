@@ -6,13 +6,13 @@ import {
 } from "@mui/material";
 
 import { Node, NodeKind } from "interpreter";
-import { StructogramNode } from "components/StructogramNode";
+import { StructogramNode } from "renderer/StructogramNode";
 
 export const renderer = (
 	nodes: Node[],
 	id: string,
 	boxProps: SxProps,
-) => {
+): ReactNode => {
 	let component: ReactNode | ReactNode[] = (
 		<Typography
 			fontFamily="inherit"

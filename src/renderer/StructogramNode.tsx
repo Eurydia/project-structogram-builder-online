@@ -7,10 +7,50 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-import { StructogramNodeWrapper } from "./StructogramNodeWrapper";
 import { ArrowTopLeftBottomRight } from "./ArrowTopLeftBottomRight";
 import { ArrowBottomLeftTopRight } from "./ArrowBottomLeftTopRight";
 import { Node, NodeKind } from "interpreter";
+
+type StructogramNodeWrapperProps = {
+	children: ReactNode | ReactNode[];
+	borderTop?: boolean;
+	borderBottom?: boolean;
+	borderRight?: boolean;
+	borderLeft?: boolean;
+};
+const StructogramNodeWrapper: FC<
+	StructogramNodeWrapperProps
+> = (props) => {
+	const {
+		children,
+		borderTop,
+		borderBottom,
+		borderLeft,
+		borderRight,
+	} = props;
+	return (
+		<Box
+			height="100%"
+			sx={{
+				borderColor: "inherit",
+				backgroundColor: "inherit",
+				borderStyle: "solid",
+				borderLeftWidth: borderLeft
+					? "inherit"
+					: 0,
+				borderTopWidth: borderTop ? "inherit" : 0,
+				borderBottomWidth: borderBottom
+					? "inherit"
+					: 0,
+				borderRightWidth: borderRight
+					? "inherit"
+					: 0,
+			}}
+		>
+			{children}
+		</Box>
+	);
+};
 
 type StructogramComponentTextProps =
 	TypographyProps & {
@@ -257,7 +297,9 @@ export const StructogramNodeIfElse: FC<
 	);
 };
 
-const fitlerEmptyNode = (node: Node): boolean => {
+const fitlerEmptyProcessNodes = (
+	node: Node,
+): boolean => {
 	return (
 		node.kind !== NodeKind.PROCESS ||
 		node.body
@@ -292,7 +334,9 @@ export const StructogramNode: FC<
 				<StructogramNodeLoopFirst
 					{...rest}
 					condition={text}
-					body={node.body.filter(fitlerEmptyNode)}
+					body={node.body.filter(
+						fitlerEmptyProcessNodes,
+					)}
 				/>
 			);
 		}
@@ -308,7 +352,9 @@ export const StructogramNode: FC<
 				<StructogramNodeLoopLast
 					{...rest}
 					condition={text}
-					body={node.body.filter(fitlerEmptyNode)}
+					body={node.body.filter(
+						fitlerEmptyProcessNodes,
+					)}
 				/>
 			);
 		}
@@ -325,10 +371,10 @@ export const StructogramNode: FC<
 					{...rest}
 					condition={text}
 					bodyIf={node.bodyIf.filter(
-						fitlerEmptyNode,
+						fitlerEmptyProcessNodes,
 					)}
 					bodyElse={node.bodyElse.filter(
-						fitlerEmptyNode,
+						fitlerEmptyProcessNodes,
 					)}
 				/>
 			);

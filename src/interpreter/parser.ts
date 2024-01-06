@@ -8,28 +8,28 @@ export enum NodeKind {
 	IF_ELSE,
 }
 
-export type NodeEnd = {
+type NodeEnd = {
 	kind: NodeKind.END;
 };
 
-export type NodeProcess = {
+type NodeProcess = {
 	kind: NodeKind.PROCESS;
 	body: Token[];
 };
 
-export type NodeLoopFirst = {
+type NodeLoopFirst = {
 	kind: NodeKind.LOOP_FIRST;
 	condition: Token[];
 	body: Node[];
 };
 
-export type NodeLoopLast = {
+type NodeLoopLast = {
 	kind: NodeKind.LOOP_LAST;
 	condition: Token[];
 	body: Node[];
 };
 
-export type NodeIfElse = {
+type NodeIfElse = {
 	kind: NodeKind.IF_ELSE;
 	condition: Token[];
 	bodyIf: Node[];
@@ -306,7 +306,7 @@ const parserBuildIfElseNode = (
 	return node;
 };
 
-export const parserGetNextNodeThenAdvance = (
+const parserGetNextNodeThenAdvance = (
 	p: Parser,
 ): Node => {
 	parserSkipWhiteSpace(p);
