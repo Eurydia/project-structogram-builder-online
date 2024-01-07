@@ -4,6 +4,7 @@ import {
 	Grid,
 	TypographyProps,
 	Typography,
+	Stack,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
@@ -30,7 +31,6 @@ const StructogramNodeWrapper: FC<
 	} = props;
 	return (
 		<Box
-			height="100%"
 			sx={{
 				borderColor: "inherit",
 				backgroundColor: "inherit",
@@ -201,7 +201,6 @@ export const StructogramNodeIfElse: FC<
 			<StructogramNode
 				key={`index-${index}`}
 				borderTop
-				borderRight
 				node={subnode}
 			/>
 		));
@@ -284,13 +283,24 @@ export const StructogramNodeIfElse: FC<
 					item
 					xs={6}
 				>
-					{bodyNodeIf}
+					<Stack
+						height="100%"
+						sx={{
+							borderColor: "inherit",
+							borderRightStyle: "solid",
+							borderRightWidth: "inherit",
+						}}
+					>
+						{bodyNodeIf}
+					</Stack>
 				</Grid>
 				<Grid
 					item
 					xs={6}
 				>
-					{bodyNodeElse}
+					<Stack height="100%">
+						{bodyNodeElse}
+					</Stack>
 				</Grid>
 			</Grid>
 		</StructogramNodeWrapper>
