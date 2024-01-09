@@ -68,6 +68,11 @@ const StructogramComponentText: FC<
 			padding={1}
 			paddingLeft={2}
 			{...rest}
+			sx={{
+				fontFamily: "Fira Code",
+				wordBreak: "break-word",
+				fontVariantLigatures: "contextual",
+			}}
 		>
 			{children ?? "..."}
 		</Typography>
@@ -372,17 +377,16 @@ export const StructogramNode: FC<
 
 	switch (node.kind) {
 		case NodeKind.FUNC: {
-			const args = node.args
-				.map((token) => token.text)
-				.join("");
 			let name = "...";
 			if (node.name.length > 0) {
 				name = node.name
 					.map((token) => token.text)
 					.join("");
 			}
+			const args = node.args
+				.map((token) => token.text)
+				.join("");
 			const declaration = `${name}(${args})`;
-
 			return (
 				<StructogramNodeFunc
 					declaration={declaration}

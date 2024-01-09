@@ -53,12 +53,6 @@ export const renderer = (
 			<Box
 				id={id}
 				maxWidth="640px"
-				fontFamily="Fira Code"
-				sx={{
-					wordBreak: "break-all",
-					fontVariantLigatures: "contextual",
-					userSelect: "none",
-				}}
 			>
 				{component}
 			</Box>
