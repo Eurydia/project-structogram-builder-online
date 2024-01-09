@@ -191,10 +191,7 @@ export const StructogramNodeIfElse: FC<
 		props;
 
 	let bodyNodeIf: ReactNode | ReactNode[] = (
-		<StructogramNodeProcess
-			borderTop
-			borderRight
-		/>
+		<StructogramNodeProcess borderTop />
 	);
 	if (bodyIf.length > 0) {
 		bodyNodeIf = bodyIf.map((subnode, index) => (
@@ -307,6 +304,48 @@ export const StructogramNodeIfElse: FC<
 	);
 };
 
+type StructogramNodeFuncProps = {
+	declaration: string;
+	body: Node[];
+	borderTop?: boolean;
+	borderBottom?: boolean;
+	borderRight?: boolean;
+	borderLeft?: boolean;
+};
+const StructogramNodeFunc: FC<
+	StructogramNodeFuncProps
+> = (props) => {
+	const { declaration, body, ...rest } = props;
+
+	let bodyNode: ReactNode | ReactNode[] = (
+		<StructogramNodeProcess
+			borderTop
+			borderLeft
+			borderRight
+		/>
+	);
+	if (body.length > 0) {
+		bodyNode = body.map((subnode, index) => (
+			<StructogramNode
+				key={`subnode-${index}`}
+				node={subnode}
+				borderTop
+				borderLeft
+				borderRight
+			/>
+		));
+	}
+
+	return (
+		<StructogramNodeWrapper {...rest}>
+			<StructogramComponentText align="center">
+				{declaration}
+			</StructogramComponentText>
+			<Box paddingX={2}>{bodyNode}</Box>
+		</StructogramNodeWrapper>
+	);
+};
+
 const fitlerEmptyProcessNodes = (
 	node: Node,
 ): boolean => {
@@ -332,6 +371,27 @@ export const StructogramNode: FC<
 	const { node, ...rest } = props;
 
 	switch (node.kind) {
+		case NodeKind.FUNC: {
+			const args = node.args
+				.map((token) => token.text)
+				.join("");
+			let name = "...";
+			if (node.name.length > 0) {
+				name = node.name
+					.map((token) => token.text)
+					.join("");
+			}
+			const declaration = `${name}(${args})`;
+
+			return (
+				<StructogramNodeFunc
+					declaration={declaration}
+					body={node.body}
+					{...rest}
+				/>
+			);
+		}
+
 		case NodeKind.LOOP_FIRST: {
 			let text: string | undefined;
 			if (node.condition.length > 0) {
