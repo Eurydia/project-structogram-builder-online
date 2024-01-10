@@ -208,7 +208,12 @@ export const EditorPage: FC = () => {
 
 	return (
 		<Fragment>
-			<Box>
+			<Box
+				sx={{
+					height: "100vh",
+					overflowY: "hidden",
+				}}
+			>
 				<Paper
 					square
 					elevation={0}
@@ -273,8 +278,7 @@ export const EditorPage: FC = () => {
 								onValueChange={onContentChange}
 								boxProps={{
 									overflowY: "auto",
-									height:
-										"calc(100vh - 61.6833px)",
+									height: "100vh",
 								}}
 							/>
 						</Grid>
@@ -295,8 +299,9 @@ export const EditorPage: FC = () => {
 									padding: 4,
 									overflowY: "auto",
 									backgroundColor: grey[300],
-									height:
-										"calc(100vh - 61.6833px)",
+									borderColor: grey[700],
+									height: "100vh",
+									userSelect: "none",
 								},
 							)}
 						</Grid>

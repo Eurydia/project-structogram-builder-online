@@ -32,19 +32,11 @@ const StructogramNodeWrapper: FC<
 	return (
 		<Box
 			sx={{
-				borderColor: "inherit",
-				backgroundColor: "inherit",
 				borderStyle: "solid",
-				borderLeftWidth: borderLeft
-					? "inherit"
-					: 0,
-				borderTopWidth: borderTop ? "inherit" : 0,
-				borderBottomWidth: borderBottom
-					? "inherit"
-					: 0,
-				borderRightWidth: borderRight
-					? "inherit"
-					: 0,
+				borderLeftWidth: borderLeft ? 2 : 0,
+				borderTopWidth: borderTop ? 2 : 0,
+				borderBottomWidth: borderBottom ? 2 : 0,
+				borderRightWidth: borderRight ? 2 : 0,
 			}}
 		>
 			{children}
@@ -63,15 +55,13 @@ const StructogramComponentText: FC<
 
 	return (
 		<Typography
-			fontFamily="inherit"
-			fontWeight="inherit"
-			padding={1}
-			paddingLeft={2}
+			padding={1.5}
 			{...rest}
 			sx={{
 				fontFamily: "Fira Code",
 				wordBreak: "break-word",
 				fontVariantLigatures: "contextual",
+				...rest.sx,
 			}}
 		>
 			{children ?? "..."}
@@ -233,7 +223,7 @@ export const StructogramNodeIfElse: FC<
 					item
 					xs={12}
 				>
-					<StructogramComponentText>
+					<StructogramComponentText align="center">
 						{condition}
 					</StructogramComponentText>
 				</Grid>
@@ -248,7 +238,6 @@ export const StructogramNodeIfElse: FC<
 						justifyContent="center"
 						position="relative"
 					>
-						<ArrowTopLeftBottomRight color="inherit" />
 						<StructogramComponentText
 							sx={{
 								zIndex: 2,
@@ -257,6 +246,7 @@ export const StructogramNodeIfElse: FC<
 						>
 							True
 						</StructogramComponentText>
+						<ArrowTopLeftBottomRight htmlColor="black" />
 					</Box>
 				</Grid>
 				<Grid
@@ -270,7 +260,7 @@ export const StructogramNodeIfElse: FC<
 						justifyContent="center"
 						position="relative"
 					>
-						<ArrowBottomLeftTopRight color="inherit" />
+						<ArrowBottomLeftTopRight />
 						<StructogramComponentText
 							sx={{
 								zIndex: 2,
@@ -290,7 +280,7 @@ export const StructogramNodeIfElse: FC<
 						sx={{
 							borderColor: "inherit",
 							borderRightStyle: "solid",
-							borderRightWidth: "inherit",
+							borderRightWidth: 2,
 						}}
 					>
 						{bodyNodeIf}
