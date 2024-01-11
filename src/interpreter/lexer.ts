@@ -64,17 +64,17 @@ export const lexerGetNextTokenThenAdvance = (
 	}
 
 	if (/\s/.test(l.content[l.cursorPos])) {
-		token["kind"] = TokenKind.WHITE_SPACE;
-		token["text"] = l.content[l.cursorPos];
+		token.kind = TokenKind.WHITE_SPACE;
+		token.text = l.content[l.cursorPos];
 		l.cursorPos++;
 		return token;
 	}
 
-	token["text"] = l.content[l.cursorPos];
+	token.text = l.content[l.cursorPos];
 	l.cursorPos++;
 
-	if (token["text"] in LITERAL_TOKENS) {
-		token["kind"] = LITERAL_TOKENS[token["text"]];
+	if (token.text in LITERAL_TOKENS) {
+		token.kind = LITERAL_TOKENS[token.text];
 		return token;
 	}
 
@@ -83,16 +83,16 @@ export const lexerGetNextTokenThenAdvance = (
 		!(l.content[l.cursorPos] in LITERAL_TOKENS) &&
 		!/\s/.test(l.content[l.cursorPos])
 	) {
-		token["text"] += l.content[l.cursorPos];
+		token.text += l.content[l.cursorPos];
 		l.cursorPos++;
 	}
 
-	if (KEYWORDS.includes(token["text"])) {
-		token["kind"] = TokenKind.KEYWORD;
+	if (KEYWORDS.includes(token.text)) {
+		token.kind = TokenKind.KEYWORD;
 		return token;
 	}
 
-	token["kind"] = TokenKind.SYMBOL;
+	token.kind = TokenKind.SYMBOL;
 	return token;
 };
 
