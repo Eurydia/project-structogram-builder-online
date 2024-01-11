@@ -316,68 +316,110 @@ const parserBuildIfElseNode = (
 	return node;
 };
 
-// const parserBuildFuncNode = (
-// 	p: Parser,
-// ): NodeFunc | NodeProcess => {
-// 	const node: NodeFunc = {
-// 		kind: NodeKind.FUNC,
-// 		returnType: [],
-// 		name: [],
-// 		args: [],
-// 		body: [],
-// 	};
+const isFuncNodeSequence = (
+	p: Parser,
+): boolean => {
+	const originalPos = p.cursorPos;
 
-// 	parserSkipWhiteSpace(p);
-// 	if (p.cursorPos >= p.tokenLength) {
-// 		return node;
-// 	}
+	parserSkipWhiteSpace(p);
+	if (p.cursorPos >= p.tokenLength) {
+		p.cursorPos = originalPos;
+		return false;
+	}
+	if (
+		p.tokens[p.cursorPos].kind !==
+		TokenKind.SYMBOL
+	) {
+		p.cursorPos = originalPos;
+		return false;
+	}
+	p.cursorPos++; // consume the "return type"
 
-// 	parserSkipWhiteSpace(p);
-// 	if (p.cursorPos >= p.tokenLength) {
-// 		return node;
-// 	}
+	parserSkipWhiteSpace(p);
+	if (p.cursorPos >= p.tokenLength) {
+		p.cursorPos = originalPos;
+		return false;
+	}
+	if (
+		p.tokens[p.cursorPos].kind !==
+		TokenKind.SYMBOL
+	) {
+		p.cursorPos = originalPos;
+		return false;
+	}
+	p.cursorPos++; // consume the "function name"
 
-// 	node.name.push(p.tokens[p.cursorPos]);
-// 	p.cursorPos++; // consume the function name
+	parserSkipWhiteSpace(p);
+	if (p.cursorPos >= p.tokenLength) {
+		p.cursorPos = originalPos;
+		return false;
+	}
 
-// 	parserSkipWhiteSpace(p);
-// 	if (p.cursorPos >= p.tokenLength) {
-// 		return node;
-// 	}
-// 	if (
-// 		p.tokens[p.cursorPos].kind !==
-// 		TokenKind.LEFT_PAREN
-// 	) {
-// 		return node;
-// 	}
-// 	node.args = parserCollectTokens(
-// 		p,
-// 		TokenKind.LEFT_PAREN,
-// 		TokenKind.RIGHT_PAREN,
-// 	);
+	parserCollectTokens(
+		p,
+		TokenKind.LEFT_PAREN,
+		TokenKind.RIGHT_PAREN,
+	);
+	if (p.cursorPos >= p.tokenLength) {
+		p.cursorPos = originalPos;
+		return false;
+	}
 
-// 	parserSkipWhiteSpace(p);
-// 	if (p.cursorPos >= p.tokenLength) {
-// 		return node;
-// 	}
-// 	if (
-// 		p.tokens[p.cursorPos].kind !==
-// 		TokenKind.LEFT_CURLY
-// 	) {
-// 		return node;
-// 	}
-// 	node.body = parserGetAllNodes(
-// 		parserInit(
-// 			parserCollectTokens(
-// 				p,
-// 				TokenKind.LEFT_CURLY,
-// 				TokenKind.RIGHT_CURLY,
-// 			),
-// 		),
-// 	);
+	parserSkipWhiteSpace(p);
+	if (p.cursorPos >= p.tokenLength) {
+		p.cursorPos = originalPos;
+		return false;
+	}
+	if (
+		p.tokens[p.cursorPos].kind !==
+		TokenKind.LEFT_CURLY
+	) {
+		p.cursorPos = originalPos;
+		return false;
+	}
 
-// 	return node;
-// };
+	p.cursorPos = originalPos;
+	return true;
+};
+
+const parserBuildFuncNode = (
+	p: Parser,
+): NodeFunc => {
+	const node: NodeFunc = {
+		kind: NodeKind.FUNC,
+		returnType: [],
+		name: [],
+		args: [],
+		body: [],
+	};
+
+	node.returnType.push(p.tokens[p.cursorPos]);
+	p.cursorPos++; // consume the return type
+	parserSkipWhiteSpace(p);
+
+	node.name.push(p.tokens[p.cursorPos]);
+	p.cursorPos++; // consume the function name
+	parserSkipWhiteSpace(p);
+
+	node.args = parserCollectTokens(
+		p,
+		TokenKind.LEFT_PAREN,
+		TokenKind.RIGHT_PAREN,
+	);
+	parserSkipWhiteSpace(p);
+
+	node.body = parserGetAllNodes(
+		parserInit(
+			parserCollectTokens(
+				p,
+				TokenKind.LEFT_CURLY,
+				TokenKind.RIGHT_CURLY,
+			),
+		),
+	);
+
+	return node;
+};
 
 const parserGetNextNodeThenAdvance = (
 	p: Parser,
@@ -406,6 +448,12 @@ const parserGetNextNodeThenAdvance = (
 		}
 	}
 
+	p.cursorPos--;
+	if (isFuncNodeSequence(p)) {
+		return parserBuildFuncNode(p);
+	}
+
+	p.cursorPos++;
 	const node: NodeProcess = {
 		kind: NodeKind.PROCESS,
 		body: [],

@@ -3,6 +3,7 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
+	useRef,
 	useState,
 } from "react";
 import {
@@ -48,6 +49,13 @@ import { AdaptiveButton } from "components/AdaptiveButton";
 
 export const EditorPage: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
+	const appBarRef = useRef<HTMLDivElement | null>(
+		null,
+	);
+	const [
+		appBarStaticHeight,
+		setAppBarStaticHeight,
+	] = useState<number>(0);
 	const matchBreakpointXs = useMediaQuery<Theme>(
 		(theme) => theme.breakpoints.down("md"),
 	);
@@ -56,7 +64,6 @@ export const EditorPage: FC = () => {
 		popoverExportMenuAnchor,
 		setPopoverExportMenuAnchor,
 	] = useState<HTMLButtonElement | null>(null);
-
 	const [previewOpen, setPreviewOpen] = useState(
 		() => {
 			const url = new URL(window.location.href);
@@ -92,12 +99,25 @@ export const EditorPage: FC = () => {
 		});
 
 	useEffect(() => {
+		if (appBarRef.current === null) {
+			return;
+		}
+
+		setAppBarStaticHeight(
+			appBarRef.current.getBoundingClientRect()
+				.height,
+		);
+	}, [appBarRef]);
+
+	useEffect(() => {
 		const tokens = lexerGetAllTokens(
 			lexerInit(editorContent),
 		);
+
 		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
+		console.info(nodes);
 		setNodes(nodes);
 	}, [editorContent]);
 
@@ -208,13 +228,9 @@ export const EditorPage: FC = () => {
 
 	return (
 		<Fragment>
-			<Box
-				sx={{
-					height: "100vh",
-					overflowY: "hidden",
-				}}
-			>
+			<Box>
 				<Paper
+					ref={appBarRef}
 					square
 					elevation={0}
 					sx={{
@@ -278,7 +294,7 @@ export const EditorPage: FC = () => {
 								onValueChange={onContentChange}
 								boxProps={{
 									overflowY: "auto",
-									height: "100vh",
+									height: `calc(100vh - ${appBarStaticHeight}px)`,
 								}}
 							/>
 						</Grid>
@@ -300,8 +316,8 @@ export const EditorPage: FC = () => {
 									overflowY: "auto",
 									backgroundColor: grey[300],
 									borderColor: grey[700],
-									height: "100vh",
 									userSelect: "none",
+									height: `calc(100vh - ${appBarStaticHeight}px)`,
 								},
 							)}
 						</Grid>

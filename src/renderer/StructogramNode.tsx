@@ -376,7 +376,10 @@ export const StructogramNode: FC<
 			const args = node.args
 				.map((token) => token.text)
 				.join("");
-			const declaration = `${name}(${args})`;
+			const returnType = node.returnType
+				.map((token) => token.text)
+				.join("");
+			const declaration = ` ${returnType} ${name}(${args})`;
 			return (
 				<StructogramNodeFunc
 					declaration={declaration}

@@ -22,8 +22,6 @@ const KEYWORDS: string[] = [
 	"else",
 	"while",
 	"do",
-	"func",
-	"proc",
 ];
 
 const LITERAL_TOKENS: Record<string, TokenKind> =
