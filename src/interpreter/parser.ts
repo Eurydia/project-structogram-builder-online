@@ -39,6 +39,7 @@ type NodeIfElse = {
 
 type NodeFunc = {
 	kind: NodeKind.FUNC;
+	returnType: Token[];
 	name: Token[];
 	args: Token[];
 	body: Node[];
@@ -315,67 +316,68 @@ const parserBuildIfElseNode = (
 	return node;
 };
 
-const parserBuildFuncNode = (
-	p: Parser,
-): NodeFunc => {
-	const node: NodeFunc = {
-		kind: NodeKind.FUNC,
-		name: [],
-		args: [],
-		body: [],
-	};
+// const parserBuildFuncNode = (
+// 	p: Parser,
+// ): NodeFunc | NodeProcess => {
+// 	const node: NodeFunc = {
+// 		kind: NodeKind.FUNC,
+// 		returnType: [],
+// 		name: [],
+// 		args: [],
+// 		body: [],
+// 	};
 
-	parserSkipWhiteSpace(p);
-	if (p.cursorPos >= p.tokenLength) {
-		return node;
-	}
+// 	parserSkipWhiteSpace(p);
+// 	if (p.cursorPos >= p.tokenLength) {
+// 		return node;
+// 	}
 
-	parserSkipWhiteSpace(p);
-	if (p.cursorPos >= p.tokenLength) {
-		return node;
-	}
+// 	parserSkipWhiteSpace(p);
+// 	if (p.cursorPos >= p.tokenLength) {
+// 		return node;
+// 	}
 
-	node.name.push(p.tokens[p.cursorPos]);
-	p.cursorPos++; // consume the function name
+// 	node.name.push(p.tokens[p.cursorPos]);
+// 	p.cursorPos++; // consume the function name
 
-	parserSkipWhiteSpace(p);
-	if (p.cursorPos >= p.tokenLength) {
-		return node;
-	}
-	if (
-		p.tokens[p.cursorPos].kind !==
-		TokenKind.LEFT_PAREN
-	) {
-		return node;
-	}
-	node.args = parserCollectTokens(
-		p,
-		TokenKind.LEFT_PAREN,
-		TokenKind.RIGHT_PAREN,
-	);
+// 	parserSkipWhiteSpace(p);
+// 	if (p.cursorPos >= p.tokenLength) {
+// 		return node;
+// 	}
+// 	if (
+// 		p.tokens[p.cursorPos].kind !==
+// 		TokenKind.LEFT_PAREN
+// 	) {
+// 		return node;
+// 	}
+// 	node.args = parserCollectTokens(
+// 		p,
+// 		TokenKind.LEFT_PAREN,
+// 		TokenKind.RIGHT_PAREN,
+// 	);
 
-	parserSkipWhiteSpace(p);
-	if (p.cursorPos >= p.tokenLength) {
-		return node;
-	}
-	if (
-		p.tokens[p.cursorPos].kind !==
-		TokenKind.LEFT_CURLY
-	) {
-		return node;
-	}
-	node.body = parserGetAllNodes(
-		parserInit(
-			parserCollectTokens(
-				p,
-				TokenKind.LEFT_CURLY,
-				TokenKind.RIGHT_CURLY,
-			),
-		),
-	);
+// 	parserSkipWhiteSpace(p);
+// 	if (p.cursorPos >= p.tokenLength) {
+// 		return node;
+// 	}
+// 	if (
+// 		p.tokens[p.cursorPos].kind !==
+// 		TokenKind.LEFT_CURLY
+// 	) {
+// 		return node;
+// 	}
+// 	node.body = parserGetAllNodes(
+// 		parserInit(
+// 			parserCollectTokens(
+// 				p,
+// 				TokenKind.LEFT_CURLY,
+// 				TokenKind.RIGHT_CURLY,
+// 			),
+// 		),
+// 	);
 
-	return node;
-};
+// 	return node;
+// };
 
 const parserGetNextNodeThenAdvance = (
 	p: Parser,
@@ -392,9 +394,6 @@ const parserGetNextNodeThenAdvance = (
 	p.cursorPos++;
 	if (token.kind === TokenKind.KEYWORD) {
 		switch (token.text) {
-			case "func":
-			case "proc":
-				return parserBuildFuncNode(p);
 			case "for":
 			case "while":
 				return parserBuildLoopFirstNode(p);
