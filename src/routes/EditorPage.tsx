@@ -117,7 +117,6 @@ export const EditorPage: FC = () => {
 		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
-		console.info(nodes);
 		setNodes(nodes);
 	}, [editorContent]);
 
