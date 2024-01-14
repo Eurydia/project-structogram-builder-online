@@ -64,7 +64,7 @@ const StructogramComponentText: FC<
 				...rest.sx,
 			}}
 		>
-			{children ?? "..."}
+			{children ?? "-"}
 		</Typography>
 	);
 };
@@ -367,12 +367,9 @@ export const StructogramNode: FC<
 
 	switch (node.kind) {
 		case NodeKind.FUNC: {
-			let name = "...";
-			if (node.name.length > 0) {
-				name = node.name
-					.map((token) => token.text)
-					.join("");
-			}
+			const name = node.name
+				.map((token) => token.text)
+				.join("");
 			const args = node.args
 				.map((token) => token.text)
 				.join("");

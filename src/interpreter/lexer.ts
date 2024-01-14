@@ -40,13 +40,38 @@ export type Lexer = {
 	cursorPos: number;
 };
 
+const cleanContent = (
+	content: string,
+): string => {
+	let cleanedContent = "";
+
+	const length = content.length;
+	let i = 0;
+	while (i < length) {
+		cleanedContent += content[i];
+		i++;
+
+		if (cleanedContent.endsWith("//")) {
+			cleanedContent = cleanedContent.slice(
+				0,
+				-2,
+			);
+
+			while (i < length && content[i] !== "\n") {
+				i++;
+			}
+		}
+	}
+
+	return cleanedContent;
+};
+
 export const lexerInit = (
 	content: string,
 ): Lexer => {
-	const cleanedContent = `${content}\n`
-		.normalize()
-		.replace(/\/\/(?<=\/\/).*(?=\n)/g, "\n")
-		.replace(/\s+/g, " ");
+	const cleanedContent = cleanContent(
+		content.normalize().replace(/\s+/g, " "),
+	);
 
 	return {
 		content: cleanedContent,
