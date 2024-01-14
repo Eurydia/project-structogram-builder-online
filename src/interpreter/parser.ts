@@ -222,6 +222,7 @@ const parserBuildLoopLastNode = (
 	);
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		return node;
 	}
@@ -246,6 +247,7 @@ const parserBuildIfElseNode = (
 	};
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		return node;
 	}
@@ -262,6 +264,7 @@ const parserBuildIfElseNode = (
 	);
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		return node;
 	}
@@ -282,6 +285,7 @@ const parserBuildIfElseNode = (
 	);
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		return node;
 	}
@@ -295,6 +299,7 @@ const parserBuildIfElseNode = (
 	p.cursorPos++; // consume the "else" keyword
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		return node;
 	}
@@ -322,6 +327,7 @@ const isFuncNodeSequence = (
 	const originalPos = p.cursorPos;
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		p.cursorPos = originalPos;
 		return false;
@@ -336,6 +342,7 @@ const isFuncNodeSequence = (
 	p.cursorPos++; // consume the "return type"
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		p.cursorPos = originalPos;
 		return false;
@@ -350,6 +357,7 @@ const isFuncNodeSequence = (
 	p.cursorPos++; // consume the "function name"
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		p.cursorPos = originalPos;
 		return false;
@@ -366,6 +374,7 @@ const isFuncNodeSequence = (
 	}
 
 	parserSkipWhiteSpace(p);
+
 	if (p.cursorPos >= p.tokenLength) {
 		p.cursorPos = originalPos;
 		return false;

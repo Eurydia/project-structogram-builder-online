@@ -31,6 +31,7 @@ const LITERAL_TOKENS: Record<string, TokenKind> =
 		"(": TokenKind.LEFT_PAREN,
 		")": TokenKind.RIGHT_PAREN,
 		";": TokenKind.SEMICOLON,
+		" ": TokenKind.WHITE_SPACE,
 	};
 
 export type Lexer = {
@@ -42,9 +43,14 @@ export type Lexer = {
 export const lexerInit = (
 	content: string,
 ): Lexer => {
+	const cleanedContent = `${content}\n`
+		.normalize()
+		.replace(/\/\/(?<=\/\/).*(?=\n)/g, "\n")
+		.replace(/\s+/g, " ");
+
 	return {
-		content: content.normalize(),
-		contentLength: content.normalize().length,
+		content: cleanedContent,
+		contentLength: cleanedContent.length,
 		cursorPos: 0,
 	};
 };
@@ -61,13 +67,6 @@ export const lexerGetNextTokenThenAdvance = (
 		return token;
 	}
 
-	if (/\s/.test(l.content[l.cursorPos])) {
-		token.kind = TokenKind.WHITE_SPACE;
-		token.text = l.content[l.cursorPos];
-		l.cursorPos++;
-		return token;
-	}
-
 	token.text = l.content[l.cursorPos];
 	l.cursorPos++;
 
@@ -79,7 +78,7 @@ export const lexerGetNextTokenThenAdvance = (
 	while (
 		l.cursorPos < l.contentLength &&
 		!(l.content[l.cursorPos] in LITERAL_TOKENS) &&
-		!/\s/.test(l.content[l.cursorPos])
+		l.content[l.cursorPos] !== " "
 	) {
 		token.text += l.content[l.cursorPos];
 		l.cursorPos++;
