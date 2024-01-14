@@ -70,8 +70,8 @@ export const lexerInit = (
 	content: string,
 ): Lexer => {
 	const cleanedContent = cleanContent(
-		content.normalize().replace(/\s+/g, " "),
-	);
+		content.normalize(),
+	).replace(/\s+/g, " ");
 
 	return {
 		content: cleanedContent,
