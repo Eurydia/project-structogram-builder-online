@@ -118,8 +118,6 @@ export const EditorPage: FC = () => {
 			parserInit(tokens),
 		);
 		setNodes(nodes);
-		console.log(nodes);
-		console.log(tokens);
 	}, [editorContent]);
 
 	const onContentChange = useCallback(

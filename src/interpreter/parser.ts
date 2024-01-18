@@ -113,6 +113,10 @@ const parserSkipWhiteSpace = (
 	}
 };
 
+// for (kgfdglkl;fdkglfdkglkfgl) {
+
+// }
+
 const parserBuildLoopFirstNode = (
 	p: Parser,
 ): NodeLoopFirst => {
