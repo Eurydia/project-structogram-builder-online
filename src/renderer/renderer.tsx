@@ -7,6 +7,7 @@ import {
 
 import { Node, NodeKind } from "interpreter";
 import { StructogramNode } from "renderer/StructogramNode";
+import { grey } from "@mui/material/colors";
 
 export const renderer = (
 	nodes: Node[],
@@ -49,10 +50,20 @@ export const renderer = (
 	}
 
 	return (
-		<Box sx={boxProps}>
+		<Box
+			borderColor={grey[700]}
+			sx={{
+				...boxProps,
+				backgroundColor: grey[300],
+			}}
+		>
 			<Box
 				id={id}
 				maxWidth="640px"
+				borderColor={grey[700]}
+				sx={{
+					backgroundColor: grey[300],
+				}}
 			>
 				{component}
 			</Box>

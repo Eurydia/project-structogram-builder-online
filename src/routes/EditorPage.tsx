@@ -26,7 +26,6 @@ import {
 	LaunchRounded,
 	SendRounded,
 } from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
 import { useSnackbar } from "notistack";
 import {
 	toJpeg,
@@ -313,8 +312,6 @@ export const EditorPage: FC = () => {
 								{
 									padding: 4,
 									overflowY: "auto",
-									backgroundColor: grey[300],
-									borderColor: grey[700],
 									userSelect: "none",
 									height: `calc(100vh - ${appBarStaticHeight}px)`,
 								},
