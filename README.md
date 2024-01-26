@@ -1,7 +1,10 @@
-# nassi-shneiderman-diagram-builder-online
+# Nassi-Shneiderman diagram builder
 
-This project is a successor to my [Nassi-Shneiderman Diagram Builder](https://github.com/Eurydia/nassi-shneiderman-diagram-builder).
-It is a web application that allows you to create Nassi-Shneiderman diagrams using C-style code.
+Thsi project is a web application that allows you to create Nassi-Shneiderman diagrams using C-style code.
+
+Live demo: https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online/
+
+Documentation: https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online-docs/
 
 ## Resources
 
