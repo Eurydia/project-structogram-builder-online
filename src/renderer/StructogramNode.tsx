@@ -366,16 +366,30 @@ export const StructogramNode: FC<
 	const { node, ...rest } = props;
 
 	switch (node.kind) {
-		case NodeKind.TERMINATED: {
+		case NodeKind.ERROR: {
 			return (
 				<StructogramNodeWrapper {...rest}>
 					<StructogramComponentText>
-						{`${node.rowPos}:${node.colPos} ${node.reason}`}
+						{`At line ${node.rowPos}, character ${node.colPos}: ${node.reason}`}
 					</StructogramComponentText>
-					<StructogramComponentText>
-						{node.context
-							.map((token) => token.text)
-							.join("")}
+					<StructogramComponentText
+						sx={{
+							paddingLeft: 1,
+							paddingY: 0,
+						}}
+					>
+						{node.context.text}
+					</StructogramComponentText>
+					<StructogramComponentText
+						paddingLeft={1}
+						sx={{
+							paddingLeft: 1,
+							paddingY: 0,
+						}}
+					>
+						{"~".repeat(
+							node.context.text.length,
+						) + "^"}
 					</StructogramComponentText>
 				</StructogramNodeWrapper>
 			);
