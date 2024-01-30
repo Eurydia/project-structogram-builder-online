@@ -112,10 +112,13 @@ export const EditorPage: FC = () => {
 		const tokens = lexerGetAllTokens(
 			lexerInit(editorContent),
 		);
+		console.info("tokens", tokens);
 
 		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
+		console.info("nodes", nodes);
+
 		setNodes(nodes);
 	}, [editorContent]);
 

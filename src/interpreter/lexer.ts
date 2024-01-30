@@ -14,6 +14,8 @@ export enum TokenKind {
 export type Token = {
 	kind: TokenKind;
 	text: string;
+	rowPos: number;
+	colPos: number;
 };
 
 const KEYWORDS: string[] = [
@@ -31,82 +33,98 @@ const LITERAL_TOKENS: Record<string, TokenKind> =
 		"(": TokenKind.LEFT_PAREN,
 		")": TokenKind.RIGHT_PAREN,
 		";": TokenKind.SEMICOLON,
-		" ": TokenKind.WHITE_SPACE,
 	};
 
 export type Lexer = {
 	content: string;
 	contentLength: number;
 	cursorPos: number;
+
+	cursorRow: number;
+	cursorCol: number;
 };
 
-const cleanContent = (
+const removeComments = (
 	content: string,
 ): string => {
-	let cleanedContent = "";
+	let cleanContent = "";
 
-	const length = content.length;
-	let i = 0;
-	while (i < length) {
-		cleanedContent += content[i];
-		i++;
-
-		if (cleanedContent.endsWith("//")) {
-			cleanedContent = cleanedContent.slice(
-				0,
-				-2,
-			);
-
-			while (i < length && content[i] !== "\n") {
-				i++;
+	let contentPos = 0;
+	while (contentPos < content.length) {
+		if (
+			contentPos + 1 < content.length &&
+			content[contentPos] === "/" &&
+			content[contentPos + 1] === "/"
+		) {
+			while (
+				contentPos < content.length &&
+				content[contentPos] !== "\n"
+			) {
+				contentPos++;
 			}
 		}
+		cleanContent += content[contentPos];
+		contentPos++;
 	}
 
-	return cleanedContent;
+	return cleanContent;
 };
 
 export const lexerInit = (
 	content: string,
 ): Lexer => {
-	const cleanedContent = cleanContent(
+	const cleanedContent = removeComments(
 		content.normalize(),
-	).replace(/\s+/g, " ");
+	);
 
 	return {
 		content: cleanedContent,
 		contentLength: cleanedContent.length,
 		cursorPos: 0,
+		cursorCol: 1,
+		cursorRow: 1,
 	};
 };
 
 export const lexerGetNextTokenThenAdvance = (
 	l: Lexer,
 ): Token => {
-	const token = {
+	const token: Token = {
 		kind: TokenKind.END,
 		text: "",
+		rowPos: l.cursorRow,
+		colPos: l.cursorCol,
 	};
 
 	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
 
-	token.text = l.content[l.cursorPos];
+	token["text"] = l.content[l.cursorPos];
 	l.cursorPos++;
 
-	if (token.text in LITERAL_TOKENS) {
-		token.kind = LITERAL_TOKENS[token.text];
+	if (/\s/.test(token.text)) {
+		token.kind = TokenKind.WHITE_SPACE;
+		if (token.text === "\n") {
+			l.cursorRow++;
+			l.cursorCol = 1;
+		}
+		return token;
+	}
+
+	if (token["text"] in LITERAL_TOKENS) {
+		token["kind"] = LITERAL_TOKENS[token["text"]];
 		return token;
 	}
 
 	while (
-		l.cursorPos < l.contentLength &&
+		l["cursorPos"] < l.contentLength &&
 		!(l.content[l.cursorPos] in LITERAL_TOKENS) &&
-		l.content[l.cursorPos] !== " "
+		!/\s/.test(l.content[l.cursorPos])
 	) {
-		token.text += l.content[l.cursorPos];
+		token["text"] += l.content[l.cursorPos];
 		l.cursorPos++;
+		l.cursorCol++;
 	}
 
 	if (KEYWORDS.includes(token.text)) {

@@ -366,20 +366,32 @@ export const StructogramNode: FC<
 	const { node, ...rest } = props;
 
 	switch (node.kind) {
+		case NodeKind.TERMINATED: {
+			return (
+				<StructogramNodeWrapper {...rest}>
+					<StructogramComponentText>
+						{`${node.rowPos}:${node.colPos} ${node.reason}`}
+					</StructogramComponentText>
+					<StructogramComponentText>
+						{node.context
+							.map((token) => token.text)
+							.join("")}
+					</StructogramComponentText>
+				</StructogramNodeWrapper>
+			);
+		}
+
 		case NodeKind.FUNC: {
-			const name = node.name
-				.map((token) => token.text)
-				.join("");
-			const args = node.args
-				.map((token) => token.text)
-				.join("");
-			const returnType = node.returnType
-				.map((token) => token.text)
-				.join("");
-			const declaration = ` ${returnType} ${name}(${args})`;
+			let text: string = "";
+			if (node.decl.length > 0) {
+				text = node.decl
+					.map((token) => token.text)
+					.join("")
+					.trim();
+			}
 			return (
 				<StructogramNodeFunc
-					declaration={declaration}
+					declaration={text}
 					body={node.body}
 					{...rest}
 				/>
