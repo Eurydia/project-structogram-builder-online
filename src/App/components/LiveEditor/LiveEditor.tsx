@@ -35,13 +35,16 @@ import {
 	parserGetAllNodes,
 	parserInit,
 } from "interpreter";
-import { renderer } from "renderer/renderer";
+import { DiagramPreview } from "App/components/DiagramPreview";
 
-import { StructogramCodeEditor } from "App/components/StructogramCodeEditor";
+import { StructogramCodeEditor } from "App/components/StyledCodeEditor";
 import { AdaptiveButton } from "App/components/AdaptiveButton";
 import { useExportDiagram } from "App/components/LiveEditor/useExportDiagram";
 import { useEditorContent } from "App/components/LiveEditor/useEditorContent";
-import { generateUniqueLink } from "App/components/LiveEditor/helperGenerateUniqueLink";
+import {
+	generateUniqueLink,
+	getPreviewState,
+} from "App/components/LiveEditor/helper";
 
 export const LiveEditor: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
@@ -73,15 +76,7 @@ export const LiveEditor: FC = () => {
 		setPopoverExportMenuAnchor,
 	] = useState<HTMLButtonElement | null>(null);
 	const [previewOpen, setPreviewOpen] = useState(
-		() => {
-			const url = new URL(window.location.href);
-			const preview =
-				url.searchParams.get("preview");
-			if (preview === null) {
-				return false;
-			}
-			return preview === "true";
-		},
+		getPreviewState(window.location.href),
 	);
 
 	useEffect(() => {
@@ -110,7 +105,10 @@ export const LiveEditor: FC = () => {
 
 	const handleCopyLink = useCallback(() => {
 		navigator.clipboard.writeText(
-			generateUniqueLink(editorContent),
+			generateUniqueLink(
+				editorContent,
+				window.location.href,
+			),
 		);
 		enqueueSnackbar("Link copied to clipboard", {
 			variant: "info",
@@ -233,16 +231,16 @@ export const LiveEditor: FC = () => {
 									: undefined
 							}
 						>
-							{renderer(
-								nodes,
-								"structogram-preview-region",
-								{
+							<DiagramPreview
+								nodes={nodes}
+								id="structogram-preview-region"
+								boxProps={{
 									padding: 4,
 									overflowY: "auto",
 									userSelect: "none",
 									height: `calc(100vh - ${appBarStaticHeight}px)`,
-								},
-							)}
+								}}
+							/>
 						</Grid>
 					</Grid>
 				</Box>

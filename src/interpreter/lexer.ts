@@ -1,4 +1,4 @@
-export enum TokenKind {
+export enum DiagramTokenKind {
 	END = 0,
 	SYMBOL,
 	KEYWORD,
@@ -11,8 +11,8 @@ export enum TokenKind {
 	WHITE_SPACE,
 }
 
-export type Token = {
-	kind: TokenKind;
+export type DiagramToken = {
+	kind: DiagramTokenKind;
 	text: string;
 	rowPos: number;
 	colPos: number;
@@ -26,14 +26,16 @@ const KEYWORDS: string[] = [
 	"do",
 ];
 
-const LITERAL_TOKENS: Record<string, TokenKind> =
-	{
-		"{": TokenKind.LEFT_CURLY,
-		"}": TokenKind.RIGHT_CURLY,
-		"(": TokenKind.LEFT_PAREN,
-		")": TokenKind.RIGHT_PAREN,
-		";": TokenKind.SEMICOLON,
-	};
+const LITERAL_TOKENS: Record<
+	string,
+	DiagramTokenKind
+> = {
+	"{": DiagramTokenKind.LEFT_CURLY,
+	"}": DiagramTokenKind.RIGHT_CURLY,
+	"(": DiagramTokenKind.LEFT_PAREN,
+	")": DiagramTokenKind.RIGHT_PAREN,
+	";": DiagramTokenKind.SEMICOLON,
+};
 
 export type Lexer = {
 	content: string;
@@ -88,9 +90,9 @@ export const lexerInit = (
 
 export const lexerGetNextTokenThenAdvance = (
 	l: Lexer,
-): Token => {
-	const token: Token = {
-		kind: TokenKind.END,
+): DiagramToken => {
+	const token: DiagramToken = {
+		kind: DiagramTokenKind.END,
 		text: "",
 		rowPos: l.cursorRow,
 		colPos: l.cursorCol,
@@ -105,7 +107,7 @@ export const lexerGetNextTokenThenAdvance = (
 	l.cursorCol++;
 
 	if (/\s/.test(token.text)) {
-		token.kind = TokenKind.WHITE_SPACE;
+		token.kind = DiagramTokenKind.WHITE_SPACE;
 		if (token.text === "\n") {
 			l.cursorRow++;
 			l.cursorCol = 1;
@@ -129,22 +131,22 @@ export const lexerGetNextTokenThenAdvance = (
 	}
 
 	if (KEYWORDS.includes(token.text)) {
-		token.kind = TokenKind.KEYWORD;
+		token.kind = DiagramTokenKind.KEYWORD;
 		return token;
 	}
 
-	token.kind = TokenKind.SYMBOL;
+	token.kind = DiagramTokenKind.SYMBOL;
 	return token;
 };
 
 export const lexerGetAllTokens = (
 	l: Lexer,
-): Token[] => {
-	const tokens: Token[] = [];
-	let token: Token;
+): DiagramToken[] => {
+	const tokens: DiagramToken[] = [];
+	let token: DiagramToken;
 	while (
 		(token = lexerGetNextTokenThenAdvance(l))
-			.kind !== TokenKind.END
+			.kind !== DiagramTokenKind.END
 	) {
 		tokens.push(token);
 	}

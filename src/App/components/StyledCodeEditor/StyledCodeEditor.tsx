@@ -1,17 +1,17 @@
 import { FC } from "react";
-import { Box, SxProps } from "@mui/material";
 
+import { Box, SxProps } from "@mui/material";
 import ReactCodeMirror from "@uiw/react-codemirror";
 
 import "./styles.css";
 
-type StructogramCodeEditorProps = {
+type StyledCodeEditorProps = {
 	value: string;
 	onValueChange?: (value: string) => void;
 	boxProps?: SxProps;
 };
-export const StructogramCodeEditor: FC<
-	StructogramCodeEditorProps
+export const StyledCodeEditor: FC<
+	StyledCodeEditorProps
 > = (props) => {
 	const { value, onValueChange, boxProps } =
 		props;

@@ -10,7 +10,11 @@ import { grey } from "@mui/material/colors";
 
 import { ArrowTopLeftBottomRight } from "./ArrowTopLeftBottomRight";
 import { ArrowBottomLeftTopRight } from "./ArrowBottomLeftTopRight";
-import { Node, NodeKind } from "interpreter";
+import {
+	Node,
+	DiagramNodeKind,
+	DiagramToken,
+} from "interpreter";
 
 type DiagramWrapperProps = {
 	children: ReactNode | ReactNode[];
@@ -70,28 +74,39 @@ const DiagramComponentText: FC<
 };
 
 type DiagramProcessProps = {
-	text?: string;
+	bodyTokens?: DiagramToken[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-const DiagramNodeProcess: FC<
-	DiagramProcessProps
-> = (props) => {
-	const { text, ...rest } = props;
+const DiagramProcess: FC<DiagramProcessProps> = (
+	props,
+) => {
+	const { bodyTokens, ...rest } = props;
+
+	let bodyText: string | undefined = undefined;
+	if (bodyTokens !== undefined) {
+		bodyText = bodyTokens
+			.map((token) => token.text)
+			.join("")
+			.trim();
+		if (bodyText.length === 0) {
+			bodyText = undefined;
+		}
+	}
 
 	return (
 		<DiagramWrapper {...rest}>
 			<DiagramComponentText>
-				{text}
+				{bodyText}
 			</DiagramComponentText>
 		</DiagramWrapper>
 	);
 };
 
 type DiagramLoopFirstProps = {
-	condition?: string;
+	conditionTokens?: DiagramToken[];
 	body: Node[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
@@ -101,18 +116,30 @@ type DiagramLoopFirstProps = {
 export const DiagramLoopFirst: FC<
 	DiagramLoopFirstProps
 > = (props) => {
-	const { condition, body, ...rest } = props;
+	const { conditionTokens, body, ...rest } =
+		props;
+
+	let conditionText: string | undefined =
+		undefined;
+	if (
+		conditionTokens !== undefined &&
+		conditionTokens.length > 0
+	) {
+		conditionText = conditionTokens
+			.map((token) => token.text)
+			.join("")
+			.trim();
+	}
 
 	let bodyNode: ReactNode | ReactNode[] = (
-		<DiagramNodeProcess
+		<DiagramProcess
 			borderTop
 			borderLeft
 		/>
 	);
-
 	if (body.length > 0) {
 		bodyNode = body.map((subnode, index) => (
-			<StructogramNode
+			<Diagram
 				key={`subnode-${index}`}
 				borderTop
 				borderLeft
@@ -124,7 +151,7 @@ export const DiagramLoopFirst: FC<
 	return (
 		<DiagramWrapper {...rest}>
 			<DiagramComponentText>
-				{condition}
+				{conditionText}
 			</DiagramComponentText>
 			<Box paddingLeft={2}>{bodyNode}</Box>
 		</DiagramWrapper>
@@ -132,7 +159,7 @@ export const DiagramLoopFirst: FC<
 };
 
 type DiagramLoopLastProps = {
-	condition?: string;
+	conditionTokens?: DiagramToken[];
 	body: Node[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
@@ -142,17 +169,30 @@ type DiagramLoopLastProps = {
 export const DiagramLoopLast: FC<
 	DiagramLoopLastProps
 > = (props) => {
-	const { condition, body, ...rest } = props;
+	const { conditionTokens, body, ...rest } =
+		props;
+
+	let conditionText: string | undefined =
+		undefined;
+	if (
+		conditionTokens !== undefined &&
+		conditionTokens.length > 0
+	) {
+		conditionText = conditionTokens
+			.map((token) => token.text)
+			.join("")
+			.trim();
+	}
 
 	let bodyNode: ReactNode | ReactNode[] = (
-		<DiagramNodeProcess
+		<DiagramProcess
 			borderBottom
 			borderLeft
 		/>
 	);
 	if (body.length > 0) {
 		bodyNode = body.map((subnode, index) => (
-			<StructogramNode
+			<Diagram
 				key={`subnode-${index}`}
 				node={subnode}
 				borderBottom
@@ -164,14 +204,14 @@ export const DiagramLoopLast: FC<
 		<DiagramWrapper {...rest}>
 			<Box paddingLeft={2}>{bodyNode}</Box>
 			<DiagramComponentText>
-				{condition}
+				{conditionText}
 			</DiagramComponentText>
 		</DiagramWrapper>
 	);
 };
 
 type DiagramIfElseProps = {
-	condition?: string;
+	conditionTokens?: DiagramToken[];
 	bodyIf: Node[];
 	bodyElse: Node[];
 	borderTop?: boolean;
@@ -182,15 +222,31 @@ type DiagramIfElseProps = {
 export const DiagramIfElse: FC<
 	DiagramIfElseProps
 > = (props) => {
-	const { condition, bodyIf, bodyElse, ...rest } =
-		props;
+	const {
+		conditionTokens,
+		bodyIf,
+		bodyElse,
+		...rest
+	} = props;
+
+	let conditionText: string | undefined =
+		undefined;
+	if (
+		conditionTokens !== undefined &&
+		conditionTokens.length > 0
+	) {
+		conditionText = conditionTokens
+			.map((token) => token.text)
+			.join("")
+			.trim();
+	}
 
 	let bodyNodeIf: ReactNode | ReactNode[] = (
-		<DiagramNodeProcess borderTop />
+		<DiagramProcess borderTop />
 	);
 	if (bodyIf.length > 0) {
 		bodyNodeIf = bodyIf.map((subnode, index) => (
-			<StructogramNode
+			<Diagram
 				key={`index-${index}`}
 				borderTop
 				node={subnode}
@@ -199,12 +255,12 @@ export const DiagramIfElse: FC<
 	}
 
 	let bodyNodeElse: ReactNode | ReactNode[] = (
-		<DiagramNodeProcess borderTop />
+		<DiagramProcess borderTop />
 	);
 	if (bodyElse.length > 0) {
 		bodyNodeElse = bodyElse.map(
 			(subnode, index) => (
-				<StructogramNode
+				<Diagram
 					key={`index-${index}`}
 					borderTop
 					node={subnode}
@@ -224,7 +280,7 @@ export const DiagramIfElse: FC<
 					xs={12}
 				>
 					<DiagramComponentText align="center">
-						{condition}
+						{conditionText}
 					</DiagramComponentText>
 				</Grid>
 				<Grid
@@ -300,7 +356,7 @@ export const DiagramIfElse: FC<
 };
 
 type DiagramFuncProps = {
-	declaration: string;
+	declarationTokens: DiagramToken[];
 	body: Node[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
@@ -310,10 +366,23 @@ type DiagramFuncProps = {
 const DiagramFunc: FC<DiagramFuncProps> = (
 	props,
 ) => {
-	const { declaration, body, ...rest } = props;
+	const { declarationTokens, body, ...rest } =
+		props;
+
+	let declarationText: string | undefined =
+		undefined;
+	if (
+		declarationTokens !== undefined &&
+		declarationTokens.length > 0
+	) {
+		declarationText = declarationTokens
+			.map((token) => token.text)
+			.join("")
+			.trim();
+	}
 
 	let bodyNode: ReactNode | ReactNode[] = (
-		<DiagramNodeProcess
+		<DiagramProcess
 			borderTop
 			borderLeft
 			borderRight
@@ -321,7 +390,7 @@ const DiagramFunc: FC<DiagramFuncProps> = (
 	);
 	if (body.length > 0) {
 		bodyNode = body.map((subnode, index) => (
-			<StructogramNode
+			<Diagram
 				key={`subnode-${index}`}
 				node={subnode}
 				borderTop
@@ -334,7 +403,7 @@ const DiagramFunc: FC<DiagramFuncProps> = (
 	return (
 		<DiagramWrapper {...rest}>
 			<DiagramComponentText align="center">
-				{declaration}
+				{declarationText}
 			</DiagramComponentText>
 			<Box paddingX={2}>{bodyNode}</Box>
 		</DiagramWrapper>
@@ -361,59 +430,36 @@ const DiagramError: FC<DiagramErrorProps> = (
 		character,
 		...rest
 	} = props;
-
+	const errorText = `At line ${line}, character ${character}: ${reason}`;
 	return (
 		<DiagramWrapper {...rest}>
 			<DiagramComponentText>
-				{`At line ${line}, character ${character}: ${reason}`}
+				{errorText}
 			</DiagramComponentText>
-			<DiagramComponentText
-				sx={{
-					paddingLeft: 1,
-					paddingY: 0,
-				}}
-			>
+			<DiagramComponentText paddingY={0}>
 				{context}
 			</DiagramComponentText>
-			<DiagramComponentText
-				paddingLeft={1}
-				sx={{
-					paddingLeft: 1,
-					paddingY: 0,
-				}}
-			>
+			<DiagramComponentText paddingY={0}>
 				{"~".repeat(context.length - 1) + "^"}
 			</DiagramComponentText>
 		</DiagramWrapper>
 	);
 };
 
-const fitlerEmptyProcessNodes = (
-	node: Node,
-): boolean => {
-	return (
-		node.kind !== NodeKind.PROCESS ||
-		node.body
-			.map((token) => token.text)
-			.join("")
-			.trim().length > 0
-	);
-};
-
-type StructogramNodeProps = {
+type DiagramProps = {
 	node: Node;
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-export const StructogramNode: FC<
-	StructogramNodeProps
-> = (props) => {
+export const Diagram: FC<DiagramProps> = (
+	props,
+) => {
 	const { node, ...rest } = props;
 
 	switch (node.kind) {
-		case NodeKind.ERROR: {
+		case DiagramNodeKind.ERROR:
 			return (
 				<DiagramError
 					{...rest}
@@ -423,99 +469,46 @@ export const StructogramNode: FC<
 					character={node.colPos}
 				/>
 			);
-		}
-
-		case NodeKind.FUNC: {
-			let text: string = "";
-			if (node.decl.length > 0) {
-				text = node.decl
-					.map((token) => token.text)
-					.join("")
-					.trim();
-			}
+		case DiagramNodeKind.FUNC:
 			return (
 				<DiagramFunc
-					declaration={text}
+					declarationTokens={node.declaration}
 					body={node.body}
 					{...rest}
 				/>
 			);
-		}
-
-		case NodeKind.LOOP_FIRST: {
-			let text: string | undefined;
-			if (node.condition.length > 0) {
-				text = node.condition
-					.map((token) => token.text)
-					.join("")
-					.trim();
-			}
+		case DiagramNodeKind.LOOP_FIRST:
 			return (
 				<DiagramLoopFirst
 					{...rest}
-					condition={text}
-					body={node.body.filter(
-						fitlerEmptyProcessNodes,
-					)}
+					conditionTokens={node.condition}
+					body={node.body}
 				/>
 			);
-		}
-		case NodeKind.LOOP_LAST: {
-			let text: string | undefined;
-			if (node.condition.length > 0) {
-				text = node.condition
-					.map((token) => token.text)
-					.join("")
-					.trim();
-			}
+		case DiagramNodeKind.LOOP_LAST:
 			return (
 				<DiagramLoopLast
 					{...rest}
-					condition={text}
-					body={node.body.filter(
-						fitlerEmptyProcessNodes,
-					)}
+					conditionTokens={node.condition}
+					body={node.body}
 				/>
 			);
-		}
-		case NodeKind.IF_ELSE: {
-			let text: string | undefined;
-			if (node.condition.length > 0) {
-				text = node.condition
-					.map((token) => token.text)
-					.join("")
-					.trim();
-			}
+		case DiagramNodeKind.IF_ELSE:
 			return (
 				<DiagramIfElse
 					{...rest}
-					condition={text}
-					bodyIf={node.bodyIf.filter(
-						fitlerEmptyProcessNodes,
-					)}
-					bodyElse={node.bodyElse.filter(
-						fitlerEmptyProcessNodes,
-					)}
+					conditionTokens={node.condition}
+					bodyIf={node.bodyIf}
+					bodyElse={node.bodyElse}
 				/>
 			);
-		}
-		case NodeKind.PROCESS: {
-			let text: string | undefined = node.body
-				.map((token) => token.text)
-				.join("")
-				.trim();
-
-			if (text.length === 0) {
-				text = undefined;
-			}
-
+		case DiagramNodeKind.PROCESS:
 			return (
-				<DiagramNodeProcess
+				<DiagramProcess
 					{...rest}
-					text={text}
+					bodyTokens={node.body}
 				/>
 			);
-		}
 	}
 	return <Fragment />;
 };
