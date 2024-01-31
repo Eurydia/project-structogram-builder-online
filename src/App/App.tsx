@@ -7,7 +7,7 @@ import {
 
 import { SnackbarProvider } from "notistack";
 
-import { EditorPage } from "routes/EditorPage";
+import { LiveEditor } from "App/components/LiveEditor/LiveEditor";
 
 const themeDark = createTheme({
 	palette: {
@@ -28,7 +28,7 @@ export const App: FC = () => {
 						horizontal: "center",
 					}}
 				>
-					<EditorPage />
+					<LiveEditor />
 				</SnackbarProvider>
 			</ThemeProvider>
 		</Fragment>

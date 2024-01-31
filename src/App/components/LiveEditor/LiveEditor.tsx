@@ -27,12 +27,6 @@ import {
 	SendRounded,
 } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
-import {
-	toJpeg,
-	toPng,
-	toSvg,
-} from "html-to-image";
-import { saveAs } from "file-saver";
 
 import {
 	lexerGetAllTokens,
@@ -43,10 +37,13 @@ import {
 } from "interpreter";
 import { renderer } from "renderer/renderer";
 
-import { StructogramCodeEditor } from "components/StructogramCodeEditor";
-import { AdaptiveButton } from "components/AdaptiveButton";
+import { StructogramCodeEditor } from "App/components/StructogramCodeEditor";
+import { AdaptiveButton } from "App/components/AdaptiveButton";
+import { useExportDiagram } from "App/components/LiveEditor/useExportDiagram";
+import { useEditorContent } from "App/components/LiveEditor/useEditorContent";
+import { generateUniqueLink } from "App/components/LiveEditor/helperGenerateUniqueLink";
 
-export const EditorPage: FC = () => {
+export const LiveEditor: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
 	const appBarRef = useRef<HTMLDivElement | null>(
 		null,
@@ -59,6 +56,18 @@ export const EditorPage: FC = () => {
 		(theme) => theme.breakpoints.down("md"),
 	);
 
+	const { exportJPEG, exportPNG, exportSVG } =
+		useExportDiagram(
+			"structogram-preview-region",
+		);
+
+	const { editorContent, setEditorContent } =
+		useEditorContent(
+			window.location.href,
+			"autosaveContent",
+		);
+
+	const [nodes, setNodes] = useState<Node[]>([]);
 	const [
 		popoverExportMenuAnchor,
 		setPopoverExportMenuAnchor,
@@ -71,37 +80,14 @@ export const EditorPage: FC = () => {
 			if (preview === null) {
 				return false;
 			}
-
 			return preview === "true";
 		},
 	);
-	const [nodes, setNodes] = useState<Node[]>([]);
-	const [editorContent, setEditorContent] =
-		useState(() => {
-			const url = new URL(window.location.href);
-			const content =
-				url.searchParams.get("content");
-			if (content !== null) {
-				window.localStorage.setItem(
-					"content",
-					content,
-				);
-				return content;
-			}
-
-			const savedContent =
-				window.localStorage.getItem("content");
-			if (savedContent !== null) {
-				return savedContent;
-			}
-			return "";
-		});
 
 	useEffect(() => {
 		if (appBarRef.current === null) {
 			return;
 		}
-
 		setAppBarStaticHeight(
 			appBarRef.current.getBoundingClientRect()
 				.height,
@@ -112,105 +98,24 @@ export const EditorPage: FC = () => {
 		const tokens = lexerGetAllTokens(
 			lexerInit(editorContent),
 		);
-		console.info("tokens", tokens);
-
 		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
-		console.info("nodes", nodes);
-
 		setNodes(nodes);
 	}, [editorContent]);
-
-	const onContentChange = useCallback(
-		(v: string) => {
-			setEditorContent(v);
-			window.localStorage.setItem("content", v);
-		},
-		[],
-	);
-	const handleSaveSVG = useCallback(async () => {
-		const HTMLNode = document.getElementById(
-			"structogram-preview-region",
-		);
-		if (HTMLNode === null) {
-			return;
-		}
-		toSvg(HTMLNode).then((blob) => {
-			if (blob === null) {
-				return;
-			}
-			if (window.saveAs) {
-				window.saveAs(blob, "structogram");
-			} else {
-				saveAs(blob, "structogram");
-			}
-		});
-		enqueueSnackbar("Saved structogram as SVG", {
-			variant: "info",
-		});
-	}, [enqueueSnackbar]);
-
-	const handleSavePNG = useCallback(async () => {
-		const HTMLNode = document.getElementById(
-			"structogram-preview-region",
-		);
-		if (HTMLNode === null) {
-			return;
-		}
-		toPng(HTMLNode).then((blob) => {
-			if (blob === null) {
-				return;
-			}
-			if (window.saveAs) {
-				window.saveAs(blob, "structogram");
-			} else {
-				saveAs(blob, "structogram");
-			}
-		});
-		enqueueSnackbar("Saved structogram as PNG", {
-			variant: "info",
-		});
-	}, [enqueueSnackbar]);
-
-	const handleSaveJPEG = useCallback(async () => {
-		const HTMLNode = document.getElementById(
-			"structogram-preview-region",
-		);
-		if (HTMLNode === null) {
-			return;
-		}
-		toJpeg(HTMLNode).then((blob) => {
-			if (blob === null) {
-				return;
-			}
-			if (window.saveAs) {
-				window.saveAs(blob, "structogram");
-			} else {
-				saveAs(blob, "structogram");
-			}
-		});
-		enqueueSnackbar("Saved structogram as JPEG", {
-			variant: "info",
-		});
-	}, [enqueueSnackbar]);
 
 	const handlePreviewToggle = useCallback(() => {
 		setPreviewOpen((prev) => !prev);
 	}, []);
 
 	const handleCopyLink = useCallback(() => {
-		const url = new URL(window.location.href);
-		url.searchParams.set("preview", "true");
-		url.searchParams.set(
-			"content",
-			editorContent,
+		navigator.clipboard.writeText(
+			generateUniqueLink(editorContent),
 		);
-		navigator.clipboard.writeText(url.href);
-		enqueueSnackbar("Copied link to clipboard", {
+		enqueueSnackbar("Link copied to clipboard", {
 			variant: "info",
 		});
-	}, [editorContent, enqueueSnackbar]);
+	}, [enqueueSnackbar, editorContent]);
 
 	const handlePopoverExportMenuOpen = useCallback(
 		(
@@ -226,6 +131,25 @@ export const EditorPage: FC = () => {
 		useCallback(() => {
 			setPopoverExportMenuAnchor(null);
 		}, []);
+
+	const handleExportDiagram = async (
+		exporterFn: () => Promise<boolean>,
+	) => {
+		exporterFn().then((success) => {
+			if (success) {
+				enqueueSnackbar("Diagram exported", {
+					variant: "info",
+				});
+				return;
+			}
+			enqueueSnackbar(
+				"Failed to export diagram",
+				{
+					variant: "error",
+				},
+			);
+		});
+	};
 
 	return (
 		<Fragment>
@@ -292,7 +216,7 @@ export const EditorPage: FC = () => {
 						>
 							<StructogramCodeEditor
 								value={editorContent}
-								onValueChange={onContentChange}
+								onValueChange={setEditorContent}
 								boxProps={{
 									overflowY: "auto",
 									height: `calc(100vh - ${appBarStaticHeight}px)`,
@@ -342,7 +266,11 @@ export const EditorPage: FC = () => {
 					}}
 				>
 					<MenuList>
-						<MenuItem onClick={handleSaveJPEG}>
+						<MenuItem
+							onClick={() =>
+								handleExportDiagram(exportJPEG)
+							}
+						>
 							<ListItemIcon>
 								<DownloadRounded fontSize="small" />
 							</ListItemIcon>
@@ -350,7 +278,11 @@ export const EditorPage: FC = () => {
 								Save as JPEG
 							</ListItemText>
 						</MenuItem>
-						<MenuItem onClick={handleSavePNG}>
+						<MenuItem
+							onClick={() =>
+								handleExportDiagram(exportPNG)
+							}
+						>
 							<ListItemIcon>
 								<DownloadRounded fontSize="small" />
 							</ListItemIcon>
@@ -358,7 +290,11 @@ export const EditorPage: FC = () => {
 								Save as PNG
 							</ListItemText>
 						</MenuItem>
-						<MenuItem onClick={handleSaveSVG}>
+						<MenuItem
+							onClick={() =>
+								handleExportDiagram(exportSVG)
+							}
+						>
 							<ListItemIcon>
 								<DownloadRounded fontSize="small" />
 							</ListItemIcon>
