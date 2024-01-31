@@ -378,7 +378,7 @@ export const StructogramNode: FC<
 							paddingY: 0,
 						}}
 					>
-						{node.context.text}
+						{node.context}
 					</StructogramComponentText>
 					<StructogramComponentText
 						paddingLeft={1}
@@ -387,9 +387,8 @@ export const StructogramNode: FC<
 							paddingY: 0,
 						}}
 					>
-						{"~".repeat(
-							node.context.text.length,
-						) + "^"}
+						{"~".repeat(node.context.length - 1) +
+							"^"}
 					</StructogramComponentText>
 				</StructogramNodeWrapper>
 			);

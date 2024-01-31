@@ -102,6 +102,7 @@ export const lexerGetNextTokenThenAdvance = (
 
 	token["text"] = l.content[l.cursorPos];
 	l.cursorPos++;
+	l.cursorCol++;
 
 	if (/\s/.test(token.text)) {
 		token.kind = TokenKind.WHITE_SPACE;
