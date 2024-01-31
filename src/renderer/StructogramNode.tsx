@@ -12,16 +12,16 @@ import { ArrowTopLeftBottomRight } from "./ArrowTopLeftBottomRight";
 import { ArrowBottomLeftTopRight } from "./ArrowBottomLeftTopRight";
 import { Node, NodeKind } from "interpreter";
 
-type StructogramNodeWrapperProps = {
+type DiagramWrapperProps = {
 	children: ReactNode | ReactNode[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-const StructogramNodeWrapper: FC<
-	StructogramNodeWrapperProps
-> = (props) => {
+const DiagramWrapper: FC<DiagramWrapperProps> = (
+	props,
+) => {
 	const {
 		children,
 		borderTop,
@@ -44,12 +44,12 @@ const StructogramNodeWrapper: FC<
 	);
 };
 
-type StructogramComponentTextProps =
+type DiagramComponentTextProps =
 	TypographyProps & {
 		children?: string;
 	};
-const StructogramComponentText: FC<
-	StructogramComponentTextProps
+const DiagramComponentText: FC<
+	DiagramComponentTextProps
 > = (props) => {
 	const { children, ...rest } = props;
 
@@ -69,28 +69,28 @@ const StructogramComponentText: FC<
 	);
 };
 
-type StructogramNodeProcessProps = {
+type DiagramProcessProps = {
 	text?: string;
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-const StructogramNodeProcess: FC<
-	StructogramNodeProcessProps
+const DiagramNodeProcess: FC<
+	DiagramProcessProps
 > = (props) => {
 	const { text, ...rest } = props;
 
 	return (
-		<StructogramNodeWrapper {...rest}>
-			<StructogramComponentText>
+		<DiagramWrapper {...rest}>
+			<DiagramComponentText>
 				{text}
-			</StructogramComponentText>
-		</StructogramNodeWrapper>
+			</DiagramComponentText>
+		</DiagramWrapper>
 	);
 };
 
-type StructogramNodeLoopFirstProps = {
+type DiagramLoopFirstProps = {
 	condition?: string;
 	body: Node[];
 	borderTop?: boolean;
@@ -98,13 +98,13 @@ type StructogramNodeLoopFirstProps = {
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-export const StructogramNodeLoopFirst: FC<
-	StructogramNodeLoopFirstProps
+export const DiagramLoopFirst: FC<
+	DiagramLoopFirstProps
 > = (props) => {
 	const { condition, body, ...rest } = props;
 
 	let bodyNode: ReactNode | ReactNode[] = (
-		<StructogramNodeProcess
+		<DiagramNodeProcess
 			borderTop
 			borderLeft
 		/>
@@ -122,16 +122,16 @@ export const StructogramNodeLoopFirst: FC<
 	}
 
 	return (
-		<StructogramNodeWrapper {...rest}>
-			<StructogramComponentText>
+		<DiagramWrapper {...rest}>
+			<DiagramComponentText>
 				{condition}
-			</StructogramComponentText>
+			</DiagramComponentText>
 			<Box paddingLeft={2}>{bodyNode}</Box>
-		</StructogramNodeWrapper>
+		</DiagramWrapper>
 	);
 };
 
-type StructogramNodeLoopLastProps = {
+type DiagramLoopLastProps = {
 	condition?: string;
 	body: Node[];
 	borderTop?: boolean;
@@ -139,13 +139,13 @@ type StructogramNodeLoopLastProps = {
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-export const StructogramNodeLoopLast: FC<
-	StructogramNodeLoopLastProps
+export const DiagramLoopLast: FC<
+	DiagramLoopLastProps
 > = (props) => {
 	const { condition, body, ...rest } = props;
 
 	let bodyNode: ReactNode | ReactNode[] = (
-		<StructogramNodeProcess
+		<DiagramNodeProcess
 			borderBottom
 			borderLeft
 		/>
@@ -161,16 +161,16 @@ export const StructogramNodeLoopLast: FC<
 		));
 	}
 	return (
-		<StructogramNodeWrapper {...rest}>
+		<DiagramWrapper {...rest}>
 			<Box paddingLeft={2}>{bodyNode}</Box>
-			<StructogramComponentText>
+			<DiagramComponentText>
 				{condition}
-			</StructogramComponentText>
-		</StructogramNodeWrapper>
+			</DiagramComponentText>
+		</DiagramWrapper>
 	);
 };
 
-type StructogramNodeIfElseProps = {
+type DiagramIfElseProps = {
 	condition?: string;
 	bodyIf: Node[];
 	bodyElse: Node[];
@@ -179,14 +179,14 @@ type StructogramNodeIfElseProps = {
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-export const StructogramNodeIfElse: FC<
-	StructogramNodeIfElseProps
+export const DiagramIfElse: FC<
+	DiagramIfElseProps
 > = (props) => {
 	const { condition, bodyIf, bodyElse, ...rest } =
 		props;
 
 	let bodyNodeIf: ReactNode | ReactNode[] = (
-		<StructogramNodeProcess borderTop />
+		<DiagramNodeProcess borderTop />
 	);
 	if (bodyIf.length > 0) {
 		bodyNodeIf = bodyIf.map((subnode, index) => (
@@ -199,7 +199,7 @@ export const StructogramNodeIfElse: FC<
 	}
 
 	let bodyNodeElse: ReactNode | ReactNode[] = (
-		<StructogramNodeProcess borderTop />
+		<DiagramNodeProcess borderTop />
 	);
 	if (bodyElse.length > 0) {
 		bodyNodeElse = bodyElse.map(
@@ -214,7 +214,7 @@ export const StructogramNodeIfElse: FC<
 	}
 
 	return (
-		<StructogramNodeWrapper {...rest}>
+		<DiagramWrapper {...rest}>
 			<Grid
 				container
 				height="100%"
@@ -223,9 +223,9 @@ export const StructogramNodeIfElse: FC<
 					item
 					xs={12}
 				>
-					<StructogramComponentText align="center">
+					<DiagramComponentText align="center">
 						{condition}
-					</StructogramComponentText>
+					</DiagramComponentText>
 				</Grid>
 				<Grid
 					item
@@ -238,14 +238,14 @@ export const StructogramNodeIfElse: FC<
 						justifyContent="center"
 						position="relative"
 					>
-						<StructogramComponentText
+						<DiagramComponentText
 							sx={{
 								zIndex: 2,
 								backgroundColor: grey[300],
 							}}
 						>
 							True
-						</StructogramComponentText>
+						</DiagramComponentText>
 						<ArrowTopLeftBottomRight htmlColor="black" />
 					</Box>
 				</Grid>
@@ -261,14 +261,14 @@ export const StructogramNodeIfElse: FC<
 						position="relative"
 					>
 						<ArrowBottomLeftTopRight />
-						<StructogramComponentText
+						<DiagramComponentText
 							sx={{
 								zIndex: 2,
 								backgroundColor: grey[300],
 							}}
 						>
 							False
-						</StructogramComponentText>
+						</DiagramComponentText>
 					</Box>
 				</Grid>
 				<Grid
@@ -295,11 +295,11 @@ export const StructogramNodeIfElse: FC<
 					</Stack>
 				</Grid>
 			</Grid>
-		</StructogramNodeWrapper>
+		</DiagramWrapper>
 	);
 };
 
-type StructogramNodeFuncProps = {
+type DiagramFuncProps = {
 	declaration: string;
 	body: Node[];
 	borderTop?: boolean;
@@ -307,13 +307,13 @@ type StructogramNodeFuncProps = {
 	borderRight?: boolean;
 	borderLeft?: boolean;
 };
-const StructogramNodeFunc: FC<
-	StructogramNodeFuncProps
-> = (props) => {
+const DiagramFunc: FC<DiagramFuncProps> = (
+	props,
+) => {
 	const { declaration, body, ...rest } = props;
 
 	let bodyNode: ReactNode | ReactNode[] = (
-		<StructogramNodeProcess
+		<DiagramNodeProcess
 			borderTop
 			borderLeft
 			borderRight
@@ -332,12 +332,59 @@ const StructogramNodeFunc: FC<
 	}
 
 	return (
-		<StructogramNodeWrapper {...rest}>
-			<StructogramComponentText align="center">
+		<DiagramWrapper {...rest}>
+			<DiagramComponentText align="center">
 				{declaration}
-			</StructogramComponentText>
+			</DiagramComponentText>
 			<Box paddingX={2}>{bodyNode}</Box>
-		</StructogramNodeWrapper>
+		</DiagramWrapper>
+	);
+};
+
+type DiagramErrorProps = {
+	context: string;
+	reason: string;
+	line: number;
+	character: number;
+	borderTop?: boolean;
+	borderBottom?: boolean;
+	borderRight?: boolean;
+	borderLeft?: boolean;
+};
+const DiagramError: FC<DiagramErrorProps> = (
+	props,
+) => {
+	const {
+		context,
+		reason,
+		line,
+		character,
+		...rest
+	} = props;
+
+	return (
+		<DiagramWrapper {...rest}>
+			<DiagramComponentText>
+				{`At line ${line}, character ${character}: ${reason}`}
+			</DiagramComponentText>
+			<DiagramComponentText
+				sx={{
+					paddingLeft: 1,
+					paddingY: 0,
+				}}
+			>
+				{context}
+			</DiagramComponentText>
+			<DiagramComponentText
+				paddingLeft={1}
+				sx={{
+					paddingLeft: 1,
+					paddingY: 0,
+				}}
+			>
+				{"~".repeat(context.length - 1) + "^"}
+			</DiagramComponentText>
+		</DiagramWrapper>
 	);
 };
 
@@ -368,29 +415,13 @@ export const StructogramNode: FC<
 	switch (node.kind) {
 		case NodeKind.ERROR: {
 			return (
-				<StructogramNodeWrapper {...rest}>
-					<StructogramComponentText>
-						{`At line ${node.rowPos}, character ${node.colPos}: ${node.reason}`}
-					</StructogramComponentText>
-					<StructogramComponentText
-						sx={{
-							paddingLeft: 1,
-							paddingY: 0,
-						}}
-					>
-						{node.context}
-					</StructogramComponentText>
-					<StructogramComponentText
-						paddingLeft={1}
-						sx={{
-							paddingLeft: 1,
-							paddingY: 0,
-						}}
-					>
-						{"~".repeat(node.context.length - 1) +
-							"^"}
-					</StructogramComponentText>
-				</StructogramNodeWrapper>
+				<DiagramError
+					{...rest}
+					context={node.context}
+					reason={node.reason}
+					line={node.rowPos}
+					character={node.colPos}
+				/>
 			);
 		}
 
@@ -403,7 +434,7 @@ export const StructogramNode: FC<
 					.trim();
 			}
 			return (
-				<StructogramNodeFunc
+				<DiagramFunc
 					declaration={text}
 					body={node.body}
 					{...rest}
@@ -420,7 +451,7 @@ export const StructogramNode: FC<
 					.trim();
 			}
 			return (
-				<StructogramNodeLoopFirst
+				<DiagramLoopFirst
 					{...rest}
 					condition={text}
 					body={node.body.filter(
@@ -438,7 +469,7 @@ export const StructogramNode: FC<
 					.trim();
 			}
 			return (
-				<StructogramNodeLoopLast
+				<DiagramLoopLast
 					{...rest}
 					condition={text}
 					body={node.body.filter(
@@ -456,7 +487,7 @@ export const StructogramNode: FC<
 					.trim();
 			}
 			return (
-				<StructogramNodeIfElse
+				<DiagramIfElse
 					{...rest}
 					condition={text}
 					bodyIf={node.bodyIf.filter(
@@ -479,7 +510,7 @@ export const StructogramNode: FC<
 			}
 
 			return (
-				<StructogramNodeProcess
+				<DiagramNodeProcess
 					{...rest}
 					text={text}
 				/>
