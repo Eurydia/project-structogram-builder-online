@@ -142,7 +142,6 @@ const parserBuildLoopFirstNode = (
 	// Set "for" token as marker
 	let markerToken: Token =
 		p.tokens[p.cursorPos - 1];
-
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "(" token is missing
 	if (p.cursorPos >= p.tokenLength) {
@@ -201,13 +200,13 @@ const parserBuildLoopFirstNode = (
 	}
 	// Consume ")" token from condition
 	node.condition.pop();
-	// Bu this point, ")" token is the marker
+	// By this point, ")" token is the marker
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "{" token is missing
 	if (p.cursorPos >= p.tokenLength) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-first loop declaration. Expected a "{" token.`,
+			reason: `Incomplete test-first loop declaration. Missing a "{" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
@@ -253,7 +252,7 @@ const parserBuildLoopFirstNode = (
 	) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-first loop declaration. Expected "}" token.`,
+			reason: `Incomplete test-first loop declaration. Missing a "}" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
@@ -286,7 +285,7 @@ const parserBuildLoopLastNode = (
 	if (p.cursorPos >= p.tokenLength) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-last loop declaration. Expected a "{" token.`,
+			reason: `Incomplete test-last loop declaration. Missing a "{" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
@@ -331,7 +330,7 @@ const parserBuildLoopLastNode = (
 	) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-last loop declaration. Expected "}" token.`,
+			reason: `Incomplete test-last loop declaration. Missing "}" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
@@ -345,7 +344,7 @@ const parserBuildLoopLastNode = (
 	if (p.cursorPos >= p.tokenLength) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-last loop declaration. Expected a "while" token.`,
+			reason: `Incomplete test-last loop declaration. Missing a "while" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
@@ -391,7 +390,7 @@ const parserBuildLoopLastNode = (
 		const unexpectedToken = p.tokens[p.cursorPos];
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Unexpected token found in test-first loop declaration. Expected a "(" token but found "${unexpectedToken.text}" instead.`,
+			reason: `Unexpected token found in test-last loop declaration. Expected a "(" token but found "${unexpectedToken.text}" instead.`,
 			context: `${markerToken.text} ${unexpectedToken.text}`,
 			rowPos: unexpectedToken.rowPos,
 			colPos: unexpectedToken.colPos,
@@ -420,7 +419,7 @@ const parserBuildLoopLastNode = (
 	) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-first loop declaration. Missing a ")" token.`,
+			reason: `Incomplete test-last loop declaration. Missing a ")" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
@@ -449,7 +448,7 @@ const parserBuildLoopLastNode = (
 		const unexpectedToken = p.tokens[p.cursorPos];
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Unexpected token found in test-first loop declaration. Expected a ";" token but found "${unexpectedToken.text}" instead.`,
+			reason: `Unexpected token found in test-last loop declaration. Expected a ";" token but found "${unexpectedToken.text}" instead.`,
 			context: `${markerToken.text} ${unexpectedToken.text}`,
 			rowPos: unexpectedToken.rowPos,
 			colPos: unexpectedToken.colPos,
@@ -467,7 +466,7 @@ const parserBuildLoopLastNode = (
 
 const parserBuildIfElseNode = (
 	p: Parser,
-): NodeIfElse => {
+): NodeIfElse | NodeError => {
 	const node: NodeIfElse = {
 		kind: NodeKind.IF_ELSE,
 		condition: [],
@@ -475,78 +474,211 @@ const parserBuildIfElseNode = (
 		bodyElse: [],
 	};
 
+	// Set "for" token as marker
+	let markerToken: Token =
+		p.tokens[p.cursorPos - 1];
 	parserSkipWhiteSpace(p);
-
+	// If the cursor is out of bound, "(" token is missing
 	if (p.cursorPos >= p.tokenLength) {
-		return node;
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Incomplete branching block (if) declaration. Missing a "(" token.`,
+			context: markerToken.text,
+			rowPos: markerToken.rowPos,
+			colPos: markerToken.colPos,
+		};
 	}
+	// The first non-whitespace found is not a "(" token
+	// but something else
 	if (
 		p.tokens[p.cursorPos].kind !==
 		TokenKind.LEFT_PAREN
 	) {
-		return node;
+		const unexpectedToken = p.tokens[p.cursorPos];
+
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Unexpected token found in branching block (if) declaration. Expected a "(" token but found "${unexpectedToken.text}" instead.`,
+			context: `${markerToken.text} ${unexpectedToken.text}`,
+			rowPos: unexpectedToken.rowPos,
+			colPos: unexpectedToken.colPos,
+		};
 	}
+	// Set "(" token as marker
+	markerToken = p.tokens[p.cursorPos];
 	node.condition = parserCollectTokensBetween(
 		p,
 		TokenKind.LEFT_PAREN,
 		TokenKind.RIGHT_PAREN,
 	);
-
-	parserSkipWhiteSpace(p);
-
-	if (p.cursorPos >= p.tokenLength) {
-		return node;
+	// If the condition has at least one element,
+	// set the last token token as marker
+	// Otherwise, keep  "(" token as marker
+	if (node.condition.length > 0) {
+		markerToken =
+			node.condition[node.condition.length - 1];
 	}
+	// If the condition is empty, the ")" token is missing
+	// Or the condition is not empty but ")" is not found
+	if (
+		node.condition.length === 0 ||
+		markerToken.kind !== TokenKind.RIGHT_PAREN
+	) {
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Incomplete branching block (if) declaration. Missing a ")" token.`,
+			context: markerToken.text,
+			rowPos: markerToken.rowPos,
+			colPos: markerToken.colPos,
+		};
+	}
+	// Consume ")" token from condition
+	node.condition.pop();
+	// By this point, ")" token is the marker
+	parserSkipWhiteSpace(p);
+	// If the cursor is out of bound, "{" token is missing
+	if (p.cursorPos >= p.tokenLength) {
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Incomplete branching block (if) declaration. Missing a "{" token.`,
+			context: markerToken.text,
+			rowPos: markerToken.rowPos,
+			colPos: markerToken.colPos,
+		};
+	}
+	// The first non-whitespace found is not a "{" token
+	// but something else
 	if (
 		p.tokens[p.cursorPos].kind !==
 		TokenKind.LEFT_CURLY
 	) {
-		return node;
+		const unexpectedToken = p.tokens[p.cursorPos];
+
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Unexpected token found in branching block (if) declaration. Expected a "{" token but found "${unexpectedToken.text}" instead.`,
+			context: `${markerToken.text} ${unexpectedToken.text}`,
+			rowPos: unexpectedToken.rowPos,
+			colPos: unexpectedToken.colPos,
+		};
 	}
-	node.bodyIf = parserGetAllNodes(
-		parserInit(
-			parserCollectTokensBetween(
-				p,
-				TokenKind.LEFT_CURLY,
-				TokenKind.RIGHT_CURLY,
-			),
-		),
+	// Set "{" token as marker
+	markerToken = p.tokens[p.cursorPos];
+
+	const bodyIfTokens = parserCollectTokensBetween(
+		p,
+		TokenKind.LEFT_CURLY,
+		TokenKind.RIGHT_CURLY,
 	);
-
-	parserSkipWhiteSpace(p);
-
-	if (p.cursorPos >= p.tokenLength) {
-		return node;
+	// If body has at least one token,
+	// set the last token as marker .
+	// If body has no token, keep "{" as marker
+	if (bodyIfTokens.length > 0) {
+		markerToken =
+			bodyIfTokens[bodyIfTokens.length - 1];
 	}
+	// If the body has no token, the declaration is incomplete
+	// Or the body has tokens, but "}" is not found
 	if (
+		bodyIfTokens.length === 0 ||
+		markerToken.kind !== TokenKind.RIGHT_CURLY
+	) {
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Incomplete branching block (if) declaration. Missing a "}" token.`,
+			context: markerToken.text,
+			rowPos: markerToken.rowPos,
+			colPos: markerToken.colPos,
+		};
+	}
+	// Consume "}" token from body
+	bodyIfTokens.pop();
+	// Only parse the body after the declaration is valid
+	// the body of if branch has to be parsed here
+	// before possible return
+	node.bodyIf = parserGetAllNodes(
+		parserInit(bodyIfTokens),
+	);
+	parserSkipWhiteSpace(p);
+	// The branching block is complete
+	// No need for error at this point
+	if (
+		p.cursorPos >= p.tokenLength ||
 		p.tokens[p.cursorPos].kind !==
 			TokenKind.KEYWORD ||
 		p.tokens[p.cursorPos].text !== "else"
 	) {
 		return node;
 	}
-	p.cursorPos++; // consume the "else" keyword
-
+	// The cursor is pointing at "else" token
+	// Set "else" as marker and consume it
+	markerToken = p.tokens[p.cursorPos];
+	p.cursorPos++;
+	// By this point, "else" is the marker
 	parserSkipWhiteSpace(p);
-
+	// If the cursor is out of bound, "{" token is missing
 	if (p.cursorPos >= p.tokenLength) {
-		return node;
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Incomplete branching block (if-else) declaration. Missing a "{" token.`,
+			context: markerToken.text,
+			rowPos: markerToken.rowPos,
+			colPos: markerToken.colPos,
+		};
 	}
+	// The first non-whitespace found is not a "{" token
+	// but something else
 	if (
 		p.tokens[p.cursorPos].kind !==
 		TokenKind.LEFT_CURLY
 	) {
-		return node;
+		const unexpectedToken = p.tokens[p.cursorPos];
+
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Unexpected token found in branching block (if-else) declaration. Expected a "{" token but found "${unexpectedToken.text}" instead.`,
+			context: `${markerToken.text} ${unexpectedToken.text}`,
+			rowPos: unexpectedToken.rowPos,
+			colPos: unexpectedToken.colPos,
+		};
 	}
+	// Set "{" token as marker
+	markerToken = p.tokens[p.cursorPos];
+
+	const bodyElseTokens =
+		parserCollectTokensBetween(
+			p,
+			TokenKind.LEFT_CURLY,
+			TokenKind.RIGHT_CURLY,
+		);
+	// If body has at least one token,
+	// set the last token as marker .
+	// If body has no token, keep "{" as marker
+	if (bodyElseTokens.length > 0) {
+		markerToken =
+			bodyElseTokens[bodyElseTokens.length - 1];
+	}
+	// If the body has no token, the declaration is incomplete
+	// Or the body has tokens, but "}" is not found
+	if (
+		bodyElseTokens.length === 0 ||
+		markerToken.kind !== TokenKind.RIGHT_CURLY
+	) {
+		return {
+			kind: NodeKind.ERROR,
+			reason: `Incomplete branching block (if-else) declaration. Missing a "}" token.`,
+			context: markerToken.text,
+			rowPos: markerToken.rowPos,
+			colPos: markerToken.colPos,
+		};
+	}
+	// Consume "}" token from body
+	bodyElseTokens.pop();
+
 	node.bodyElse = parserGetAllNodes(
-		parserInit(
-			parserCollectTokensBetween(
-				p,
-				TokenKind.LEFT_CURLY,
-				TokenKind.RIGHT_CURLY,
-			),
-		),
+		parserInit(bodyElseTokens),
 	);
+
 	return node;
 };
 
@@ -606,8 +738,7 @@ const parserGetNextNodeThenAdvance = (
 			kind: NodeKind.ERROR,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
-			reason:
-				"Expected semicolon at the end of process.",
+			reason: `Incomplete process declaration. Missing a ";" token.`,
 			context: markerToken.text,
 		};
 	}
@@ -649,7 +780,7 @@ const parserGetNextNodeThenAdvance = (
 	) {
 		return {
 			kind: NodeKind.ERROR,
-			reason: `Incomplete test-first loop declaration. Missing a "}" token.`,
+			reason: `Incomplete function declaration. Missing a "}" token.`,
 			context: markerToken.text,
 			rowPos: markerToken.rowPos,
 			colPos: markerToken.colPos,
