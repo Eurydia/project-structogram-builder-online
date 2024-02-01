@@ -10,7 +10,7 @@ export enum DiagramNodeKind {
 	LOOP_FIRST,
 	LOOP_LAST,
 	IF_ELSE,
-	FUNC,
+	FUNCTION,
 }
 
 type DiagramNodeEOF = {
@@ -19,8 +19,9 @@ type DiagramNodeEOF = {
 
 type DiagramNodeError = {
 	kind: DiagramNodeKind.ERROR;
-	rowPos: number;
-	colPos: number;
+	caretOffset: number;
+	lineNumber: number;
+	charNumber: number;
 	context: string;
 	reason: string;
 };
@@ -50,7 +51,7 @@ type DiagramNodeIfElse = {
 };
 
 type DiagramNodeFunction = {
-	kind: DiagramNodeKind.FUNC;
+	kind: DiagramNodeKind.FUNCTION;
 	declaration: DiagramToken[];
 	body: Node[];
 };
@@ -115,7 +116,6 @@ const parserCollectTokensBetween = (
 			break;
 		}
 	}
-
 	// The cursor is pointing the token immediately after
 	// the stop token
 	return tokens;
@@ -148,12 +148,15 @@ const parserBuildLoopFirstNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "(" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-first loop declaration. Missing a "(" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "(" token
@@ -162,14 +165,19 @@ const parserBuildLoopFirstNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_PAREN
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
-
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in test-first loop declaration. Expected a "(" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in test-first loop declaration. Expected a "(" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "(" token as marker
@@ -194,12 +202,15 @@ const parserBuildLoopFirstNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_PAREN
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-first loop declaration. Missing a ")" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume ")" token from condition
@@ -208,12 +219,15 @@ const parserBuildLoopFirstNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "{" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-first loop declaration. Missing a "{" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "{" token
@@ -222,14 +236,19 @@ const parserBuildLoopFirstNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_CURLY
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
-
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in test-first loop declaration. Expected a "{" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in test-first loop declaration. Expected a "{" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "{" token as marker
@@ -255,12 +274,15 @@ const parserBuildLoopFirstNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_CURLY
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-first loop declaration. Missing a "}" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume "}" token from body
@@ -269,7 +291,6 @@ const parserBuildLoopFirstNode = (
 	node.body = parserGetAllNodes(
 		parserInit(bodyTokens),
 	);
-
 	return node;
 };
 
@@ -288,12 +309,15 @@ const parserBuildLoopLastNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "{" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-last loop declaration. Missing a "{" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "{" token
@@ -302,13 +326,19 @@ const parserBuildLoopLastNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_CURLY
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in test-last loop declaration. Expected a "{" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in test-last loop declaration. Expected a "{" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "{" token as marker
@@ -334,12 +364,15 @@ const parserBuildLoopLastNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_CURLY
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-last loop declaration. Missing "}" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume the "}" token in body
@@ -348,12 +381,15 @@ const parserBuildLoopLastNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "while" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-last loop declaration. Missing a "while" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found after "}" is not a "while" token
@@ -363,13 +399,19 @@ const parserBuildLoopLastNode = (
 			DiagramTokenKind.KEYWORD ||
 		p.tokens[p.cursorPos].text !== "while"
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in test-last loop declaration. Expected a "while" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in test-last loop declaration. Expected a "while" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "while" token as marker
@@ -379,12 +421,15 @@ const parserBuildLoopLastNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "(" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-last loop declaration. Missing a "(" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "(" token
@@ -393,13 +438,19 @@ const parserBuildLoopLastNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_PAREN
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in test-last loop declaration. Expected a "(" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in test-last loop declaration. Expected a "(" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "(" token as marker
@@ -424,12 +475,15 @@ const parserBuildLoopLastNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_PAREN
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-last loop declaration. Missing a ")" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume ")" token from condition
@@ -438,12 +492,15 @@ const parserBuildLoopLastNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, ";" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete test-last loop declaration. Missing a ";" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found after ")" is not a ";" token
@@ -452,13 +509,19 @@ const parserBuildLoopLastNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.SEMICOLON
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in test-last loop declaration. Expected a ";" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in test-last loop declaration. Expected a ";" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume semicolon token
@@ -480,19 +543,21 @@ const parserBuildIfElseNode = (
 		bodyIf: [],
 		bodyElse: [],
 	};
-
 	// Set "for" token as marker
 	let markerToken: DiagramToken =
 		p.tokens[p.cursorPos - 1];
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "(" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete branching block (if) declaration. Missing a "(" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "(" token
@@ -501,14 +566,19 @@ const parserBuildIfElseNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_PAREN
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
-
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in branching block (if) declaration. Expected a "(" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in branching block (if) declaration. Expected a "(" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "(" token as marker
@@ -532,12 +602,15 @@ const parserBuildIfElseNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_PAREN
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete branching block (if) declaration. Missing a ")" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume ")" token from condition
@@ -546,12 +619,15 @@ const parserBuildIfElseNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "{" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete branching block (if) declaration. Missing a "{" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "{" token
@@ -560,14 +636,19 @@ const parserBuildIfElseNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_CURLY
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
-
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in branching block (if) declaration. Expected a "{" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in branching block (if) declaration. Expected a "{" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "{" token as marker
@@ -592,12 +673,15 @@ const parserBuildIfElseNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_CURLY
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete branching block (if) declaration. Missing a "}" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume "}" token from body
@@ -627,12 +711,15 @@ const parserBuildIfElseNode = (
 	parserSkipWhiteSpace(p);
 	// If the cursor is out of bound, "{" token is missing
 	if (p.cursorPos >= p.tokenLength) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete branching block (if-else) declaration. Missing a "{" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// The first non-whitespace found is not a "{" token
@@ -641,14 +728,19 @@ const parserBuildIfElseNode = (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_CURLY
 	) {
-		const unexpectedToken = p.tokens[p.cursorPos];
-
+		const { text: markerTokenText } = markerToken;
+		const {
+			text: errorTokenText,
+			lineNumber,
+			charNumber,
+		} = p.tokens[p.cursorPos];
 		return {
 			kind: DiagramNodeKind.ERROR,
-			reason: `Unexpected token found in branching block (if-else) declaration. Expected a "{" token but found "${unexpectedToken.text}" instead.`,
-			context: `${markerToken.text} ${unexpectedToken.text}`,
-			rowPos: unexpectedToken.rowPos,
-			colPos: unexpectedToken.colPos,
+			reason: `Unexpected token found in branching block (if-else) declaration. Expected a "{" token but found "${errorTokenText}" instead.`,
+			context: `${markerTokenText} ${errorTokenText}`,
+			caretOffset: markerTokenText.length + 1,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Set "{" token as marker
@@ -674,12 +766,15 @@ const parserBuildIfElseNode = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_CURLY
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete branching block (if-else) declaration. Missing a "}" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 	// Consume "}" token from body
@@ -754,12 +849,15 @@ const parserGetNextNodeThenAdvance = (
 			p.tokens[p.cursorPos].kind !==
 				DiagramTokenKind.SEMICOLON)
 	) {
+		const { text, lineNumber, charNumber } =
+			markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
 			reason: `Incomplete process declaration. Missing a ";" token.`,
-			context: markerToken.text,
+			context: text,
+			caretOffset: text.length,
+			lineNumber,
+			charNumber,
 		};
 	}
 
@@ -799,19 +897,25 @@ const parserGetNextNodeThenAdvance = (
 		markerToken.kind !==
 			DiagramTokenKind.RIGHT_CURLY
 	) {
+		const {
+			text,
+			lineNumber: rowPos,
+			charNumber: colPos,
+		} = markerToken;
 		return {
 			kind: DiagramNodeKind.ERROR,
 			reason: `Incomplete function declaration. Missing a "}" token.`,
-			context: markerToken.text,
-			rowPos: markerToken.rowPos,
-			colPos: markerToken.colPos,
+			context: text,
+			caretOffset: text.length + 1,
+			lineNumber: rowPos,
+			charNumber: colPos,
 		};
 	}
 	// Consume the "}" token from body
 	bodyTokens.pop();
 
 	return {
-		kind: DiagramNodeKind.FUNC,
+		kind: DiagramNodeKind.FUNCTION,
 		declaration: tokens,
 		body: parserGetAllNodes(
 			parserInit(bodyTokens),

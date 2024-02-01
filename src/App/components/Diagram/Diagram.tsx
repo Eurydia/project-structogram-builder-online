@@ -413,8 +413,10 @@ const DiagramFunc: FC<DiagramFuncProps> = (
 type DiagramErrorProps = {
 	context: string;
 	reason: string;
-	line: number;
-	character: number;
+	lineNumber: number;
+	characterNumber: number;
+	caretOffset: number;
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -426,11 +428,15 @@ const DiagramError: FC<DiagramErrorProps> = (
 	const {
 		context,
 		reason,
-		line,
-		character,
+		lineNumber,
+		characterNumber,
+		caretOffset,
+
 		...rest
 	} = props;
-	const errorText = `At line ${line}, character ${character}: ${reason}`;
+	const errorText = `At line ${lineNumber}, character ${characterNumber}: ${reason}`;
+	const caretText = "~".repeat(caretOffset) + "^";
+
 	return (
 		<DiagramWrapper {...rest}>
 			<DiagramComponentText>
@@ -440,7 +446,7 @@ const DiagramError: FC<DiagramErrorProps> = (
 				{context}
 			</DiagramComponentText>
 			<DiagramComponentText paddingY={0}>
-				{"~".repeat(context.length - 1) + "^"}
+				{caretText}
 			</DiagramComponentText>
 		</DiagramWrapper>
 	);
@@ -448,6 +454,7 @@ const DiagramError: FC<DiagramErrorProps> = (
 
 type DiagramProps = {
 	node: Node;
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -463,13 +470,14 @@ export const Diagram: FC<DiagramProps> = (
 			return (
 				<DiagramError
 					{...rest}
+					caretOffset={node.caretOffset}
 					context={node.context}
 					reason={node.reason}
-					line={node.rowPos}
-					character={node.colPos}
+					lineNumber={node.lineNumber}
+					characterNumber={node.charNumber}
 				/>
 			);
-		case DiagramNodeKind.FUNC:
+		case DiagramNodeKind.FUNCTION:
 			return (
 				<DiagramFunc
 					declarationTokens={node.declaration}

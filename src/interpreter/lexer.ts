@@ -1,5 +1,5 @@
 export enum DiagramTokenKind {
-	END = 0,
+	EOF = 0,
 	SYMBOL,
 	KEYWORD,
 
@@ -14,8 +14,8 @@ export enum DiagramTokenKind {
 export type DiagramToken = {
 	kind: DiagramTokenKind;
 	text: string;
-	rowPos: number;
-	colPos: number;
+	lineNumber: number;
+	charNumber: number;
 };
 
 const KEYWORDS: string[] = [
@@ -92,10 +92,10 @@ export const lexerGetNextTokenThenAdvance = (
 	l: Lexer,
 ): DiagramToken => {
 	const token: DiagramToken = {
-		kind: DiagramTokenKind.END,
+		kind: DiagramTokenKind.EOF,
 		text: "",
-		rowPos: l.cursorRow,
-		colPos: l.cursorCol,
+		lineNumber: l.cursorRow,
+		charNumber: l.cursorCol,
 	};
 
 	if (l.cursorPos >= l.contentLength) {
@@ -146,7 +146,7 @@ export const lexerGetAllTokens = (
 	let token: DiagramToken;
 	while (
 		(token = lexerGetNextTokenThenAdvance(l))
-			.kind !== DiagramTokenKind.END
+			.kind !== DiagramTokenKind.EOF
 	) {
 		tokens.push(token);
 	}
