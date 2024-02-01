@@ -6,14 +6,14 @@ import {
 } from "@mui/material";
 
 type AdaptiveButtonProps = ButtonProps & {
-	collapse: boolean;
+	collapsed: boolean;
 };
 export const AdaptiveButton: FC<
 	AdaptiveButtonProps
 > = (props) => {
-	const { collapse, ...rest } = props;
+	const { collapsed, ...rest } = props;
 
-	if (collapse) {
+	if (collapsed) {
 		return (
 			<Tooltip title={rest.children}>
 				<Button

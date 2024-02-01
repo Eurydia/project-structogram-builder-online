@@ -1,1 +1,1 @@
-export { StyledCodeEditor as StructogramCodeEditor } from "./StyledCodeEditor";
+export { StyledCodeEditor } from "./StyledCodeEditor";

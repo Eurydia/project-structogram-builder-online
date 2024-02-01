@@ -1,29 +1,23 @@
 import {
 	FC,
 	Fragment,
-	useCallback,
 	useEffect,
-	useRef,
 	useState,
 } from "react";
+
 import {
-	Box,
-	Grid,
-	Stack,
 	Paper,
-	Button,
 	MenuList,
 	ListItemText,
 	ButtonGroup,
 	Popover,
 	MenuItem,
 	ListItemIcon,
-	useMediaQuery,
 	Theme,
+	useMediaQuery,
 } from "@mui/material";
 import {
 	DownloadRounded,
-	LaunchRounded,
 	SendRounded,
 } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
@@ -35,40 +29,30 @@ import {
 	parserGetAllNodes,
 	parserInit,
 } from "interpreter";
-import { DiagramPreview } from "App/components/DiagramPreview";
 
-import { StructogramCodeEditor } from "App/components/StyledCodeEditor";
+import { DiagramPreview } from "App/components/DiagramPreview";
+import { StyledCodeEditor } from "App/components/StyledCodeEditor";
 import { AdaptiveButton } from "App/components/AdaptiveButton";
-import { useExportDiagram } from "App/components/LiveEditor/useExportDiagram";
-import { useEditorContent } from "App/components/LiveEditor/useEditorContent";
-import {
-	generateUniqueLink,
-	getPreviewState,
-} from "App/components/LiveEditor/helper";
+
+import { Layout } from "./Layout";
+import { useExportDiagram } from "./useExportDiagram";
+import { useEditorContent } from "./useEditorContent";
+import { generateUniqueLink } from "./helper";
 
 export const LiveEditor: FC = () => {
 	const { enqueueSnackbar } = useSnackbar();
-	const appBarRef = useRef<HTMLDivElement | null>(
-		null,
-	);
-	const [
-		appBarStaticHeight,
-		setAppBarStaticHeight,
-	] = useState<number>(0);
-	const matchBreakpointXs = useMediaQuery<Theme>(
-		(theme) => theme.breakpoints.down("md"),
-	);
-
 	const { exportJPEG, exportPNG, exportSVG } =
 		useExportDiagram(
 			"structogram-preview-region",
 		);
-
 	const { editorContent, setEditorContent } =
 		useEditorContent(
 			window.location.href,
 			"autosaveContent",
 		);
+	const matchBreakpointXs = useMediaQuery<Theme>(
+		(theme) => theme.breakpoints.down("md"),
+	);
 
 	const [nodes, setNodes] = useState<
 		DiagramNode[]
@@ -77,19 +61,6 @@ export const LiveEditor: FC = () => {
 		popoverExportMenuAnchor,
 		setPopoverExportMenuAnchor,
 	] = useState<HTMLButtonElement | null>(null);
-	const [previewOpen, setPreviewOpen] = useState(
-		getPreviewState(window.location.href),
-	);
-
-	useEffect(() => {
-		if (appBarRef.current === null) {
-			return;
-		}
-		setAppBarStaticHeight(
-			appBarRef.current.getBoundingClientRect()
-				.height,
-		);
-	}, [appBarRef]);
 
 	useEffect(() => {
 		const tokens = lexerGetAllTokens(
@@ -101,11 +72,7 @@ export const LiveEditor: FC = () => {
 		setNodes(nodes);
 	}, [editorContent]);
 
-	const handlePreviewToggle = useCallback(() => {
-		setPreviewOpen((prev) => !prev);
-	}, []);
-
-	const handleCopyLink = useCallback(() => {
+	const handleCopyLink = () => {
 		navigator.clipboard.writeText(
 			generateUniqueLink(
 				editorContent,
@@ -115,22 +82,18 @@ export const LiveEditor: FC = () => {
 		enqueueSnackbar("Link copied to clipboard", {
 			variant: "info",
 		});
-	}, [enqueueSnackbar, editorContent]);
+	};
 
-	const handlePopoverExportMenuOpen = useCallback(
-		(
-			event: React.MouseEvent<HTMLButtonElement>,
-		) => {
-			setPopoverExportMenuAnchor(
-				event.currentTarget,
-			);
-		},
-		[],
-	);
-	const handlePopoverExportMenuClose =
-		useCallback(() => {
-			setPopoverExportMenuAnchor(null);
-		}, []);
+	const handlePopoverExportMenuOpen = (
+		event: React.MouseEvent<HTMLButtonElement>,
+	) => {
+		setPopoverExportMenuAnchor(
+			event.currentTarget,
+		);
+	};
+	const handlePopoverExportMenuClose = () => {
+		setPopoverExportMenuAnchor(null);
+	};
 
 	const handleExportDiagram = async (
 		exporterFn: () => Promise<boolean>,
@@ -153,100 +116,44 @@ export const LiveEditor: FC = () => {
 
 	return (
 		<Fragment>
-			<Box>
-				<Paper
-					ref={appBarRef}
-					square
-					elevation={0}
-					sx={{
-						padding: 1,
-					}}
-				>
-					<Stack
-						display="flex"
-						direction="row"
-						justifyContent="space-between"
-					>
-						<ButtonGroup variant="outlined">
-							<Button
-								onClick={handlePreviewToggle}
-							>
-								{previewOpen
-									? "Show code"
-									: "Hide code"}
-							</Button>
-							<Button
-								href="https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online-docs/"
-								component="a"
-								target="_blank"
-								endIcon={<LaunchRounded />}
-							>
-								docs
-							</Button>
-						</ButtonGroup>
-						<ButtonGroup variant="outlined">
-							<AdaptiveButton
-								collapse={matchBreakpointXs}
-								startIcon={<DownloadRounded />}
-								onClick={
-									handlePopoverExportMenuOpen
-								}
-							>
-								EXPORT
-							</AdaptiveButton>
-							<AdaptiveButton
-								collapse={matchBreakpointXs}
-								endIcon={<SendRounded />}
-								onClick={handleCopyLink}
-							>
-								SHARE
-							</AdaptiveButton>
-						</ButtonGroup>
-					</Stack>
-				</Paper>
-				<Box>
-					<Grid container>
-						<Grid
-							item
-							xs={12}
-							lg={6}
-							display={
-								previewOpen ? "none" : undefined
+			<Layout
+				slotAppBar={
+					<ButtonGroup variant="outlined">
+						<AdaptiveButton
+							collapsed={matchBreakpointXs}
+							startIcon={<DownloadRounded />}
+							onClick={
+								handlePopoverExportMenuOpen
 							}
 						>
-							<StructogramCodeEditor
-								value={editorContent}
-								onValueChange={setEditorContent}
-								boxProps={{
-									overflowY: "auto",
-									height: `calc(100vh - ${appBarStaticHeight}px)`,
-								}}
-							/>
-						</Grid>
-						<Grid
-							item
-							xs
-							lg
-							display={
-								matchBreakpointXs && !previewOpen
-									? "none"
-									: undefined
-							}
+							EXPORT
+						</AdaptiveButton>
+						<AdaptiveButton
+							collapsed={matchBreakpointXs}
+							endIcon={<SendRounded />}
+							onClick={handleCopyLink}
 						>
-							<DiagramPreview
-								nodes={nodes}
-								id="structogram-preview-region"
-								boxProps={{
-									padding: 4,
-									overflowY: "auto",
-									userSelect: "none",
-									height: `calc(100vh - ${appBarStaticHeight}px)`,
-								}}
-							/>
-						</Grid>
-					</Grid>
-				</Box>
-			</Box>
+							SHARE
+						</AdaptiveButton>
+					</ButtonGroup>
+				}
+				slotPanelLeft={
+					<StyledCodeEditor
+						value={editorContent}
+						onValueChange={setEditorContent}
+					/>
+				}
+				slotPanelRight={
+					<DiagramPreview
+						nodes={nodes}
+						id="structogram-preview-region"
+						boxProps={{
+							padding: 4,
+							userSelect: "none",
+						}}
+					/>
+				}
+			/>
 			<Popover
 				anchorOrigin={{
 					vertical: "bottom",

@@ -1,6 +1,5 @@
 // Custom hooks for exporting diagrams
 
-import { useCallback } from "react";
 import { saveAs } from "file-saver";
 import {
 	toJpeg,
@@ -11,7 +10,7 @@ import {
 export const useExportDiagram = (
 	targetElementId: string,
 ) => {
-	const exportSVG = useCallback(async () => {
+	const exportSVG = async () => {
 		const HTMLNode = document.getElementById(
 			targetElementId,
 		);
@@ -25,9 +24,9 @@ export const useExportDiagram = (
 			saveAs(blob, "structogram");
 			return true;
 		});
-	}, [targetElementId]);
+	};
 
-	const exportPNG = useCallback(async () => {
+	const exportPNG = async () => {
 		const HTMLNode = document.getElementById(
 			targetElementId,
 		);
@@ -41,9 +40,9 @@ export const useExportDiagram = (
 			saveAs(blob, "structogram");
 			return true;
 		});
-	}, [targetElementId]);
+	};
 
-	const exportJPEG = useCallback(async () => {
+	const exportJPEG = async () => {
 		const HTMLNode = document.getElementById(
 			targetElementId,
 		);
@@ -57,7 +56,7 @@ export const useExportDiagram = (
 			saveAs(blob, "structogram");
 			return true;
 		});
-	}, [targetElementId]);
+	};
 
 	return {
 		exportSVG,

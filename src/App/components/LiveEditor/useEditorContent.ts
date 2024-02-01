@@ -1,6 +1,6 @@
 // Custom hook for editor content
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 export const useEditorContent = (
 	hrefURL: string,
@@ -30,16 +30,13 @@ export const useEditorContent = (
 			return "";
 		});
 
-	const setEditorContent = useCallback(
-		(v: string) => {
-			setEditorContentInner(v);
-			window.localStorage.setItem(
-				localStorageKey,
-				v,
-			);
-		},
-		[localStorageKey],
-	);
+	const setEditorContent = (content: string) => {
+		setEditorContentInner(content);
+		window.localStorage.setItem(
+			localStorageKey,
+			content,
+		);
+	};
 
 	return { editorContent, setEditorContent };
 };

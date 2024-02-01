@@ -10,6 +10,10 @@
 	font-variant-ligatures: contextual;
 	font-feature-settings: "calt";
 }
+
 .cm-lineNumbers > .cm-gutterElement {
 	user-select: none;
+}
+.cm-linewrapping {
+	word-wrap: "break-all";
 }

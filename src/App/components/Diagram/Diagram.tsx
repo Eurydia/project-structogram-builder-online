@@ -18,6 +18,7 @@ import {
 
 type DiagramWrapperProps = {
 	children: ReactNode | ReactNode[];
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -75,6 +76,7 @@ const DiagramComponentText: FC<
 
 type DiagramProcessProps = {
 	bodyTokens?: DiagramToken[];
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -108,6 +110,7 @@ const DiagramProcess: FC<DiagramProcessProps> = (
 type DiagramLoopFirstProps = {
 	conditionTokens?: DiagramToken[];
 	body: DiagramNode[];
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -130,7 +133,6 @@ export const DiagramLoopFirst: FC<
 			.join("")
 			.trim();
 	}
-
 	let bodyNode: ReactNode | ReactNode[] = (
 		<DiagramProcess
 			borderTop
@@ -161,6 +163,7 @@ export const DiagramLoopFirst: FC<
 type DiagramLoopLastProps = {
 	conditionTokens?: DiagramToken[];
 	body: DiagramNode[];
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -214,6 +217,7 @@ type DiagramIfElseProps = {
 	conditionTokens?: DiagramToken[];
 	bodyIf: DiagramNode[];
 	bodyElse: DiagramNode[];
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -358,6 +362,7 @@ export const DiagramIfElse: FC<
 type DiagramFuncProps = {
 	declarationTokens: DiagramToken[];
 	body: DiagramNode[];
+
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -414,7 +419,7 @@ type DiagramErrorProps = {
 	context: string;
 	reason: string;
 	lineNumber: number;
-	characterNumber: number;
+	charNumber: number;
 	caretOffset: number;
 
 	borderTop?: boolean;
@@ -429,12 +434,12 @@ const DiagramError: FC<DiagramErrorProps> = (
 		context,
 		reason,
 		lineNumber,
-		characterNumber,
+		charNumber,
 		caretOffset,
 
 		...rest
 	} = props;
-	const errorText = `At line ${lineNumber}, character ${characterNumber}: ${reason}`;
+	const errorText = `At line ${lineNumber}, character ${charNumber}: ${reason}`;
 	const caretText = "~".repeat(caretOffset) + "^";
 
 	return (
@@ -474,7 +479,7 @@ export const Diagram: FC<DiagramProps> = (
 					context={node.context}
 					reason={node.reason}
 					lineNumber={node.lineNumber}
-					characterNumber={node.charNumber}
+					charNumber={node.charNumber}
 				/>
 			);
 		case DiagramNodeKind.FUNCTION:

@@ -42,8 +42,8 @@ export type Lexer = {
 	contentLength: number;
 	cursorPos: number;
 
-	cursorRow: number;
-	cursorCol: number;
+	lineNumber: number;
+	charNumber: number;
 };
 
 const removeComments = (
@@ -83,8 +83,8 @@ export const lexerInit = (
 		content: cleanedContent,
 		contentLength: cleanedContent.length,
 		cursorPos: 0,
-		cursorCol: 1,
-		cursorRow: 1,
+		charNumber: 1,
+		lineNumber: 1,
 	};
 };
 
@@ -94,40 +94,40 @@ export const lexerGetNextTokenThenAdvance = (
 	const token: DiagramToken = {
 		kind: DiagramTokenKind.EOF,
 		text: "",
-		lineNumber: l.cursorRow,
-		charNumber: l.cursorCol,
+		lineNumber: l.lineNumber,
+		charNumber: l.charNumber,
 	};
 
 	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
 
-	token["text"] = l.content[l.cursorPos];
+	token.text = l.content[l.cursorPos];
 	l.cursorPos++;
-	l.cursorCol++;
+	l.charNumber++;
 
 	if (/\s/.test(token.text)) {
 		token.kind = DiagramTokenKind.WHITE_SPACE;
 		if (token.text === "\n") {
-			l.cursorRow++;
-			l.cursorCol = 1;
+			l.lineNumber++;
+			l.charNumber = 1;
 		}
 		return token;
 	}
 
-	if (token["text"] in LITERAL_TOKENS) {
-		token["kind"] = LITERAL_TOKENS[token["text"]];
+	if (token.text in LITERAL_TOKENS) {
+		token.kind = LITERAL_TOKENS[token.text];
 		return token;
 	}
 
 	while (
-		l["cursorPos"] < l.contentLength &&
+		l.cursorPos < l.contentLength &&
 		!(l.content[l.cursorPos] in LITERAL_TOKENS) &&
 		!/\s/.test(l.content[l.cursorPos])
 	) {
-		token["text"] += l.content[l.cursorPos];
+		token.text += l.content[l.cursorPos];
 		l.cursorPos++;
-		l.cursorCol++;
+		l.charNumber++;
 	}
 
 	if (KEYWORDS.includes(token.text)) {

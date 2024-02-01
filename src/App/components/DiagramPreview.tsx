@@ -22,7 +22,7 @@ export const DiagramPreview: FC<
 
 	let component: ReactNode | ReactNode[] = (
 		<Typography
-			fontFamily="inherit"
+			fontFamily="Fira Code"
 			fontStyle="italic"
 		>
 			Nothing to display.
@@ -47,6 +47,7 @@ export const DiagramPreview: FC<
 				...boxProps,
 				backgroundColor: grey[300],
 				borderColor: grey[700],
+				height: "100%",
 			}}
 		>
 			<Box
