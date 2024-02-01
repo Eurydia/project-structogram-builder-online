@@ -31,7 +31,7 @@ import { useSnackbar } from "notistack";
 import {
 	lexerGetAllTokens,
 	lexerInit,
-	Node,
+	DiagramNode,
 	parserGetAllNodes,
 	parserInit,
 } from "interpreter";
@@ -70,7 +70,9 @@ export const LiveEditor: FC = () => {
 			"autosaveContent",
 		);
 
-	const [nodes, setNodes] = useState<Node[]>([]);
+	const [nodes, setNodes] = useState<
+		DiagramNode[]
+	>([]);
 	const [
 		popoverExportMenuAnchor,
 		setPopoverExportMenuAnchor,

@@ -7,11 +7,11 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-import { Node } from "interpreter";
+import { DiagramNode } from "interpreter";
 import { Diagram } from "App/components/Diagram/Diagram";
 
 type DiagramPreviewProps = {
-	nodes: Node[];
+	nodes: DiagramNode[];
 	id: string;
 	boxProps: SxProps;
 };

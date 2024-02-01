@@ -11,7 +11,7 @@ import { grey } from "@mui/material/colors";
 import { ArrowTopLeftBottomRight } from "./ArrowTopLeftBottomRight";
 import { ArrowBottomLeftTopRight } from "./ArrowBottomLeftTopRight";
 import {
-	Node,
+	DiagramNode,
 	DiagramNodeKind,
 	DiagramToken,
 } from "interpreter";
@@ -107,7 +107,7 @@ const DiagramProcess: FC<DiagramProcessProps> = (
 
 type DiagramLoopFirstProps = {
 	conditionTokens?: DiagramToken[];
-	body: Node[];
+	body: DiagramNode[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -160,7 +160,7 @@ export const DiagramLoopFirst: FC<
 
 type DiagramLoopLastProps = {
 	conditionTokens?: DiagramToken[];
-	body: Node[];
+	body: DiagramNode[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -212,8 +212,8 @@ export const DiagramLoopLast: FC<
 
 type DiagramIfElseProps = {
 	conditionTokens?: DiagramToken[];
-	bodyIf: Node[];
-	bodyElse: Node[];
+	bodyIf: DiagramNode[];
+	bodyElse: DiagramNode[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -357,7 +357,7 @@ export const DiagramIfElse: FC<
 
 type DiagramFuncProps = {
 	declarationTokens: DiagramToken[];
-	body: Node[];
+	body: DiagramNode[];
 	borderTop?: boolean;
 	borderBottom?: boolean;
 	borderRight?: boolean;
@@ -453,7 +453,7 @@ const DiagramError: FC<DiagramErrorProps> = (
 };
 
 type DiagramProps = {
-	node: Node;
+	node: DiagramNode;
 
 	borderTop?: boolean;
 	borderBottom?: boolean;
