@@ -1,7 +1,21 @@
-// Custom hook for editor content
+/**
+ * This module implements a custom hook for controlling editor content
+ */
+// ---------------------------------------------
 
 import { useState } from "react";
 
+/**
+ * The "useEditorContent" hook provides functions for controlling the editor content.
+ * It initializes and manages the state of the editor content and saves it to local storage.
+ *
+ * Based on the the given URL, the hook checks if the "content" parameter is present.
+ * If it is, the hook sets the editor content to the value of the "content" parameter and sync local storage to the new content.
+ * If the "content" parameter is not present, the hook checks if there is a saved content in local storage.
+ * If there is, the hook sets the editor content to the saved content.
+ *
+ * As such, content from the URL takes precedence over content from local storage.
+ */
 export const useEditorContent = (
 	hrefURL: string,
 	localStorageKey: string,
