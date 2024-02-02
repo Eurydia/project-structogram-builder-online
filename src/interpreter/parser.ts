@@ -493,6 +493,11 @@ const parserBuildLoopFirstNode = (
 	return node;
 };
 
+/**
+ * The "parserBuildLoopLastNode" function builds a "DiagramNodeLoopLast" object.
+ * It is called when the parser encounters a "do-while" loop declaration.
+ * It returns a "DiagramNodeError" object if the declaration is incomplete or incorrect.
+ */
 const parserBuildLoopLastNode = (
 	p: Parser,
 ): DiagramNodeLoopLast | DiagramNodeError => {
@@ -671,6 +676,11 @@ const parserBuildLoopLastNode = (
 	return node;
 };
 
+/**
+ * The "parserBuildIfElseNode" function builds a "DiagramNodeIfElse" object.
+ * It is called when the parser encounters an "if" or "if-else" block declaration.
+ * It returns a "DiagramNodeError" object if the declaration is incomplete or incorrect.
+ */
 const parserBuildIfElseNode = (
 	p: Parser,
 ): DiagramNodeIfElse | DiagramNodeError => {
@@ -794,8 +804,10 @@ const parserBuildIfElseNode = (
 		parserInit(bodyIfTokens),
 	);
 	parserSkipWhiteSpace(p);
-	// The branching block is complete
-	// No need for error at this point
+
+	// Since the else branch is optional, the parser has to check if it exists
+	// If the cursor is out of bound, "else" token is missing
+	// This is also the end of the "if" block
 	if (
 		p.cursorPos >= p.tokenLength ||
 		p.tokens[p.cursorPos].kind !==
@@ -870,17 +882,28 @@ const parserBuildIfElseNode = (
 	return node;
 };
 
-const parserGetNextNodeThenAdvance = (
+/**
+ * The "parserGetNextNodeThenAdvance" function returns the next node from the parser.
+ * It also advances the cursor position to the next token.
+ */
+const parserGetNextNode = (
 	p: Parser,
 ): DiagramNode => {
+	// Skip all leading "DiagramToken" objects with "DiagramTokenKind.WHITE_SPACE" kind
 	parserSkipWhiteSpace(p);
+
+	// If the cursor is out of bound, return the end node
 	if (p.cursorPos >= p.tokenLength) {
 		return {
 			kind: DiagramNodeKind.END,
 		};
 	}
+	// The cursor is pointing at a non-whitespace token
+	// consume it
 	const token = p.tokens[p.cursorPos];
 	p.cursorPos++;
+
+	// If the token is a keyword, build a node based on the keyword
 	if (token.kind === DiagramTokenKind.KEYWORD) {
 		switch (token.text) {
 			case "for":
@@ -894,10 +917,15 @@ const parserGetNextNodeThenAdvance = (
 				break;
 		}
 	}
-
+	// If it is not a keyword, it is assumed to be a process or a function
+	// The "tokens" array collects the body of the process or the declaration of the function
+	// This is a violation of the "single responsibility principle" if I have ever seen one
 	const tokens: DiagramToken[] = [token];
+
 	let markerToken = token;
 
+	// If the current token is a semicolon, then it is a process with no body
+	// For now, this is allowed much like ";" empty statement in C
 	if (
 		markerToken.kind ===
 		DiagramTokenKind.SEMICOLON
@@ -908,7 +936,7 @@ const parserGetNextNodeThenAdvance = (
 		};
 	}
 
-	// Consume tokens until ";" or "{" token is found
+	// Collect tokens until a semicolon or a left curly brace is found
 	while (
 		p.cursorPos < p.tokenLength &&
 		p.tokens[p.cursorPos].kind !==
@@ -921,8 +949,9 @@ const parserGetNextNodeThenAdvance = (
 		p.cursorPos++;
 	}
 
-	// Neither ";" or "{" token is found
-	// The loop terminates becaues EOF
+	// It is possible that neither ";" or "{" token is found
+	// The loop terminates becaues it reached the end of the tokens
+	// In this case, the process is incomplete and a missing token error is reported
 	// Also assumed that the use ris trying to write a process
 	// instead of a function
 	if (
@@ -939,10 +968,12 @@ const parserGetNextNodeThenAdvance = (
 		);
 	}
 
+	// If the loop stopped because it encountered a ";" token, return a process node with the collected tokens
 	if (
 		p.tokens[p.cursorPos].kind ===
 		DiagramTokenKind.SEMICOLON
 	) {
+		// Also consume the ";" token
 		p.cursorPos++;
 		return {
 			kind: DiagramNodeKind.PROCESS,
@@ -950,11 +981,11 @@ const parserGetNextNodeThenAdvance = (
 		};
 	}
 
-	// It is confirmed that the loop stopped
-	// because it encountered a "{" token
+	// By this point, the loop stopped because it encountered a "{" token
 	// Set it as marker
 	markerToken = p.tokens[p.cursorPos];
 
+	// Collect tokens between "{" and "}"
 	const bodyTokens = parserCollectTokensBetween(
 		p,
 		DiagramTokenKind.LEFT_CURLY,
@@ -969,7 +1000,8 @@ const parserGetNextNodeThenAdvance = (
 			bodyTokens[bodyTokens.length - 1];
 	}
 	// If the condition is empty, the "}" token is missing
-	// Or the condition is not empty but "}" is not found
+	// It is possible the condition is not empty but "}" is not last token
+	// Both of these cases are reported as missing token errors
 	if (
 		bodyTokens.length === 0 ||
 		markerToken.kind !==
@@ -981,9 +1013,10 @@ const parserGetNextNodeThenAdvance = (
 			"}",
 		);
 	}
-	// Consume the "}" token from body
+	// The check has passed, consume the "}" token from body
 	bodyTokens.pop();
 
+	// Parse the body of the function after the declaration is valid
 	return {
 		kind: DiagramNodeKind.FUNCTION,
 		declaration: tokens,
@@ -993,20 +1026,23 @@ const parserGetNextNodeThenAdvance = (
 	};
 };
 
+/**
+ * The "parserGetAllNodes" function parses all "DiagramToken" from objects.
+ */
 export const parserGetAllNodes = (
 	p: Parser,
 ): DiagramNode[] => {
 	const nodes: DiagramNode[] = [];
 	let node: DiagramNode;
-	while (
-		(node = parserGetNextNodeThenAdvance(p))
-			.kind !== DiagramNodeKind.END
-	) {
+
+	// The loop stops when it encounters an "END" or an "ERROR" node
+	do {
+		node = parserGetNextNode(p);
 		nodes.push(node);
-		if (node.kind === DiagramNodeKind.ERROR) {
-			break;
-		}
-	}
+	} while (
+		node.kind !== DiagramNodeKind.END &&
+		node.kind !== DiagramNodeKind.ERROR
+	);
 
 	return nodes;
 };
