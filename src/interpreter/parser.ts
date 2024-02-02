@@ -52,14 +52,14 @@ export enum DiagramNodeKind {
 }
 
 /**
- * The "DiagramNodeENd" object represents the end of the parsing process.
+ * The "DiagramNodeEnd" object represents the end of the parsing process.
  */
 type DiagramNodeEnd = {
 	kind: DiagramNodeKind.END;
 };
 
 /**
- * The "DiagramNodeError" object represents a parsing error, along with the context and reason for the error.
+ * The "DiagramNodeError" object represents a parsing error.
  */
 type DiagramNodeError = {
 	kind: DiagramNodeKind.ERROR;
@@ -93,96 +93,90 @@ type DiagramNodeError = {
 };
 
 /**
- * The "DiagramNodeProcess" object represents a process node.
+ * The "DiagramNodeProcess" object represents a process block.
  */
 type DiagramNodeProcess = {
 	kind: DiagramNodeKind.PROCESS;
 
 	/**
-	 * The body of the process.
-	 * These tokens are joined together to form a string that represents the process.
+	 * The sequence of "DiagramToken" objects that make up the body of the process.
 	 */
 	body: DiagramToken[];
 };
 
 /**
- * The "DiagramNodeLoopFirst" object represents a test-first loop node.
+ * The "DiagramNodeLoopFirst" object represents a test-first loop.
  */
 type DiagramNodeLoopFirst = {
 	kind: DiagramNodeKind.LOOP_FIRST;
 
 	/**
-	 * The condition for the loop.
-	 * These tokens are joined together to form a string that represents the condition.
+	 * The sequence of `DiagramToken` objects that make up the condition.
 	 */
 	condition: DiagramToken[];
 
 	/**
-	 * The body of the loop.
-	 * These nodes are recursively rendered to form the body of the loop.
+	 * The sequence of "DiagramNode" objects that make up the body of the loop.
+	 * They are collected as "DiagramToken" objects and recursively parsed into "DiagramNode" objects.
 	 */
 	body: DiagramNode[];
 };
 
 /**
- * The "DiagramNodeLoopLast" object represents a test-last loop node.
+ * The "DiagramNodeLoopLast" object represents a test-last loop.
  */
 type DiagramNodeLoopLast = {
 	kind: DiagramNodeKind.LOOP_LAST;
 
 	/**
-	 * The condition for the loop.
-	 * These tokens are joined together to form a string that represents the condition.
+	 * The sequence of `DiagramToken` objects that make up the condition.
 	 */
 	condition: DiagramToken[];
 
 	/**
-	 * The body of the loop.
-	 * These nodes are recursively rendered to form the body of the loop.
+	 * The sequence of "DiagramNode" objects that make up the body of the loop.
+	 * They are collected as "DiagramToken" objects and recursively parsed into "DiagramNode" objects.
 	 */
 	body: DiagramNode[];
 };
 
 /**
- * The "DiagramNodeIfElse" object represents an if-else branching node.
+ * The "DiagramNodeIfElse" object represents a branching block.
  */
 type DiagramNodeIfElse = {
 	kind: DiagramNodeKind.IF_ELSE;
 
 	/**
-	 * The condition for the branching block.
-	 * These tokens are joined together to form a string that represents the condition.
+	 * The sequence of "DiagramToken" objects that make up the condition.
 	 */
 	condition: DiagramToken[];
 
 	/**
-	 * The body of the if branch.
-	 * These nodes are recursively rendered to form the body of the if branch.
+	 * The sequence of "DiagramNode" objects that make up the body of the if branch.
+	 * They are collected as "DiagramToken" objects and recursively parsed into "DiagramNode" objects.
 	 */
 	bodyIf: DiagramNode[];
 
 	/**
-	 * The body of the else branch.
-	 * These nodes are recursively rendered to form the body of the else branch.
+	 * Same as "bodyIf" but for the else branch.
 	 */
 	bodyElse: DiagramNode[];
 };
 
 /**
- * The "DiagramNodeFunction" object represents a function node.
+ * The "DiagramNodeFunction" object represents a function.
  */
 type DiagramNodeFunction = {
 	kind: DiagramNodeKind.FUNCTION;
 
 	/**
-	 * The declaration of the function.
-	 * These tokens are joined together to form a string that represents the declaration.
+	 * The sequence of "DiagramToken" objects that make up the function declaration.
 	 */
 	declaration: DiagramToken[];
 
 	/**
-	 * The body of the function.
-	 * These nodes are recursively rendered to form the body of the function.
+	 * The sequence of "DiagramNode" objects that make up the body of the function.
+	 * They are collected as "DiagramToken" objects and recursively parsed into "DiagramNode" objects.
 	 */
 	body: DiagramNode[];
 };
@@ -199,9 +193,24 @@ export type DiagramNode =
 	| DiagramNodeFunction
 	| DiagramNodeError;
 
+/**
+ * The "Parser" object represents a parser.
+ * It is used to convert a list of tokens into an abstract syntax tr
+ */
 export type Parser = {
+	/**
+	 * The list of tokens to be parsed.
+	 */
 	tokens: DiagramToken[];
+
+	/**
+	 * The number of tokens in the list.
+	 */
 	tokenLength: number;
+
+	/**
+	 * The position of the cursor in the list.
+	 */
 	cursorPos: number;
 };
 
