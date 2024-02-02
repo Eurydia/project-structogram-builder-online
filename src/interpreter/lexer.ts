@@ -286,9 +286,13 @@ export const lexerGetAllTokens = (
 	let token: DiagramToken;
 	// The idea is to call "lexerGetNextToken" function until a token with "EOF" member is returned.
 	// The "EOF" token is not included in the returned array.
-	do {
-		token = lexerGetNextToken(l);
+
+	while (
+		(token = lexerGetNextToken(l)).kind !==
+		DiagramTokenKind.EOF
+	) {
 		tokens.push(token);
-	} while (token.kind !== DiagramTokenKind.EOF);
+	}
+
 	return tokens;
 };

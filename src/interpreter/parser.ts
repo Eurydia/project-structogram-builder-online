@@ -284,12 +284,25 @@ const parserCollectTokensBetween = (
 const parserSkipWhiteSpace = (
 	p: Parser,
 ): void => {
+	if (p.cursorPos >= p.tokenLength) {
+		return;
+	}
+	// The cursor is already pointing at a non-whitespace token
+	if (
+		p.tokens[p.cursorPos].kind !==
+		DiagramTokenKind.WHITE_SPACE
+	) {
+		return;
+	}
+
 	while (
-		p.cursorPos < p.tokenLength &&
 		p.tokens[p.cursorPos].kind ===
-			DiagramTokenKind.WHITE_SPACE
+		DiagramTokenKind.WHITE_SPACE
 	) {
 		p.cursorPos++;
+		if (p.cursorPos >= p.tokenLength) {
+			return;
+		}
 	}
 };
 
@@ -898,6 +911,7 @@ const parserGetNextNode = (
 			kind: DiagramNodeKind.END,
 		};
 	}
+
 	// The cursor is pointing at a non-whitespace token
 	// consume it
 	const token = p.tokens[p.cursorPos];
@@ -952,8 +966,6 @@ const parserGetNextNode = (
 	// It is possible that neither ";" or "{" token is found
 	// The loop terminates becaues it reached the end of the tokens
 	// In this case, the process is incomplete and a missing token error is reported
-	// Also assumed that the use ris trying to write a process
-	// instead of a function
 	if (
 		p.cursorPos >= p.tokenLength ||
 		(p.tokens[p.cursorPos].kind !==
@@ -1036,13 +1048,15 @@ export const parserGetAllNodes = (
 	let node: DiagramNode;
 
 	// The loop stops when it encounters an "END" or an "ERROR" node
-	do {
-		node = parserGetNextNode(p);
+	while (
+		(node = parserGetNextNode(p)).kind !==
+		DiagramNodeKind.END
+	) {
 		nodes.push(node);
-	} while (
-		node.kind !== DiagramNodeKind.END &&
-		node.kind !== DiagramNodeKind.ERROR
-	);
+		if (node.kind === DiagramNodeKind.ERROR) {
+			break;
+		}
+	}
 
 	return nodes;
 };

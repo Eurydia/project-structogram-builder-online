@@ -6,6 +6,10 @@ import ReactCodeMirror, {
 
 import "./styles.css";
 
+/**
+ * This component is a styled code editor.
+ * It uses the "react-codemirror" library.
+ */
 type StyledCodeEditorProps = {
 	value: string;
 	onValueChange: (value: string) => void;
