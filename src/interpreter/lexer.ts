@@ -1,5 +1,10 @@
 /**
- * This enum categorizes the different types of tokens that the lexer recognizes.
+ * This module provides implementation for a lexer.
+ * The language I have created is simple and the lexer is designed to be simple as well.
+ */
+// ---------------------------------------------
+/**
+ * The "DiagramTokenKind" enum categorizes the different types of tokens that the lexer recognizes.
  * Each "DiagramToken" object is assigned a "TokenKind" member as its "kind" property.
  */
 export enum DiagramTokenKind {
@@ -23,7 +28,13 @@ export enum DiagramTokenKind {
 	KEYWORD,
 
 	/**
-	 * This member represents a left parenthesis "(."
+	 * This member represents any whitespace characters.
+	 * More specfically, it matches characters defined by "\s" [character class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes).
+	 */
+	WHITE_SPACE,
+
+	/**
+	 * This member represents a left parenthesis "(" literal.
 	 */
 	LEFT_PAREN,
 
@@ -46,12 +57,6 @@ export enum DiagramTokenKind {
 	 * This member represents a semicolon ";" literal.
 	 * */
 	SEMICOLON,
-
-	/**
-	 * This member represents any whitespace characters.
-	 * More specfically, it matches characters defined by "\s" [character class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes).
-	 */
-	WHITE_SPACE,
 }
 
 /**
@@ -63,15 +68,18 @@ export type DiagramToken = {
 	 * The kind of token.
 	 * */
 	kind: DiagramTokenKind;
+
 	/**
 	 * The string associated with the token.
 	 */
 	text: string;
+
 	/**
 	 * The line number where the token is located.
 	 * It is 1-indexed and starts counting from the position of the first character in the string.
 	 */
 	lineNumber: number;
+
 	/**
 	 * The character number where the token is located.
 	 * It is 1-indexed, and starts counting from the position of the first character in the string
@@ -80,8 +88,8 @@ export type DiagramToken = {
 };
 
 /**
- * The "KEYWORDS" array defines a list of keywords for the lexer.
- * The intention is to provide a centralized list of keywords that the lexer can use to categorize tokens.
+ * The "KEYWORDS" array defines a list of reserved keywords for the lexer.
+ * The intention is to define a centralized collection of keywords.
  *
  * During tokenization process, the lexer checks if each word is in this array.
  * If it is, it updates the "kind" property of that "DiagramToken" object with "DiagramTokenKind.KEYWORD" member.
@@ -95,7 +103,7 @@ const KEYWORDS: string[] = [
 ];
 
 /**
- * The "LITERAL_TOKENS" record defines a mapping of literal characters to their corresponding token kinds.
+ * The "LITERAL_TOKENS" record defines a mapping of literal characters to the appropriate "DiagramTokenKind" members.
  * The intention is similar to "KEYWORDS" array, but for literal characters.
  *
  * During tokenization, the lexer checks if each character is a key of this record.
@@ -111,6 +119,7 @@ const LITERAL_TOKENS: Record<
 	")": DiagramTokenKind.RIGHT_PAREN,
 	";": DiagramTokenKind.SEMICOLON,
 };
+
 /**
  * The "Lexer" object represents a lexer.
  */
@@ -119,43 +128,47 @@ export type Lexer = {
 	 * The input string to be tokenized.
 	 */
 	content: string;
+
 	/**
 	 * The length of the input string.
 	 */
 	contentLength: number;
+
 	/**
 	 * The current position of the cursor in the input string.
 	 */
 	cursorPos: number;
+
 	/**
 	 * The current line number.
 	 * It is 1-indexed and increments when the lexer encounters a newline character.
 	 */
 	lineNumber: number;
+
 	/**
 	 * The current character number.
-	 * It is 1-indexed, increments when the lexer encounters a character and resets to one when moving to the next line.
+	 * It is 1-indexed and increments when the lexer encounters any character.
+	 * It resets to one when moving to the next line.
 	 */
 	charNumber: number;
 };
 
 /**
- * The "removeComments" function takes in an input string and removes all comments from it, and returns a string with all comments removed.
+ * The "removeComments" function takes in an input string, removes comments from it, and returns a string the comments removed.
  *
- * This function is a preprocessing step before tokenization, and it is called by the "lexerInit" function.
+ * This function is a preprocessor, and it is called by the "lexerInit" function.
  */
 const removeComments = (
 	content: string,
 ): string => {
-	// The "cleanContent" variable stores the input string with all comments removed.
-	let cleanContent = "";
+	let preprocessedContent = "";
 
 	// The idea is to iterate through each character in the input string.
 	// If a specific sequence of characters is encountered, the function skips all characters until the end of the line.
 	// To clarify to "skip" is simply to not include the characters in the "cleanContent" variable.
 	let contentPos = 0;
 	while (contentPos < content.length) {
-		// If both the current character abd the next character are forward slashes, skip all characters until the end of the line.
+		// If both the current character abd the next character are forward slashes, skip all characters.
 		if (
 			contentPos + 1 < content.length &&
 			content[contentPos] === "/" &&
@@ -169,20 +182,19 @@ const removeComments = (
 				contentPos++;
 			}
 		}
-		cleanContent += content[contentPos];
+		preprocessedContent += content[contentPos];
 		contentPos++;
 	}
-	return cleanContent;
+	return preprocessedContent;
 };
 
 /**
- * The "lexerInit" function initializes a "Lexer" object from the given input strinrg.
+ * The "lexerInit" function initializes a "Lexer" object from the given input string.
  */
 export const lexerInit = (
 	content: string,
 ): Lexer => {
 	// Calling "String.normalize()"on input string is important due to the way accented characters behave.
-	// See documentation on "normalize": https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
 	// See discussion on accented characters https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
 	const preprocessedContent = removeComments(
 		content.normalize(),
@@ -197,7 +209,8 @@ export const lexerInit = (
 };
 
 /**
- * The "lexerGetNextTokenThenAdvance" function tokenizes the next token from the given "Lexer" object, returns the token, and advances the cursor position.
+ * The "lexerGetNextTokenThenAdvance" function tokenizes a token, returns it, and advances the cursor position.
+ *
  * This function is resposible for the actual tokenization process.
  */
 export const lexerGetNextTokenThenAdvance = (
@@ -205,20 +218,19 @@ export const lexerGetNextTokenThenAdvance = (
 ): DiagramToken => {
 	// The "token" variable stores the tokenized input.
 	// The properties of this token are updated and corrected as the function tokenizes the input string.
-	// Its default value is the "EOF" member of "DiagramTokenKind" enum.
-
 	const token: DiagramToken = {
 		kind: DiagramTokenKind.EOF,
 		text: "",
 		lineNumber: l.lineNumber,
 		charNumber: l.charNumber,
 	};
-	// If the function fails to tokenize the input string, it returns the "token" object as is.
+
+	// If there is no character left in the input string, return the "token" object.
 	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
 
-	// Consumes the current character, advances the "charNumber" and "cursorPos" properties.
+	// There is at least one character left, consume it, and advance the "charNumber" and "cursorPos".
 	token.text = l.content[l.cursorPos];
 	l.cursorPos++;
 	l.charNumber++;
@@ -226,7 +238,7 @@ export const lexerGetNextTokenThenAdvance = (
 	// If the consumed character is a whitespace character, update the "kind" property of the "token" object to "DiagramTokenKind.WHITE_SPACE" and return it.
 	if (/\s/.test(token.text)) {
 		token.kind = DiagramTokenKind.WHITE_SPACE;
-		// If the consumed character is a newline character, increments the "lineNumber" property of the lexer, as well as, sets the "charNumber" to 1.
+		// If the consumed character is also a newline character, update the "lineNumber" and "charNumber" properties of the "Lexer" object.
 		if (token.text === "\n") {
 			l.lineNumber++;
 			l.charNumber = 1;
