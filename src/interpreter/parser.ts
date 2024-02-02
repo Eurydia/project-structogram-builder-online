@@ -214,6 +214,9 @@ export type Parser = {
 	cursorPos: number;
 };
 
+/**
+ * The "parserInit" function initializes a "Parser" object with the given sequence of "DiagramToken" objects.
+ */
 export const parserInit = (
 	tokens: DiagramToken[],
 ): Parser => {
