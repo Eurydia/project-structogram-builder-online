@@ -5,7 +5,7 @@
  * @description
  * This enum categorizes the different types of tokens that the lexer recognizes.
  * Each `Token` object is assigned a `TokenKind` member.
- * @see {@link Token}
+ * @see Token
  */
 export enum DiagramTokenKind {
 	/**
