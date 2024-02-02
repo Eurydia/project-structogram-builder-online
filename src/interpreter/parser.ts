@@ -276,6 +276,11 @@ const parserCollectTokensBetween = (
 	return tokens;
 };
 
+/**
+ * The "parserSkipWhiteSpace" function skips all whitespace tokens.
+ * It moves the cursor to the first non-whitespace token.
+ * If the cursor is already at a non-whitespace token, the function does nothing.
+ */
 const parserSkipWhiteSpace = (
 	p: Parser,
 ): void => {
