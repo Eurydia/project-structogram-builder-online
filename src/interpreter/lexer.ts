@@ -263,16 +263,20 @@ export const lexerGetNextTokenThenAdvance = (
 	return token;
 };
 
+/**
+ * The "lexerGetAllTokens" function tokenizes the entire input string at once.
+ * The intention is to provide a convenient way to tokenize the entire input string without having to call "lexerGetNextTokenThenAdvance" function multiple times.
+ */
 export const lexerGetAllTokens = (
 	l: Lexer,
 ): DiagramToken[] => {
 	const tokens: DiagramToken[] = [];
 	let token: DiagramToken;
-	while (
-		(token = lexerGetNextTokenThenAdvance(l))
-			.kind !== DiagramTokenKind.EOF
-	) {
+	// The idea is to call "lexerGetNextTokenThenAdvance" function until a token with "EOF" member is returned.
+	// The "EOF" token is not included in the returned array.
+	do {
+		token = lexerGetNextTokenThenAdvance(l);
 		tokens.push(token);
-	}
+	} while (token.kind !== DiagramTokenKind.EOF);
 	return tokens;
 };
