@@ -51,49 +51,145 @@ export enum DiagramNodeKind {
 	FUNCTION,
 }
 
+/**
+ * The "DiagramNodeENd" object represents the end of the parsing process.
+ */
 type DiagramNodeEnd = {
 	kind: DiagramNodeKind.END;
 };
 
+/**
+ * The "DiagramNodeError" object represents a parsing error, along with the context and reason for the error.
+ */
 type DiagramNodeError = {
 	kind: DiagramNodeKind.ERROR;
-	caretOffset: number;
+	/**
+	 * The line number where the error occurred.
+	 * It is 1-indexed, and starts counting from the position of the first character in the string.
+	 */
 	lineNumber: number;
+
+	/**
+	 * The character number where the error occurred.
+	 * It is 1-indexed, and starts counting from the position of the first character in the string.
+	 */
 	charNumber: number;
+
+	/**
+	 * The point in which an error occurred and its surrounding context.
+	 */
 	context: string;
+
+	/**
+	 * The number of characters to offset the caret from the start of the context string.
+	 * It helps to visually indicate the location of the error within the "context" string.
+	 */
+	caretOffset: number;
+
+	/**
+	 * The reason and explanation for the error.
+	 */
 	reason: string;
 };
 
+/**
+ * The "DiagramNodeProcess" object represents a process node.
+ */
 type DiagramNodeProcess = {
 	kind: DiagramNodeKind.PROCESS;
+
+	/**
+	 * The body of the process.
+	 * These tokens are joined together to form a string that represents the process.
+	 */
 	body: DiagramToken[];
 };
 
+/**
+ * The "DiagramNodeLoopFirst" object represents a test-first loop node.
+ */
 type DiagramNodeLoopFirst = {
 	kind: DiagramNodeKind.LOOP_FIRST;
+
+	/**
+	 * The condition for the loop.
+	 * These tokens are joined together to form a string that represents the condition.
+	 */
 	condition: DiagramToken[];
+
+	/**
+	 * The body of the loop.
+	 * These nodes are recursively rendered to form the body of the loop.
+	 */
 	body: DiagramNode[];
 };
 
+/**
+ * The "DiagramNodeLoopLast" object represents a test-last loop node.
+ */
 type DiagramNodeLoopLast = {
 	kind: DiagramNodeKind.LOOP_LAST;
+
+	/**
+	 * The condition for the loop.
+	 * These tokens are joined together to form a string that represents the condition.
+	 */
 	condition: DiagramToken[];
+
+	/**
+	 * The body of the loop.
+	 * These nodes are recursively rendered to form the body of the loop.
+	 */
 	body: DiagramNode[];
 };
 
+/**
+ * The "DiagramNodeIfElse" object represents an if-else branching node.
+ */
 type DiagramNodeIfElse = {
 	kind: DiagramNodeKind.IF_ELSE;
+
+	/**
+	 * The condition for the branching block.
+	 * These tokens are joined together to form a string that represents the condition.
+	 */
 	condition: DiagramToken[];
+
+	/**
+	 * The body of the if branch.
+	 * These nodes are recursively rendered to form the body of the if branch.
+	 */
 	bodyIf: DiagramNode[];
+
+	/**
+	 * The body of the else branch.
+	 * These nodes are recursively rendered to form the body of the else branch.
+	 */
 	bodyElse: DiagramNode[];
 };
 
+/**
+ * The "DiagramNodeFunction" object represents a function node.
+ */
 type DiagramNodeFunction = {
 	kind: DiagramNodeKind.FUNCTION;
+
+	/**
+	 * The declaration of the function.
+	 * These tokens are joined together to form a string that represents the declaration.
+	 */
 	declaration: DiagramToken[];
+
+	/**
+	 * The body of the function.
+	 * These nodes are recursively rendered to form the body of the function.
+	 */
 	body: DiagramNode[];
 };
 
+/**
+ * The "DiagramNode" union type represents different kinds of nodes that can appear in the abstract syntax tree.
+ */
 export type DiagramNode =
 	| DiagramNodeEnd
 	| DiagramNodeProcess
