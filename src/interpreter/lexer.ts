@@ -196,26 +196,37 @@ export const lexerInit = (
 	};
 };
 
+/**
+ * The "lexerGetNextTokenThenAdvance" function tokenizes the next token from the given "Lexer" object, returns the token, and advances the cursor position.
+ * This function is resposible for the actual tokenization process.
+ */
 export const lexerGetNextTokenThenAdvance = (
 	l: Lexer,
 ): DiagramToken => {
+	// The "token" variable stores the tokenized input.
+	// The properties of this token are updated and corrected as the function tokenizes the input string.
+	// Its default value is the "EOF" member of "DiagramTokenKind" enum.
+
 	const token: DiagramToken = {
 		kind: DiagramTokenKind.EOF,
 		text: "",
 		lineNumber: l.lineNumber,
 		charNumber: l.charNumber,
 	};
-
+	// If the function fails to tokenize the input string, it returns the "token" object as is.
 	if (l.cursorPos >= l.contentLength) {
 		return token;
 	}
 
+	// Consumes the current character, advances the "charNumber" and "cursorPos" properties.
 	token.text = l.content[l.cursorPos];
 	l.cursorPos++;
 	l.charNumber++;
 
+	// If the consumed character is a whitespace character, update the "kind" property of the "token" object to "DiagramTokenKind.WHITE_SPACE" and return it.
 	if (/\s/.test(token.text)) {
 		token.kind = DiagramTokenKind.WHITE_SPACE;
+		// If the consumed character is a newline character, increments the "lineNumber" property of the lexer, as well as, sets the "charNumber" to 1.
 		if (token.text === "\n") {
 			l.lineNumber++;
 			l.charNumber = 1;
@@ -223,11 +234,13 @@ export const lexerGetNextTokenThenAdvance = (
 		return token;
 	}
 
+	// If the consumed character is not a white space character, but one of the literal tokens, update the "kind" property of the "token" object to the corresponding value in "LITERAL_TOKENS" record and return it.
 	if (token.text in LITERAL_TOKENS) {
 		token.kind = LITERAL_TOKENS[token.text];
 		return token;
 	}
 
+	// If the consumed character is not a white space character, and not one of the literal tokens, consume all characters until the next white space character or literal token.
 	while (
 		l.cursorPos < l.contentLength &&
 		!(l.content[l.cursorPos] in LITERAL_TOKENS) &&
@@ -238,11 +251,14 @@ export const lexerGetNextTokenThenAdvance = (
 		l.charNumber++;
 	}
 
+	// Once a white space character or literal token is encountered, check whether the consumed sequence of characters is a keyword.
+	// If it is, update the "kind" property of the "token" object to "DiagramTokenKind.KEYWORD" and return it.
 	if (KEYWORDS.includes(token.text)) {
 		token.kind = DiagramTokenKind.KEYWORD;
 		return token;
 	}
 
+	// If the consumed sequence of characters is not a keyword, update the "kind" property of the "token" object to "DiagramTokenKind.SYMBOL" and return it.
 	token.kind = DiagramTokenKind.SYMBOL;
 	return token;
 };
