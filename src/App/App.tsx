@@ -7,7 +7,7 @@ import {
 
 import { SnackbarProvider } from "notistack";
 
-import { LiveEditor } from "App/components/LiveEditor/LiveEditor";
+import { LiveEditor } from "App/components/LiveEditor";
 
 const themeDark = createTheme({
 	palette: {
@@ -18,6 +18,8 @@ const themeDark = createTheme({
 /**
  * The main application component.
  * It resets the CSS and define the "Theme" and the "Snackbar" provider.
+ *
+ * The "LiveEditor" component is the main component of the application, and this component is a wrapper for it.
  */
 export const App: FC = () => {
 	return (
