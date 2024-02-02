@@ -15,6 +15,10 @@ const themeDark = createTheme({
 	},
 });
 
+/**
+ * The main application component.
+ * It resets the CSS and define the "Theme" and the "Snackbar" provider.
+ */
 export const App: FC = () => {
 	return (
 		<Fragment>
