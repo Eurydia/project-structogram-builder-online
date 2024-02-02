@@ -209,11 +209,11 @@ export const lexerInit = (
 };
 
 /**
- * The "lexerGetNextTokenThenAdvance" function tokenizes a token, returns it, and advances the cursor position.
+ * The "lexerGetNextToken" function tokenizes a token, returns it, and advances the cursor position.
  *
  * This function is resposible for the actual tokenization process.
  */
-export const lexerGetNextTokenThenAdvance = (
+const lexerGetNextToken = (
 	l: Lexer,
 ): DiagramToken => {
 	// The "token" variable stores the tokenized input.
@@ -277,17 +277,17 @@ export const lexerGetNextTokenThenAdvance = (
 
 /**
  * The "lexerGetAllTokens" function tokenizes the entire input string at once.
- * The intention is to provide a convenient way to tokenize the entire input string without having to call "lexerGetNextTokenThenAdvance" function multiple times.
+ * The intention is to provide a convenient way to tokenize the entire input string without having to call "lexerGetNextToken" function multiple times.
  */
 export const lexerGetAllTokens = (
 	l: Lexer,
 ): DiagramToken[] => {
 	const tokens: DiagramToken[] = [];
 	let token: DiagramToken;
-	// The idea is to call "lexerGetNextTokenThenAdvance" function until a token with "EOF" member is returned.
+	// The idea is to call "lexerGetNextToken" function until a token with "EOF" member is returned.
 	// The "EOF" token is not included in the returned array.
 	do {
-		token = lexerGetNextTokenThenAdvance(l);
+		token = lexerGetNextToken(l);
 		tokens.push(token);
 	} while (token.kind !== DiagramTokenKind.EOF);
 	return tokens;

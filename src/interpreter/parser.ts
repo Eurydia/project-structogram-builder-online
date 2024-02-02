@@ -2,18 +2,57 @@ import {
 	DiagramToken,
 	DiagramTokenKind,
 } from "./lexer";
+/**
+ * This module provides implementation for parsers which are needed to convert a list of tokens into an abstract syntax tree.
+ */
+// ---------------------------------------------
 
+/**
+ * The `DiagramNodeKind` enumeration represents different kinds of nodes that can appear in the abstract syntax tree.
+ * Each "DiagramNode" object is assigned a "DiagramNodeKind" member as its "kind" property.
+ */
 export enum DiagramNodeKind {
-	EOF = 0,
+	/**
+	 * This member represents the end of the abstract syntax tree.
+	 * It signals the end of parsing process.
+	 */
+	END = 0,
+
+	/**
+	 * This member represents a parsing error.
+	 * It signals syntax errors and the end of parsing process.
+	 */
 	ERROR,
+
+	/**
+	 * This member represents a process node.
+	 * It is the catch-all category for any sequence of tokens that do not fit into any other category.
+	 */
 	PROCESS,
+
+	/**
+	 * This member represents a test-first loop node for "for" and "while" loops.
+	 */
 	LOOP_FIRST,
+
+	/**
+	 * This member represents a test-last loop node for "do-while" loops.
+	 */
 	LOOP_LAST,
+
+	/**
+	 * This member represents an if-else branching node for "if" and "if-else" blocks.
+	 */
 	IF_ELSE,
+
+	/**
+	 * This member represents a function node.
+	 */
 	FUNCTION,
 }
-type DiagramNodeEOF = {
-	kind: DiagramNodeKind.EOF;
+
+type DiagramNodeEnd = {
+	kind: DiagramNodeKind.END;
 };
 
 type DiagramNodeError = {
@@ -56,13 +95,12 @@ type DiagramNodeFunction = {
 };
 
 export type DiagramNode =
-	| DiagramNodeEOF
+	| DiagramNodeEnd
 	| DiagramNodeProcess
 	| DiagramNodeLoopFirst
 	| DiagramNodeLoopLast
 	| DiagramNodeIfElse
 	| DiagramNodeFunction
-	| DiagramNodeEOF
 	| DiagramNodeError;
 
 export type Parser = {
@@ -680,7 +718,7 @@ const parserGetNextNodeThenAdvance = (
 	parserSkipWhiteSpace(p);
 	if (p.cursorPos >= p.tokenLength) {
 		return {
-			kind: DiagramNodeKind.EOF,
+			kind: DiagramNodeKind.END,
 		};
 	}
 	const token = p.tokens[p.cursorPos];
@@ -804,7 +842,7 @@ export const parserGetAllNodes = (
 	let node: DiagramNode;
 	while (
 		(node = parserGetNextNodeThenAdvance(p))
-			.kind !== DiagramNodeKind.EOF
+			.kind !== DiagramNodeKind.END
 	) {
 		nodes.push(node);
 		if (node.kind === DiagramNodeKind.ERROR) {
