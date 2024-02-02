@@ -10,6 +10,10 @@ import { grey } from "@mui/material/colors";
 import { DiagramNode } from "interpreter";
 import { Diagram } from "App/components/Diagram/Diagram";
 
+/**
+ * This component is a preview of the diagram.
+ * It prepares the root-level nodes and recursively renders their children.
+ */
 type DiagramPreviewProps = {
 	nodes: DiagramNode[];
 	id: string;
@@ -20,6 +24,7 @@ export const DiagramPreview: FC<
 > = (props): ReactNode => {
 	const { nodes, id, boxProps } = props;
 
+	// Empty state of the preview
 	let component: ReactNode | ReactNode[] = (
 		<Typography
 			fontFamily="Fira Code"
@@ -28,6 +33,7 @@ export const DiagramPreview: FC<
 			Nothing to display.
 		</Typography>
 	);
+	// If there are nodes, render them
 	if (nodes.length > 0) {
 		component = nodes.map((node, index) => (
 			<Diagram

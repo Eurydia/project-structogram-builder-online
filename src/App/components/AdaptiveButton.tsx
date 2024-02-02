@@ -5,6 +5,10 @@ import {
 	Tooltip,
 } from "@mui/material";
 
+/**
+ * This component is a button that adapts to the screen size.
+ * When the screen size is small, the label collapses down to an icon.
+ */
 type AdaptiveButtonProps = ButtonProps & {
 	collapsed: boolean;
 };
