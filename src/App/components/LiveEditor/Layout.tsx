@@ -18,10 +18,18 @@ import {
 import { getPreviewState } from "App/components/LiveEditor/helper";
 import { LaunchRounded } from "@mui/icons-material";
 
+/**
+ * This component defines the layout and its behavior for the "LiveEditor" component.
+ *
+ * There are behaviors for different screen sizes.
+ * At small screen sizes, both panels are not displayed side by side.
+ * Instead, a panel takes up the entire screen and the other panel is hidden.
+ * At medium and large screen sizes, the both panels are displayed side by side.
+ */
 type LayoutProps = {
 	slotAppBar: ReactNode;
-	slotPanelRight: ReactNode;
 	slotPanelLeft: ReactNode;
+	slotPanelRight: ReactNode;
 };
 export const Layout: FC<LayoutProps> = (
 	props,
@@ -32,25 +40,37 @@ export const Layout: FC<LayoutProps> = (
 		slotPanelRight,
 	} = props;
 
+	// Prepare the app bar reference
 	const appBarRef = useRef<HTMLDivElement | null>(
 		null,
 	);
+
+	// Prepare the app bar static height
+	// This is used to calculate the height of the left and right panels in the layout
+	// Without a fixed height, the panels have unpredictable behavior
 	const [
 		appBarStaticHeight,
 		setAppBarStaticHeight,
 	] = useState(0);
 
-	const [previewOpen, setPreviewOpen] = useState(
-		getPreviewState(window.location.href),
-	);
+	// The left panel can be hidden or shown
+	// The initial state is determined by the query parameter in the URL
+	const [leftPanelOpen, setLeftPanelOpen] =
+		useState(
+			getPreviewState(window.location.href),
+		);
+
+	// Fires when the "Show Code" and "Hide Code" button is clicked
 	const handlePreviewToggle = () => {
-		setPreviewOpen((prev) => !prev);
+		setLeftPanelOpen((prev) => !prev);
 	};
 
+	// The breakpoint for the extra small screen
 	const matchBreakpointXs = useMediaQuery<Theme>(
 		(theme) => theme.breakpoints.down("md"),
 	);
 
+	// Set the app bar static height, but only after the app bar ready
 	useEffect(() => {
 		if (appBarRef.current === null) {
 			return;
@@ -78,7 +98,7 @@ export const Layout: FC<LayoutProps> = (
 				>
 					<ButtonGroup variant="outlined">
 						<Button onClick={handlePreviewToggle}>
-							{previewOpen
+							{leftPanelOpen
 								? "Show code"
 								: "Hide code"}
 						</Button>{" "}
@@ -101,7 +121,7 @@ export const Layout: FC<LayoutProps> = (
 						xs={12}
 						lg={6}
 						display={
-							previewOpen ? "none" : undefined
+							leftPanelOpen ? "none" : undefined
 						}
 					>
 						<Box
@@ -116,7 +136,7 @@ export const Layout: FC<LayoutProps> = (
 						xs
 						lg
 						display={
-							matchBreakpointXs && !previewOpen
+							matchBreakpointXs && !leftPanelOpen
 								? "none"
 								: undefined
 						}
