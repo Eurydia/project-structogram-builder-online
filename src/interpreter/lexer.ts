@@ -1,88 +1,81 @@
 /**
- * @exports
- * @readonly
- * @enum {number}
- * @description
  * This enum categorizes the different types of tokens that the lexer recognizes.
- * Each `Token` object is assigned a `TokenKind` member.
- * @see Token
+ * Each "DiagramToken" object is assigned a "TokenKind" member as its "kind" property.
  */
 export enum DiagramTokenKind {
 	/**
-	 * @description
-	 *
 	 * This member represents the end of input.
 	 * It marks the end of tokenization process.
 	 */
 	EOF = 0,
 
 	/**
-	 * @description
-	 *
 	 * This member represents a word, more specifically, any sequence of non-whitespace characters.
 	 * Essentially, any contiguous sequence of characters excluding whitespace is categorized by this member.
 	 */
 	SYMBOL,
 
 	/**
-	 * @description
-	 *
 	 * This member represents reserved keywords.
 	 * It is a subset of "SYMBOL" member and is used to categorize reserved keywords in the language.
-	 * Simply put, every keyword starts off as a "SYMBOL" member and is then categorized as a "KEYWORD" member.
+	 * During tokenization, keywords start off as a "SYMBOL" member and is then categorized as a "KEYWORD" member.
 	 */
 	KEYWORD,
 
 	/**
-	 * @description
-	 *
 	 * This member represents a left parenthesis "(."
 	 */
 	LEFT_PAREN,
 
 	/**
-	 * @description
-	 *
 	 * This member represents a right parenthesis ")" literal.
 	 */
 	RIGHT_PAREN,
 
 	/**
-	 * @description
-	 *
 	 * This member represents a left curly brace "{" literal.
 	 * */
 	LEFT_CURLY,
 
 	/**
-	 * @description
-	 *
 	 * This member represents a right curly brace "}" literal.
 	 * */
 	RIGHT_CURLY,
 
 	/**
-	 * @description
-	 *
 	 * This member represents a semicolon ";" literal.
 	 * */
 	SEMICOLON,
 
 	/**
-	 * @description
-	 *
 	 * This member represents any whitespace characters.
-	 * More specfically, it matches characters defined by "\s" character class.
-	 *
-	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes}
+	 * More specfically, it matches characters defined by "\s" [character class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions/Character_classes).
 	 */
 	WHITE_SPACE,
 }
 
+/**
+ * A "Token" object represents a tokenized input.
+ * It is a meaningful sequence of characters.
+ */
 export type DiagramToken = {
+	/**
+	 * The kind of token.
+	 * */
 	kind: DiagramTokenKind;
+	/**
+	 * The string associated with the token.
+	 */
 	text: string;
+	/**
+	 * The line number where the token is located.
+	 * It is 1-indexed and starts counting from the position of the first character in the string.
+	 */
 	lineNumber: number;
+	/**
+	 * The character number where the token is located.
+	 * It is 1-indexed, and starts counting from the position of the first character in the string
+	 */
 	charNumber: number;
 };
 
