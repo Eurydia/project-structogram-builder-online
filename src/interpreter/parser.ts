@@ -344,19 +344,32 @@ const buildUnexpectedTokenError = (
 	};
 };
 
+/**
+ * The "parserBuildLoopFirstNode" function builds a "DiagramNodeLoopFirst" object.
+ * It is called when the parser encounters a "for" or "while" loop declaration.
+ * Alternatively, it returns a "DiagramNodeError" object if the declaration is incomplete or incorrect.
+ */
 const parserBuildLoopFirstNode = (
 	p: Parser,
 ): DiagramNodeLoopFirst | DiagramNodeError => {
+	// As the parser builds the node, it collects tokens into this object
 	const node: DiagramNodeLoopFirst = {
 		kind: DiagramNodeKind.LOOP_FIRST,
 		body: [],
 		condition: [],
 	};
-	// Set "for" token as marker
+
+	// Set "for" or "while" token as marker
+	// The cursor looks like this: `for ...`
+	// 															^
 	let markerToken: DiagramToken =
 		p.tokens[p.cursorPos - 1];
+
+	// Since syntax like "for      (...)"  and "for(...)" are both valid, skip all white spaces have to be skipped
 	parserSkipWhiteSpace(p);
-	// If the cursor is out of bound, "(" token is missing
+
+	// If the cursor is out of bound here, then "(" token is missing
+	// A missing token error is reported
 	if (p.cursorPos >= p.tokenLength) {
 		return buildMissingTokenError(
 			markerToken,
@@ -364,8 +377,9 @@ const parserBuildLoopFirstNode = (
 			"(",
 		);
 	}
-	// The first non-whitespace found is not a "(" token
-	// but something else
+
+	// If the first non-whitespace character after "for" or "while" is not "(" token, then it is an unexpected token error
+	// A missing token error is reported
 	if (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_PAREN
@@ -377,23 +391,26 @@ const parserBuildLoopFirstNode = (
 			"(",
 		);
 	}
-	// Set "(" token as marker
+
+	// Both checks have passed, so set "(" token is the marker
 	markerToken = p.tokens[p.cursorPos];
 
+	// Collect tokens between "(" and ")"
 	node.condition = parserCollectTokensBetween(
 		p,
 		DiagramTokenKind.LEFT_PAREN,
 		DiagramTokenKind.RIGHT_PAREN,
 	);
-	// If the condition has at least one element,
-	// set the last token token as marker
+
+	// If the collected tokens has at least one element, set the last token token as marker
 	// Otherwise, keep  "(" token as marker
+	// This is done to provide accurate error messages
 	if (node.condition.length > 0) {
 		markerToken =
 			node.condition[node.condition.length - 1];
 	}
-	// If the condition is empty, the ")" token is missing
-	// Or the condition is not empty but ")" is not found
+	// If the condition is empty, then the ")" token is missing
+	// It is also possible that the condition is not empty but the ")" is not the last token
 	if (
 		node.condition.length === 0 ||
 		markerToken.kind !==
@@ -405,11 +422,15 @@ const parserBuildLoopFirstNode = (
 			")",
 		);
 	}
-	// Consume ")" token from condition
+	// The last token in the condition is the ")" token, consume it
 	node.condition.pop();
+
 	// By this point, ")" token is the marker
+	// Skip all white spaces after the condition since both "for (...){...}" and "for (...)               {...}" are valid
 	parserSkipWhiteSpace(p);
+
 	// If the cursor is out of bound, "{" token is missing
+	// A missing token error is reported
 	if (p.cursorPos >= p.tokenLength) {
 		return buildMissingTokenError(
 			markerToken,
@@ -417,8 +438,8 @@ const parserBuildLoopFirstNode = (
 			"{",
 		);
 	}
-	// The first non-whitespace found is not a "{" token
-	// but something else
+	// The first non-whitespace found is not a "{" token but something else
+	//  An unexpected token error is reported
 	if (
 		p.tokens[p.cursorPos].kind !==
 		DiagramTokenKind.LEFT_CURLY
@@ -430,24 +451,27 @@ const parserBuildLoopFirstNode = (
 			"{",
 		);
 	}
-	// Set "{" token as marker
+	// Both checks have passed, set the "{" token as marker
 	markerToken = p.tokens[p.cursorPos];
 
+	// Collect tokens between "{" and "}"
 	const bodyTokens = parserCollectTokensBetween(
 		p,
 		DiagramTokenKind.LEFT_CURLY,
 		DiagramTokenKind.RIGHT_CURLY,
 	);
 
-	// If body has at least one token,
-	// set the last token as marker .
-	// If body has no token, keep "{" as marker
+	// If body has at least one token, set the last token as marker .
+	// Otherwise, keep "{" as marker
+	// This is done to provide accurate error messages
 	if (bodyTokens.length > 0) {
 		markerToken =
 			bodyTokens[bodyTokens.length - 1];
 	}
-	// If the body has no token, the declaration is incomplete
-	// Or the body has tokens, but "}" is not found
+
+	// If the body has no token, the declaration is incomplete since the "}" is missing
+	// It is possible that the body has tokens, but "}" is not the last token
+	// Both of these cases are reported as missing token errors
 	if (
 		bodyTokens.length === 0 ||
 		markerToken.kind !==
@@ -459,9 +483,10 @@ const parserBuildLoopFirstNode = (
 			"}",
 		);
 	}
-	// Consume "}" token from body
+	// The last token in the body is the "}" token, consume it
 	bodyTokens.pop();
 
+	// Only parse the body after the declaration is valid
 	node.body = parserGetAllNodes(
 		parserInit(bodyTokens),
 	);
