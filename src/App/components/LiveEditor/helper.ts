@@ -1,3 +1,11 @@
+/**
+ * This module provides helper functions for the "LiveEditor" component.
+ */
+// ---------------------------------------------
+
+/**
+ * The "generateUniqueLink" function generates a unique link based the current editor content and the current location href.
+ */
 export const generateUniqueLink = (
 	editorContent: string,
 	locationHref: string,
@@ -8,6 +16,9 @@ export const generateUniqueLink = (
 	return url.href;
 };
 
+/**
+ * The "getPreviewState" function returns a boolean indicating whether the current location href is in preview mode.
+ */
 export const getPreviewState = (
 	locationHref: string,
 ): boolean => {
