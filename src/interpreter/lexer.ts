@@ -84,7 +84,7 @@ export type DiagramToken = {
  * The intention is to provide a centralized list of keywords that the lexer can use to categorize tokens.
  *
  * During tokenization process, the lexer checks if each word is in this array.
- * If it is, it replaces the "kind" property of that "DiagramToken" object with "DiagramTokenKind.KEYWORD" member.
+ * If it is, it updates the "kind" property of that "DiagramToken" object with "DiagramTokenKind.KEYWORD" member.
  */
 const KEYWORDS: string[] = [
 	"for",
@@ -94,6 +94,13 @@ const KEYWORDS: string[] = [
 	"do",
 ];
 
+/**
+ * The "LITERAL_TOKENS" record defines a mapping of literal characters to their corresponding token kinds.
+ * The intention is similar to "KEYWORDS" array, but for literal characters.
+ *
+ * During tokenization, the lexer checks if each character is a key of this record.
+ * If it is, it updates the "kind" property of that "DiagramToken" object with corresponding value of that key.
+ */
 const LITERAL_TOKENS: Record<
 	string,
 	DiagramTokenKind
@@ -104,13 +111,32 @@ const LITERAL_TOKENS: Record<
 	")": DiagramTokenKind.RIGHT_PAREN,
 	";": DiagramTokenKind.SEMICOLON,
 };
-
+/**
+ * The "Lexer" object represents a lexer.
+- 
+ */
 export type Lexer = {
+	/**
+	 * The input string to be tokenized.
+	 */
 	content: string;
+	/**
+	 * The length of the input string.
+	 */
 	contentLength: number;
+	/**
+	 * The current position of the cursor in the input string.
+	 */
 	cursorPos: number;
-
+	/**
+	 * The current line number.
+	 * It is 1-indexed and increments when the lexer encounters a newline character.
+	 */
 	lineNumber: number;
+	/**
+	 * The current character number.
+	 * It is 1-indexed, increments when the lexer encounters a character and resets to one when moving to the next line.
+	 */
 	charNumber: number;
 };
 
