@@ -56,7 +56,7 @@ export enum DiagramTokenKind {
 
 /**
  * A "Token" object represents a tokenized input.
- * It is a meaningful sequence of characters.
+ * It encapsulates a meaningful sequence of characters and provides addition context and information about the token's.
  */
 export type DiagramToken = {
 	/**
@@ -79,6 +79,13 @@ export type DiagramToken = {
 	charNumber: number;
 };
 
+/**
+ * The "KEYWORDS" array defines a list of keywords for the lexer.
+ * The intention is to provide a centralized list of keywords that the lexer can use to categorize tokens.
+ *
+ * During tokenization process, the lexer checks if each word is in this array.
+ * If it is, it replaces the "kind" property of that "DiagramToken" object with "DiagramTokenKind.KEYWORD" member.
+ */
 const KEYWORDS: string[] = [
 	"for",
 	"if",
