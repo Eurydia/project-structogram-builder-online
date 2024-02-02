@@ -140,18 +140,29 @@ export type Lexer = {
 	charNumber: number;
 };
 
+/**
+ * The "removeComments" function takes in an input string and removes all comments from it, and returns a string with all comments removed.
+ *
+ * This function is a preprocessing step before tokenization, and it is called by the "lexerInit" function.
+ */
 const removeComments = (
 	content: string,
 ): string => {
+	// The "cleanContent" variable stores the input string with all comments removed.
 	let cleanContent = "";
 
+	// The idea is to iterate through each character in the input string.
+	// If a specific sequence of characters is encountered, the function skips all characters until the end of the line.
+	// To clarify to "skip" is simply to not include the characters in the "cleanContent" variable.
 	let contentPos = 0;
 	while (contentPos < content.length) {
+		// If both the current character abd the next character are forward slashes, skip all characters until the end of the line.
 		if (
 			contentPos + 1 < content.length &&
 			content[contentPos] === "/" &&
 			content[contentPos + 1] === "/"
 		) {
+			// It is important to note that the newline character is included in the "cleanContent" variable.
 			while (
 				contentPos < content.length &&
 				content[contentPos] !== "\n"
@@ -162,7 +173,6 @@ const removeComments = (
 		cleanContent += content[contentPos];
 		contentPos++;
 	}
-
 	return cleanContent;
 };
 
