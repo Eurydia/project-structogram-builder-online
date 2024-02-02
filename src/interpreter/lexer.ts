@@ -113,7 +113,6 @@ const LITERAL_TOKENS: Record<
 };
 /**
  * The "Lexer" object represents a lexer.
-- 
  */
 export type Lexer = {
 	/**
@@ -176,19 +175,24 @@ const removeComments = (
 	return cleanContent;
 };
 
+/**
+ * The "lexerInit" function initializes a "Lexer" object from the given input strinrg.
+ */
 export const lexerInit = (
 	content: string,
 ): Lexer => {
-	const cleanedContent = removeComments(
+	// Calling "String.normalize()"on input string is important due to the way accented characters behave.
+	// See documentation on "normalize": https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
+	// See discussion on accented characters https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript
+	const preprocessedContent = removeComments(
 		content.normalize(),
 	);
-
 	return {
-		content: cleanedContent,
-		contentLength: cleanedContent.length,
+		content: preprocessedContent,
+		contentLength: preprocessedContent.length,
 		cursorPos: 0,
-		charNumber: 1,
 		lineNumber: 1,
+		charNumber: 1,
 	};
 };
 
