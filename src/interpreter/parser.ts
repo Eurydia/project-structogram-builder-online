@@ -293,6 +293,11 @@ const parserSkipWhiteSpace = (
 	}
 };
 
+/**
+ * The "buildMissingTokenError" function builds an "DiagramNodeError" object for a missing token error.
+ * This function is called when the parser wants to report a missing token error.
+ * More specifically, when a token is expected but not found.
+ */
 const buildMissingTokenError = (
 	markerToken: DiagramToken,
 	at: string,
@@ -311,6 +316,11 @@ const buildMissingTokenError = (
 	};
 };
 
+/**
+ * The "buildUnexpectedTokenError" function builds an "DiagramNodeError" object for an unexpected token error.
+ * This function is called when the parser wants to report an unexpected token error.
+ * More specifically, when a parser expects a token but finds something else.
+ */
 const buildUnexpectedTokenError = (
 	markerToken: DiagramToken,
 	errorToken: DiagramToken,
