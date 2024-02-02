@@ -227,42 +227,52 @@ export const parserInit = (
 	};
 };
 
+/**
+ * The "parserCollectTokensBetween" function collects tokens between two given tokens.
+ * The primary use case is to collect tokens between a pair od parentheses or curly braces.
+ */
 const parserCollectTokensBetween = (
 	p: Parser,
 	startToken: DiagramTokenKind,
 	stopToken: DiagramTokenKind,
 ): DiagramToken[] => {
+	// If the cursor is out of bound, return an empty array
 	if (p.cursorPos >= p.tokenLength) {
 		return [];
 	}
+	// If the current token is not the start token, return an empty array
 	if (p.tokens[p.cursorPos].kind !== startToken) {
 		return [];
 	}
 	// Consume the start token
 	p.cursorPos++;
-
 	// Does not include the start but includes the stop token
 	const tokens: DiagramToken[] = [];
 
+	// The "depth" variable is useful for keeping track of the "level" of the tokens
 	let depth = -1;
+
+	// The idea is to consume tokens until the depth is zero
+	// To clarify, the last "stopToken" is included, but the first "startToken" is not.
 	let token: DiagramToken;
 	while (p.cursorPos < p.tokenLength) {
+		// Consume the token from the parser and collect it to the result
 		token = p.tokens[p.cursorPos];
 		p.cursorPos++;
+		tokens.push(token);
 		if (token.kind === startToken) {
 			depth--;
 		}
 		if (token.kind === stopToken) {
 			depth++;
 		}
-		tokens.push(token);
-
+		// The start and stop tokens are balanced
+		// No need to continue
 		if (depth === 0) {
 			break;
 		}
 	}
-	// The cursor is pointing the token immediately after
-	// the stop token
+	// The cursor is pointing at the token immediately after the stop token
 	return tokens;
 };
 
