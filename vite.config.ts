@@ -14,18 +14,18 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks: (id) => {
-					if (id.includes("node_modules")) {
-						if (id.includes("@mui/material")) {
-							return "vendor_mui";
-						}
-						if (
-							id.includes("@mui/icons-material")
-						) {
-							return "vendor_mui_icon";
-						}
-
-						if (id.includes("notistack")) {
-							return "vendor_notistack";
+					if (id.search("node_modules") >= 0) {
+						const vendors = [
+							"@mui/material",
+							"@mui/icons-material",
+							"notistack",
+						];
+						for (const vendor of vendors) {
+							if (id.search(vendor) >= 0) {
+								return encodeURIComponent(
+									`vendor-${vendor}`,
+								);
+							}
 						}
 
 						return "vendor";
