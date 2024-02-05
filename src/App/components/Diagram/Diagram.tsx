@@ -14,7 +14,7 @@ import {
 	DiagramNode,
 	DiagramNodeKind,
 	DiagramToken,
-} from "interpreter";
+} from "core";
 
 type DiagramWrapperProps = {
 	children: ReactNode | ReactNode[];

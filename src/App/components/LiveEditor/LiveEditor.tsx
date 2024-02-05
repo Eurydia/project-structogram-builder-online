@@ -28,7 +28,7 @@ import {
 	DiagramNode,
 	parserGetAllNodes,
 	parserInit,
-} from "interpreter";
+} from "core";
 
 import { DiagramPreview } from "App/components/DiagramPreview";
 import { StyledCodeEditor } from "App/components/StyledCodeEditor";

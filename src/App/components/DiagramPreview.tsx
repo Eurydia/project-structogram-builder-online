@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-import { DiagramNode } from "interpreter";
+import { DiagramNode } from "core";
 import { Diagram } from "App/components/Diagram/Diagram";
 
 /**
