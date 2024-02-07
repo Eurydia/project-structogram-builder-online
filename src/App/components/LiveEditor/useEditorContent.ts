@@ -39,7 +39,11 @@ export const useEditorContent = (
 					localStorageKey,
 				);
 			if (savedContent !== null) {
-				return JSON.parse(savedContent);
+				try {
+					return JSON.parse(savedContent);
+				} catch {
+					return savedContent;
+				}
 			}
 			return "Hello World;";
 		});
