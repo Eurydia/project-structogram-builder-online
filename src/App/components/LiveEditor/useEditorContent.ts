@@ -39,7 +39,7 @@ export const useEditorContent = (
 					localStorageKey,
 				);
 			if (savedContent !== null) {
-				return savedContent;
+				return JSON.parse(savedContent);
 			}
 			return "Hello World;";
 		});
@@ -48,7 +48,7 @@ export const useEditorContent = (
 		setEditorContentInner(content);
 		window.localStorage.setItem(
 			localStorageKey,
-			content,
+			JSON.stringify(content),
 		);
 	};
 
