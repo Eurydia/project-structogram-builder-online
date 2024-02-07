@@ -41,7 +41,7 @@ export const useEditorContent = (
 			if (savedContent !== null) {
 				return savedContent;
 			}
-			return "";
+			return "Hello World;";
 		});
 
 	const setEditorContent = (content: string) => {

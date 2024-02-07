@@ -13,13 +13,14 @@
 	"dependencies": {
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
+		"@fontsource/fira-code": "^5.0.16",
+		"@fontsource/roboto": "^5.0.8",
 		"@mui/icons-material": "^5.14.19",
 		"@mui/material": "^5.14.20",
 		"@uiw/react-codemirror": "^4.21.20",
 		"notistack": "^3.0.1",
 		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"vite-tsconfig-paths": "^4.2.1"
+		"react-dom": "^18.2.0"
 	},
 	"devDependencies": {
 		"@types/file-saver": "^2.0.7",
@@ -36,6 +37,7 @@
 		"html-to-image": "^1.11.11",
 		"terser": "^5.26.0",
 		"typescript": "^5.2.2",
-		"vite": "^5.0.12"
+		"vite": "^5.0.12",
+		"vite-tsconfig-paths": "^4.3.1"
 	}
 }
