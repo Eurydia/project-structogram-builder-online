@@ -15,7 +15,6 @@ export default defineConfig({
 	],
 	build: {
 		sourcemap: true,
-		manifest: true,
 		minify: "terser",
 		cssMinify: "esbuild",
 		commonjsOptions: {
