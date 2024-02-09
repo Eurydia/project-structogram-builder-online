@@ -14,8 +14,8 @@ export default defineConfig({
 		splitVendorChunkPlugin(),
 	],
 	build: {
-		sourcemap: true,
 		minify: "terser",
+		sourcemap: true,
 		cssMinify: "esbuild",
 		commonjsOptions: {
 			strictRequires: true,
