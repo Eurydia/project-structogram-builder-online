@@ -48,14 +48,7 @@ export const DiagramPreview: FC<
 	}
 
 	return (
-		<Box
-			sx={{
-				...boxProps,
-				backgroundColor: grey[300],
-				borderColor: grey[700],
-				height: "100%",
-			}}
-		>
+		<Box sx={boxProps}>
 			<Box
 				id={id}
 				sx={{

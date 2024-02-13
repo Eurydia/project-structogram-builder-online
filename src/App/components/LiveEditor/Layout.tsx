@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { getPreviewState } from "App/components/LiveEditor/helper";
 import { LaunchRounded } from "@mui/icons-material";
+import { grey } from "@mui/material/colors";
 
 /**
  * This component defines the layout and its behavior for the "LiveEditor" component.
@@ -72,7 +73,12 @@ export const Layout: FC<LayoutProps> = (
 	);
 
 	return (
-		<Box>
+		<Box
+			sx={{
+				backgroundColor: grey[300],
+				borderColor: grey[700],
+			}}
+		>
 			<Paper
 				ref={appBarRef}
 				square
