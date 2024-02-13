@@ -174,6 +174,7 @@ export const LiveEditor: FC = () => {
 						nodes={nodes}
 						id="structogram-preview-region"
 						boxProps={{
+							height: "100%",
 							padding: 4,
 							userSelect: "none",
 						}}

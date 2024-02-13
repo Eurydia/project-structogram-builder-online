@@ -1,7 +1,6 @@
 import {
 	FC,
 	ReactNode,
-	useEffect,
 	useRef,
 	useState,
 } from "react";
@@ -48,10 +47,12 @@ export const Layout: FC<LayoutProps> = (
 	// Prepare the app bar static height
 	// This is used to calculate the height of the left and right panels in the layout
 	// Without a fixed height, the panels have unpredictable behavior
-	const [
-		appBarStaticHeight,
-		setAppBarStaticHeight,
-	] = useState(0);
+	let appBarHeight = 0;
+	if (appBarRef.current !== null) {
+		appBarHeight =
+			appBarRef.current.getBoundingClientRect()
+				.height;
+	}
 
 	// The left panel can be hidden or shown
 	// The initial state is determined by the query parameter in the URL
@@ -69,17 +70,6 @@ export const Layout: FC<LayoutProps> = (
 	const matchBreakpointXs = useMediaQuery<Theme>(
 		(theme) => theme.breakpoints.down("md"),
 	);
-
-	// Set the app bar static height, but only after the app bar ready
-	useEffect(() => {
-		if (appBarRef.current === null) {
-			return;
-		}
-		setAppBarStaticHeight(
-			appBarRef.current.getBoundingClientRect()
-				.height,
-		);
-	}, [appBarRef]);
 
 	return (
 		<Box>
@@ -126,7 +116,7 @@ export const Layout: FC<LayoutProps> = (
 					>
 						<Box
 							overflow="auto"
-							height={`calc(100vh - ${appBarStaticHeight}px)`}
+							height={`calc(100vh - ${appBarHeight}px)`}
 						>
 							{slotPanelLeft}
 						</Box>
@@ -143,7 +133,7 @@ export const Layout: FC<LayoutProps> = (
 					>
 						<Box
 							overflow="auto"
-							height={`calc(100vh - ${appBarStaticHeight}px)`}
+							height={`calc(100vh - ${appBarHeight}px)`}
 						>
 							{slotPanelRight}
 						</Box>
