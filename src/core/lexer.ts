@@ -252,6 +252,19 @@ const lexerGetNextToken = (
 		return token;
 	}
 
+	// If the consumed character is a "$", consume the input until another "$" is found. This is similar to quoting
+	// This also take care of the case which a symbol token starts with "$"
+	if (token.text === "$") {
+		while (l.cursorPos < l.contentLength) {
+			token.text += l.content[l.cursorPos];
+			l.cursorPos++;
+			l.charNumber++;
+			if (l.content[l.cursorPos - 1] === "$") {
+				break;
+			}
+		}
+	}
+
 	// If the consumed character is not a white space character, and not one of the literal tokens, consume all characters until the next white space character or literal token.
 	while (
 		l.cursorPos < l.contentLength &&
@@ -261,6 +274,18 @@ const lexerGetNextToken = (
 		token.text += l.content[l.cursorPos];
 		l.cursorPos++;
 		l.charNumber++;
+
+		// When a dollar-quote is present within another symbol token
+		if (l.content[l.cursorPos - 1] === "$") {
+			while (l.cursorPos < l.contentLength) {
+				token.text += l.content[l.cursorPos];
+				l.cursorPos++;
+				l.charNumber++;
+				if (l.content[l.cursorPos - 1] === "$") {
+					break;
+				}
+			}
+		}
 	}
 
 	// Once a white space character or literal token is encountered, check whether the consumed sequence of characters is a keyword.
