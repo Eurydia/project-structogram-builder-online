@@ -86,6 +86,7 @@ export const LiveEditor: FC = () => {
 		const nodes = parserGetAllNodes(
 			parserInit(tokens),
 		);
+		console.debug(tokens);
 		setNodes(nodes);
 	}, [editorContent]);
 

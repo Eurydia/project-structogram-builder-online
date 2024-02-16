@@ -7,6 +7,7 @@ import {
 	Stack,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
+import Latex from "react-latex-next";
 
 import { ArrowTopLeftBottomRight } from "./ArrowTopLeftBottomRight";
 import { ArrowBottomLeftTopRight } from "./ArrowBottomLeftTopRight";
@@ -69,7 +70,17 @@ const DiagramComponentText: FC<
 				...rest.sx,
 			}}
 		>
-			{children ?? "-"}
+			<Latex
+				delimiters={[
+					{
+						left: "$",
+						right: "$",
+						display: false,
+					},
+				]}
+			>
+				{children ?? "-"}
+			</Latex>
 		</Typography>
 	);
 };
