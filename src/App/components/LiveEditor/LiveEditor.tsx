@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import {
 	DownloadRounded,
+	LinkRounded,
 	SendRounded,
 } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
@@ -74,6 +75,10 @@ export const LiveEditor: FC = () => {
 		popoverExportMenuAnchor,
 		setPopoverExportMenuAnchor,
 	] = useState<HTMLButtonElement | null>(null);
+	const [
+		popoverShareMenuAnchor,
+		setPopoverShareMenuAnchor,
+	] = useState<HTMLButtonElement | null>(null);
 
 	// Fires when the editor content changes
 	// Signals the lexer and parser to re-parse the content
@@ -104,6 +109,19 @@ export const LiveEditor: FC = () => {
 			variant: "info",
 		});
 	};
+	const handleCopyEmbed = () => {
+		const srcURL = generateUniqueLink(
+			editorContent,
+			window.location.href,
+		);
+		const embed = `<iframe loading="lazy" height="auto" width="100%" src="${srcURL}" style="aspect-ratio: 16/10; border: none;"></iframe>`;
+
+		navigator.clipboard.writeText(embed);
+		// Signals a success message to the user
+		enqueueSnackbar("Link copied to clipboard", {
+			variant: "info",
+		});
+	};
 
 	// Fires when the "EXPORT" button is clicked
 	// The popover is displayed with the export options
@@ -115,11 +133,15 @@ export const LiveEditor: FC = () => {
 		);
 	};
 
-	// Fires when the export menu popover is closed or dismissed
-	const handlePopoverExportMenuClose = () => {
-		setPopoverExportMenuAnchor(null);
+	// Fires when the "Share" button is clicked
+	// The popover is displayed with the export options
+	const handlePopoverShareMenuOpen = (
+		event: React.MouseEvent<HTMLButtonElement>,
+	) => {
+		setPopoverShareMenuAnchor(
+			event.currentTarget,
+		);
 	};
-
 	// Fires when an export option is selected
 	const handleExportDiagram = async (
 		exportCallback: () => Promise<boolean>,
@@ -157,7 +179,7 @@ export const LiveEditor: FC = () => {
 						<AdaptiveButton
 							collapsed={matchBreakpointXs}
 							endIcon={<SendRounded />}
-							onClick={handleCopyLink}
+							onClick={handlePopoverShareMenuOpen}
 						>
 							SHARE
 						</AdaptiveButton>
@@ -192,7 +214,9 @@ export const LiveEditor: FC = () => {
 				}}
 				anchorEl={popoverExportMenuAnchor}
 				open={popoverExportMenuAnchor !== null}
-				onClose={handlePopoverExportMenuClose}
+				onClose={() =>
+					setPopoverExportMenuAnchor(null)
+				}
 			>
 				<Paper
 					sx={{
@@ -206,7 +230,7 @@ export const LiveEditor: FC = () => {
 							}
 						>
 							<ListItemIcon>
-								<DownloadRounded fontSize="small" />
+								<DownloadRounded />
 							</ListItemIcon>
 							<ListItemText>
 								Save as JPEG
@@ -218,7 +242,7 @@ export const LiveEditor: FC = () => {
 							}
 						>
 							<ListItemIcon>
-								<DownloadRounded fontSize="small" />
+								<DownloadRounded />
 							</ListItemIcon>
 							<ListItemText>
 								Save as PNG
@@ -230,10 +254,50 @@ export const LiveEditor: FC = () => {
 							}
 						>
 							<ListItemIcon>
-								<DownloadRounded fontSize="small" />
+								<DownloadRounded />
 							</ListItemIcon>
 							<ListItemText>
 								Save as SVG
+							</ListItemText>
+						</MenuItem>
+					</MenuList>
+				</Paper>
+			</Popover>
+			<Popover
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "left",
+				}}
+				transformOrigin={{
+					vertical: "top",
+					horizontal: "left",
+				}}
+				anchorEl={popoverShareMenuAnchor}
+				open={popoverShareMenuAnchor !== null}
+				onClose={() =>
+					setPopoverShareMenuAnchor(null)
+				}
+			>
+				<Paper
+					sx={{
+						padding: 1,
+					}}
+				>
+					<MenuList>
+						<MenuItem onClick={handleCopyLink}>
+							<ListItemIcon>
+								<LinkRounded />
+							</ListItemIcon>
+							<ListItemText>
+								Copy Link
+							</ListItemText>
+						</MenuItem>
+						<MenuItem onClick={handleCopyEmbed}>
+							<ListItemIcon>
+								<LinkRounded />
+							</ListItemIcon>
+							<ListItemText>
+								Copy Iframe Embed
 							</ListItemText>
 						</MenuItem>
 					</MenuList>
