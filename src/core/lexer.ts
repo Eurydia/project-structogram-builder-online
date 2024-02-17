@@ -181,6 +181,7 @@ const removeComments = (
 			) {
 				contentPos++;
 			}
+			continue;
 		}
 		preprocessedContent += content[contentPos];
 		contentPos++;
@@ -199,6 +200,8 @@ export const lexerInit = (
 	const preprocessedContent = removeComments(
 		content.normalize(),
 	);
+
+	console.log(preprocessedContent);
 	return {
 		content: preprocessedContent,
 		contentLength: preprocessedContent.length,
