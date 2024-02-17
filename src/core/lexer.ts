@@ -200,8 +200,6 @@ export const lexerInit = (
 	const preprocessedContent = removeComments(
 		content.normalize(),
 	);
-
-	console.log(preprocessedContent);
 	return {
 		content: preprocessedContent,
 		contentLength: preprocessedContent.length,

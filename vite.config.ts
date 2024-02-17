@@ -15,7 +15,7 @@ export default defineConfig({
 	],
 	build: {
 		minify: "terser",
-		sourcemap: true,
+		// sourcemap: true,
 		cssMinify: "esbuild",
 		commonjsOptions: {
 			strictRequires: true,
