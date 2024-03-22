@@ -6,7 +6,6 @@ import {
 } from "react";
 import {
 	Box,
-	Grid,
 	TypographyProps,
 	Typography,
 	Stack,
