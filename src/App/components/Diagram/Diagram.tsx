@@ -1,4 +1,9 @@
-import { FC, Fragment, ReactNode } from "react";
+import {
+	FC,
+	Fragment,
+	ReactNode,
+	useRef,
+} from "react";
 import {
 	Box,
 	Grid,
@@ -246,6 +251,31 @@ export const DiagramIfElse: FC<
 		...rest
 	} = props;
 
+	const mainBlockRef =
+		useRef<HTMLDivElement | null>(null);
+	const ifBlockRef =
+		useRef<HTMLDivElement | null>(null);
+
+	let ifBlockWidth: string | undefined =
+		undefined;
+	let elseBlockWidth: string | undefined =
+		undefined;
+	if (
+		mainBlockRef &&
+		mainBlockRef.current &&
+		ifBlockRef &&
+		ifBlockRef.current
+	) {
+		ifBlockWidth = `${
+			ifBlockRef.current.getBoundingClientRect()
+				.width
+		}px`;
+		elseBlockWidth = `calc(${
+			mainBlockRef.current.getBoundingClientRect()
+				.width
+		}px - ${ifBlockWidth})`;
+	}
+
 	let conditionText: string | undefined =
 		undefined;
 	if (
@@ -290,23 +320,22 @@ export const DiagramIfElse: FC<
 
 	return (
 		<DiagramWrapper {...rest}>
-			<Grid
-				container
+			<Stack
+				ref={mainBlockRef}
+				component={Box}
+				width="100%"
 				height="100%"
 			>
-				<Grid
-					item
-					xs={12}
-				>
-					<DiagramComponentText align="center">
-						{conditionText}
-					</DiagramComponentText>
-				</Grid>
-				<Grid
-					item
-					xs={leftColumnSize}
+				<DiagramComponentText align="center">
+					{conditionText}
+				</DiagramComponentText>
+				<Stack
+					width="100%"
+					height="100%"
+					direction="row"
 				>
 					<Box
+						width={ifBlockWidth}
 						height="100%"
 						display="flex"
 						alignItems="center"
@@ -323,12 +352,8 @@ export const DiagramIfElse: FC<
 						</DiagramComponentText>
 						<ArrowTopLeftBottomRight htmlColor="black" />
 					</Box>
-				</Grid>
-				<Grid
-					item
-					xs={12 - leftColumnSize}
-				>
 					<Box
+						width={elseBlockWidth}
 						height="100%"
 						display="flex"
 						alignItems="center"
@@ -345,13 +370,18 @@ export const DiagramIfElse: FC<
 							False
 						</DiagramComponentText>
 					</Box>
-				</Grid>
-				<Grid
-					item
-					xs={leftColumnSize}
+				</Stack>
+				<Stack
+					width="100%"
+					height="100%"
+					direction="row"
 				>
 					<Stack
-						height="100%"
+						ref={ifBlockRef}
+						component={Box}
+						flexGrow={1}
+						flexShrink={1}
+						minHeight="100%"
 						sx={{
 							borderColor: "inherit",
 							borderRightStyle: "solid",
@@ -360,16 +390,15 @@ export const DiagramIfElse: FC<
 					>
 						{bodyNodeIf}
 					</Stack>
-				</Grid>
-				<Grid
-					item
-					xs={12 - leftColumnSize}
-				>
-					<Stack height="100%">
+					<Stack
+						flexGrow={1}
+						flexShrink={1}
+						minHeight="100%"
+					>
 						{bodyNodeElse}
 					</Stack>
-				</Grid>
-			</Grid>
+				</Stack>
+			</Stack>
 		</DiagramWrapper>
 	);
 };
