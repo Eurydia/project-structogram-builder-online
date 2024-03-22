@@ -2,7 +2,9 @@ import {
 	FC,
 	Fragment,
 	ReactNode,
+	useEffect,
 	useRef,
+	useState,
 } from "react";
 import {
 	Box,
@@ -20,6 +22,7 @@ import {
 	DiagramNodeKind,
 	DiagramToken,
 } from "core";
+import { Block } from "@mui/icons-material";
 
 const TEXT_SHADOW = `${grey[300]} 3px 0px 0px, ${grey[300]} 2.83487px 0.981584px 0px, ${grey[300]} 2.35766px 1.85511px 0px, ${grey[300]} 1.62091px 2.52441px 0px, ${grey[300]} 0.705713px 2.91581px 0px, ${grey[300]} -0.287171px 2.98622px 0px, ${grey[300]} -1.24844px 2.72789px 0px, ${grey[300]} -2.07227px 2.16926px 0px, ${grey[300]} -2.66798px 1.37182px 0px, ${grey[300]} -2.96998px 0.42336px 0px, ${grey[300]} -2.94502px -0.571704px 0px, ${grey[300]} -2.59586px -1.50383px 0px, ${grey[300]} -1.96093px -2.27041px 0px, ${grey[300]} -1.11013px -2.78704px 0px, ${grey[300]} -0.137119px -2.99686px 0px, ${grey[300]} 0.850987px -2.87677px 0px, ${grey[300]} 1.74541px -2.43999px 0px, ${grey[300]} 2.44769px -1.73459px 0px, ${grey[300]} 2.88051px -0.838247px 0px`;
 
@@ -43,6 +46,7 @@ const DiagramWrapper: FC<DiagramWrapperProps> = (
 	} = props;
 	return (
 		<Box
+			width="100%"
 			sx={{
 				borderStyle: "solid",
 				borderLeftWidth: borderLeft ? 2 : 0,
@@ -250,33 +254,23 @@ export const DiagramIfElse: FC<
 		...rest
 	} = props;
 
-	const mainBlockRef =
-		useRef<HTMLDivElement | null>(null);
 	const ifBlockRef =
 		useRef<HTMLDivElement | null>(null);
-
-	let ifBlockWidth: string | undefined =
-		undefined;
-	let elseBlockWidth: string | undefined =
-		undefined;
-	if (
-		mainBlockRef &&
-		mainBlockRef.current &&
-		ifBlockRef &&
-		ifBlockRef.current
-	) {
-		ifBlockWidth = `${
+	const [ifBlockWidth, setIfLabelWidth] =
+		useState<string | undefined>(undefined);
+	useEffect(() => {
+		if (!ifBlockRef || !ifBlockRef.current) {
+			return;
+		}
+		const ifWidth =
 			ifBlockRef.current.getBoundingClientRect()
-				.width
-		}px`;
-		elseBlockWidth = `calc(${
-			mainBlockRef.current.getBoundingClientRect()
-				.width
-		}px - ${ifBlockWidth})`;
-	}
+				.width;
+		setIfLabelWidth(`${ifWidth}px`);
+	}, [
+		ifBlockRef.current?.getBoundingClientRect(),
+	]);
 
-	let conditionText: string | undefined =
-		undefined;
+	let conditionText: string | undefined;
 	if (
 		conditionTokens !== undefined &&
 		conditionTokens.length > 0
@@ -286,12 +280,10 @@ export const DiagramIfElse: FC<
 			.join("")
 			.trim();
 	}
-	let leftColumnSize = 6;
 	let bodyNodeIf: ReactNode | ReactNode[] = (
 		<DiagramProcess borderTop />
 	);
 	if (bodyIf.length > 0) {
-		leftColumnSize += 3;
 		bodyNodeIf = bodyIf.map((subnode, index) => (
 			<Diagram
 				key={`index-${index}`}
@@ -305,7 +297,6 @@ export const DiagramIfElse: FC<
 		<DiagramProcess borderTop />
 	);
 	if (bodyElse.length > 0) {
-		leftColumnSize -= 3;
 		bodyNodeElse = bodyElse.map(
 			(subnode, index) => (
 				<Diagram
@@ -319,19 +310,18 @@ export const DiagramIfElse: FC<
 
 	return (
 		<DiagramWrapper {...rest}>
-			<Stack
-				ref={mainBlockRef}
-				component={Box}
+			<Box
 				width="100%"
 				height="100%"
+				display="flex"
+				flexDirection="column"
 			>
 				<DiagramComponentText align="center">
 					{conditionText}
 				</DiagramComponentText>
-				<Stack
-					width="100%"
-					height="100%"
-					direction="row"
+				<Box
+					display="flex"
+					flexDirection="row"
 				>
 					<Box
 						width={ifBlockWidth}
@@ -352,7 +342,7 @@ export const DiagramIfElse: FC<
 						<ArrowTopLeftBottomRight htmlColor="black" />
 					</Box>
 					<Box
-						width={elseBlockWidth}
+						flexGrow={1}
 						height="100%"
 						display="flex"
 						alignItems="center"
@@ -369,13 +359,15 @@ export const DiagramIfElse: FC<
 							False
 						</DiagramComponentText>
 					</Box>
-				</Stack>
-				<Stack
+				</Box>
+				<Box
 					width="100%"
+					maxWidth="100%"
 					height="100%"
-					direction="row"
+					display="flex"
+					flexDirection="row"
 				>
-					<Stack
+					<Box
 						ref={ifBlockRef}
 						component={Box}
 						flexGrow={1}
@@ -388,16 +380,18 @@ export const DiagramIfElse: FC<
 						}}
 					>
 						{bodyNodeIf}
-					</Stack>
-					<Stack
+					</Box>
+					<Box
+						minHeight="100%"
+						display="flex"
 						flexGrow={1}
 						flexShrink={1}
-						minHeight="100%"
+						flexDirection="column"
 					>
 						{bodyNodeElse}
-					</Stack>
-				</Stack>
-			</Stack>
+					</Box>
+				</Box>
+			</Box>
 		</DiagramWrapper>
 	);
 };
