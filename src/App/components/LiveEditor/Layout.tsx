@@ -1,22 +1,22 @@
+import { LaunchRounded } from "@mui/icons-material";
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	Grid,
+	Paper,
+	Stack,
+	Theme,
+	useMediaQuery,
+} from "@mui/material";
+import { grey } from "@mui/material/colors";
+import { getPreviewState } from "App/components/LiveEditor/helper";
 import {
 	FC,
 	ReactNode,
 	useRef,
 	useState,
 } from "react";
-import {
-	Box,
-	Grid,
-	Stack,
-	Paper,
-	Button,
-	useMediaQuery,
-	Theme,
-	ButtonGroup,
-} from "@mui/material";
-import { getPreviewState } from "App/components/LiveEditor/helper";
-import { LaunchRounded } from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
 
 /**
  * This component defines the layout and its behavior for the "LiveEditor" component.
@@ -75,7 +75,7 @@ export const Layout: FC<LayoutProps> = (
 	return (
 		<Box
 			sx={{
-				backgroundColor: grey[300],
+				backgroundColor: "#fff",
 				borderColor: grey[700],
 			}}
 		>

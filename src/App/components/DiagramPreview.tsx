@@ -7,8 +7,8 @@ import {
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
-import { DiagramNode } from "core";
 import { Diagram } from "App/components/Diagram/Diagram";
+import { DiagramNode } from "core";
 
 /**
  * This component is a preview of the diagram.
@@ -53,7 +53,7 @@ export const DiagramPreview: FC<
 				id={id}
 				sx={{
 					maxWidth: "640px",
-					backgroundColor: grey[300],
+					backgroundColor: "#fff",
 					borderColor: grey[700],
 				}}
 			>
