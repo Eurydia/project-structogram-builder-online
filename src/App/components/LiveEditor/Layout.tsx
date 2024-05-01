@@ -99,7 +99,7 @@ export const Layout: FC<LayoutProps> = (
 								: "Hide code"}
 						</Button>{" "}
 						<Button
-							href="https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online-docs/"
+							href="https://eurydia.github.io/project-structogram-builder-online-docs/"
 							component="a"
 							target="_blank"
 							endIcon={<LaunchRounded />}
