@@ -1,9 +1,7 @@
-import { FC } from "react";
-
 import ReactCodeMirror, {
 	EditorView,
 } from "@uiw/react-codemirror";
-
+import { FC } from "react";
 import "./styles.css";
 
 /**

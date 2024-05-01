@@ -1,44 +1,40 @@
 import {
+	DownloadRounded,
+	LinkRounded,
+	SendRounded,
+} from "@mui/icons-material";
+import {
+	ButtonGroup,
+	ListItemIcon,
+	ListItemText,
+	MenuItem,
+	MenuList,
+	Paper,
+	Popover,
+	Theme,
+	useMediaQuery,
+} from "@mui/material";
+import { AdaptiveButton } from "App/components/AdaptiveButton";
+import { DiagramPreview } from "App/components/DiagramPreview";
+import { StyledCodeEditor } from "App/components/StyledCodeEditor";
+import {
+	DiagramNode,
+	lexerGetAllTokens,
+	lexerInit,
+	parserGetAllNodes,
+	parserInit,
+} from "core";
+import { useSnackbar } from "notistack";
+import {
 	FC,
 	Fragment,
 	useEffect,
 	useState,
 } from "react";
-
-import {
-	Paper,
-	MenuList,
-	ListItemText,
-	ButtonGroup,
-	Popover,
-	MenuItem,
-	ListItemIcon,
-	Theme,
-	useMediaQuery,
-} from "@mui/material";
-import {
-	DownloadRounded,
-	LinkRounded,
-	SendRounded,
-} from "@mui/icons-material";
-import { useSnackbar } from "notistack";
-
-import {
-	lexerGetAllTokens,
-	lexerInit,
-	DiagramNode,
-	parserGetAllNodes,
-	parserInit,
-} from "core";
-
-import { DiagramPreview } from "App/components/DiagramPreview";
-import { StyledCodeEditor } from "App/components/StyledCodeEditor";
-import { AdaptiveButton } from "App/components/AdaptiveButton";
-
 import { Layout } from "./Layout";
-import { useExportDiagram } from "./useExportDiagram";
-import { useEditorContent } from "./useEditorContent";
 import { generateUniqueLink } from "./helper";
+import { useEditorContent } from "./useEditorContent";
+import { useExportDiagram } from "./useExportDiagram";
 
 /**
  * The main component of the application.

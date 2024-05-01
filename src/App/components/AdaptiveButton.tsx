@@ -1,9 +1,9 @@
-import { FC } from "react";
 import {
 	Button,
 	ButtonProps,
 	Tooltip,
 } from "@mui/material";
+import { FC } from "react";
 
 /**
  * This component is a button that adapts to the screen size.
