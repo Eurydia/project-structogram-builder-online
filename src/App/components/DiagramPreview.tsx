@@ -1,14 +1,12 @@
-import { FC, ReactNode } from "react";
-
 import {
 	Box,
 	SxProps,
 	Typography,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-
-import { Diagram } from "App/components/Diagram/Diagram";
+import { Diagram } from "App/components/Diagram";
 import { DiagramNode } from "core";
+import { FC, ReactNode } from "react";
 
 /**
  * This component is a preview of the diagram.
