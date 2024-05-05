@@ -2,11 +2,16 @@ import {
 	Box,
 	SxProps,
 	Typography,
+	styled,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
-import { Diagram } from "App/components/Diagram";
-import { DiagramNode } from "core";
 import { FC, ReactNode } from "react";
+import { DiagramNode } from "~core/parser";
+import { Diagram } from "./Diagram";
+
+const StyledBox = styled(Box)(({ theme }) => ({
+	maxWidth: "640px",
+	borderColor: theme.palette.text.primary,
+}));
 
 /**
  * This component is a preview of the diagram.
@@ -47,16 +52,10 @@ export const DiagramPreview: FC<
 
 	return (
 		<Box sx={boxProps}>
-			<Box
+			<StyledBox
 				id={id}
-				sx={{
-					maxWidth: "640px",
-					backgroundColor: "#fff",
-					borderColor: grey[700],
-				}}
-			>
-				{component}
-			</Box>
+				children={component}
+			/>
 		</Box>
 	);
 };

@@ -2,6 +2,12 @@
 	"compilerOptions": {
 		"baseUrl": "src",
 		"removeComments": true,
+		"paths": {
+			"~hooks/*": ["./hooks/*"],
+			"~views/*": ["./views/*"],
+			"~core/*": ["./core/*"],
+			"~components/*": ["./components/*"]
+		},
 
 		"target": "ES2022",
 		"useDefineForClassFields": true,

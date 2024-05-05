@@ -12,18 +12,9 @@ import {
 	Paper,
 	Popover,
 	Theme,
+	styled,
 	useMediaQuery,
 } from "@mui/material";
-import { AdaptiveButton } from "App/components/AdaptiveButton";
-import { DiagramPreview } from "App/components/DiagramPreview";
-import { StyledCodeEditor } from "App/components/StyledCodeEditor";
-import {
-	DiagramNode,
-	lexerGetAllTokens,
-	lexerInit,
-	parserGetAllNodes,
-	parserInit,
-} from "core";
 import { useSnackbar } from "notistack";
 import {
 	FC,
@@ -31,10 +22,24 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import { Layout } from "./Layout";
+import { AdaptiveButton } from "~components/AdaptiveButton";
+import { DiagramPreview } from "~components/DiagramPreview";
+import { StyledCodeEditor } from "~components/StyledCodeEditor";
+import {
+	lexerGetAllTokens,
+	lexerInit,
+} from "~core/lexer";
+import {
+	DiagramNode,
+	parserGetAllNodes,
+	parserInit,
+} from "~core/parser";
+import { useEditorContent } from "~hooks/useEditorContent";
+import { useExportDiagram } from "~hooks/useExportDiagram";
+import { Layout } from "~views/Layout";
 import { generateUniqueLink } from "./helper";
-import { useEditorContent } from "./useEditorContent";
-import { useExportDiagram } from "./useExportDiagram";
+
+const PaddedPaper = styled(Paper)({ padding: 1 });
 
 /**
  * The main component of the application.
@@ -162,23 +167,24 @@ export const LiveEditor: FC = () => {
 		<Fragment>
 			<Layout
 				slotAppBar={
-					<ButtonGroup variant="outlined">
+					<ButtonGroup
+						disableElevation
+						variant="outlined"
+					>
 						<AdaptiveButton
 							collapsed={matchBreakpointXs}
 							startIcon={<DownloadRounded />}
 							onClick={
 								handlePopoverExportMenuOpen
 							}
-						>
-							EXPORT
-						</AdaptiveButton>
+							children="EXPORT"
+						/>
 						<AdaptiveButton
 							collapsed={matchBreakpointXs}
 							endIcon={<SendRounded />}
 							onClick={handlePopoverShareMenuOpen}
-						>
-							SHARE
-						</AdaptiveButton>
+							children="SHARE"
+						/>
 					</ButtonGroup>
 				}
 				slotPanelLeft={
@@ -189,8 +195,8 @@ export const LiveEditor: FC = () => {
 				}
 				slotPanelRight={
 					<DiagramPreview
-						nodes={nodes}
 						id="structogram-preview-region"
+						nodes={nodes}
 						boxProps={{
 							height: "100%",
 							padding: 4,
@@ -214,11 +220,7 @@ export const LiveEditor: FC = () => {
 					setPopoverExportMenuAnchor(null)
 				}
 			>
-				<Paper
-					sx={{
-						padding: 1,
-					}}
-				>
+				<PaddedPaper>
 					<MenuList>
 						<MenuItem
 							onClick={() =>
@@ -257,7 +259,7 @@ export const LiveEditor: FC = () => {
 							</ListItemText>
 						</MenuItem>
 					</MenuList>
-				</Paper>
+				</PaddedPaper>
 			</Popover>
 			<Popover
 				anchorOrigin={{
@@ -274,11 +276,7 @@ export const LiveEditor: FC = () => {
 					setPopoverShareMenuAnchor(null)
 				}
 			>
-				<Paper
-					sx={{
-						padding: 1,
-					}}
-				>
+				<PaddedPaper>
 					<MenuList>
 						<MenuItem onClick={handleCopyLink}>
 							<ListItemIcon>
@@ -297,7 +295,7 @@ export const LiveEditor: FC = () => {
 							</ListItemText>
 						</MenuItem>
 					</MenuList>
-				</Paper>
+				</PaddedPaper>
 			</Popover>
 		</Fragment>
 	);

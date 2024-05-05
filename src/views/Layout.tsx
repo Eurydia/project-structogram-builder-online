@@ -5,18 +5,39 @@ import {
 	ButtonGroup,
 	Grid,
 	Paper,
-	Stack,
 	Theme,
+	styled,
 	useMediaQuery,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
-import { getPreviewState } from "App/components/LiveEditor/helper";
 import {
 	FC,
 	ReactNode,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
+import { getPreviewState } from "~components/LiveEditor/helper";
+
+const StyledPaper = styled(Paper)(
+	({ theme }) => ({
+		padding: theme.spacing(1),
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	}),
+);
+const StyledBox = styled(Box)({
+	overflow: "auto",
+});
+const docsButton = (
+	<Button
+		href="https://eurydia.github.io/project-structogram-builder-online-docs/"
+		component="a"
+		target="_blank"
+		endIcon={<LaunchRounded />}
+		children="docs"
+	/>
+);
 
 /**
  * This component defines the layout and its behavior for the "LiveEditor" component.
@@ -72,80 +93,67 @@ export const Layout: FC<LayoutProps> = (
 		(theme) => theme.breakpoints.down("md"),
 	);
 
+	const panelHeight = useMemo(
+		() => `calc(100vh - ${appBarHeight}px)`,
+		[appBarHeight],
+	);
+
+	const toggleCodeMsg = leftPanelOpen
+		? "Show code"
+		: "Hide code";
+
+	const rightPanelVisible =
+		matchBreakpointXs && !leftPanelOpen
+			? "none"
+			: undefined;
+
+	const leftPanelVisible = leftPanelOpen
+		? "none"
+		: undefined;
+
 	return (
-		<Box
-			sx={{
-				backgroundColor: "#fff",
-				borderColor: grey[700],
-			}}
-		>
-			<Paper
+		<StyledBox>
+			<StyledPaper
 				ref={appBarRef}
 				square
-				elevation={0}
-				sx={{
-					padding: 1,
-				}}
+				elevation={4}
 			>
-				<Stack
-					display="flex"
-					direction="row"
-					justifyContent="space-between"
+				<ButtonGroup
+					disableElevation
+					variant="outlined"
 				>
-					<ButtonGroup variant="outlined">
-						<Button onClick={handlePreviewToggle}>
-							{leftPanelOpen
-								? "Show code"
-								: "Hide code"}
-						</Button>{" "}
-						<Button
-							href="https://eurydia.github.io/project-structogram-builder-online-docs/"
-							component="a"
-							target="_blank"
-							endIcon={<LaunchRounded />}
-						>
-							docs
-						</Button>
-					</ButtonGroup>
-					{slotAppBar}
-				</Stack>
-			</Paper>
-			<Box>
-				<Grid container>
-					<Grid
-						item
-						xs={12}
-						lg={6}
-						display={
-							leftPanelOpen ? "none" : undefined
-						}
-					>
-						<Box
-							overflow="auto"
-							height={`calc(100vh - ${appBarHeight}px)`}
-						>
-							{slotPanelLeft}
-						</Box>
-					</Grid>
-					<Grid
-						item
-						xs
-						lg
-						display={
-							matchBreakpointXs && !leftPanelOpen
-								? "none"
-								: undefined
-						}
-					>
-						<Box
-							overflow="auto"
-							height={`calc(100vh - ${appBarHeight}px)`}
-						>
-							{slotPanelRight}
-						</Box>
-					</Grid>
+					<Button
+						onClick={handlePreviewToggle}
+						children={toggleCodeMsg}
+					/>
+					{docsButton}
+				</ButtonGroup>
+				{slotAppBar}
+			</StyledPaper>
+			<Grid container>
+				<Grid
+					item
+					xs={12}
+					lg={6}
+					display={leftPanelVisible}
+				>
+					<StyledBox
+						height={panelHeight}
+						children={slotPanelLeft}
+					/>
 				</Grid>
-			</Box>
-		</Box>
+				<Grid
+					item
+					xs
+					lg
+					display={rightPanelVisible}
+				>
+					<StyledBox
+						height={panelHeight}
+						children={slotPanelRight}
+					/>
+				</Grid>
+			</Grid>
+		</StyledBox>
 	);
 };

@@ -1,17 +1,11 @@
 import {
 	CssBaseline,
 	ThemeProvider,
-	createTheme,
 } from "@mui/material";
-import { LiveEditor } from "App/components/LiveEditor";
 import { SnackbarProvider } from "notistack";
 import { FC, Fragment } from "react";
-
-const themeDark = createTheme({
-	palette: {
-		mode: "dark",
-	},
-});
+import { LiveEditor } from "~components/LiveEditor";
+import { themeDark } from "./theme";
 
 /**
  * The main application component.

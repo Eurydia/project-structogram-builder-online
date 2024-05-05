@@ -6,12 +6,12 @@ import {
 	StructogramLoopLast,
 	StructogramProcess,
 } from "@eurydos/structogram-component";
+import { FC, Fragment, ReactNode } from "react";
+import { DiagramToken } from "~core/lexer";
 import {
 	DiagramNode,
 	DiagramNodeKind,
-	DiagramToken,
-} from "core";
-import { FC, Fragment, ReactNode } from "react";
+} from "~core/parser";
 
 type DiagramProcessProps = {
 	bodyTokens?: DiagramToken[];
