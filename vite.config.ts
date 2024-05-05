@@ -7,7 +7,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	base: "/structogram-builder-online/",
+	base: "/project-structogram-builder-online/",
 	plugins: [
 		react(),
 		tsconfigPaths(),

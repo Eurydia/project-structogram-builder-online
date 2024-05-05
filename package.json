@@ -11,6 +11,7 @@
 		"deploy": "gh-pages -d dist --branch gh-pages"
 	},
 	"dependencies": {
+		"@eurydos/structogram-component": "^1.0.2",
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
 		"@fontsource/fira-code": "^5.0.16",
@@ -23,7 +24,6 @@
 		"react-dom": "^18.2.0"
 	},
 	"devDependencies": {
-		"@eurydos/structogram-component": "^1.0.2",
 		"@types/file-saver": "^2.0.7",
 		"@types/katex": "^0.16.7",
 		"@types/react": "^18.2.37",
