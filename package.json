@@ -13,7 +13,6 @@
 	"dependencies": {
 		"@emotion/react": "^11.11.1",
 		"@emotion/styled": "^11.11.0",
-		"@eurydos/structogram-component": "^1.0.2",
 		"@fontsource/fira-code": "^5.0.16",
 		"@fontsource/roboto": "^5.0.8",
 		"@mui/icons-material": "^5.14.19",
@@ -24,6 +23,7 @@
 		"react-dom": "^18.2.0"
 	},
 	"devDependencies": {
+		"@eurydos/structogram-component": "^1.0.2",
 		"@types/file-saver": "^2.0.7",
 		"@types/katex": "^0.16.7",
 		"@types/react": "^18.2.37",
