@@ -1,7 +1,7 @@
 {
 	"name": "NSDBuilder",
 	"short_name": "NSDBuilder",
-	"start_url": "https://eurydia.github.io/project-nassi-shneiderman-diagram-builder-online",
+	"start_url": "https://eurydia.github.io/project-structogram-builder-online/",
 	"icons": [
 		{
 			"src": "favicon-16x16.png",
