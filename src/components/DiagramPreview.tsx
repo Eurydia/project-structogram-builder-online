@@ -10,6 +10,7 @@ import { Diagram } from "./Diagram";
 
 const StyledBox = styled(Box)(({ theme }) => ({
 	maxWidth: "640px",
+	backgroundColor: theme.palette.common.white,
 	borderColor: theme.palette.text.primary,
 }));
 

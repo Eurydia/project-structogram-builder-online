@@ -5,11 +5,12 @@ import {
 
 export const themeDark = createTheme({
 	palette: {
+		mode: "dark",
 		primary: {
 			main: "#e1cdfe",
 		},
 		text: {
-			primary: alpha("#f00", 0.9),
+			primary: alpha("#fff", 0.9),
 		},
 		background: {
 			paper: "#2B2828",
