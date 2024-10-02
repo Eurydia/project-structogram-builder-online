@@ -41,7 +41,7 @@
 		"react-latex-next": "^3.0.0",
 		"terser": "^5.26.0",
 		"typescript": "^5.2.2",
-		"vite": "^5.0.13",
+		"vite": "^5.4.8",
 		"vite-tsconfig-paths": "^4.3.1"
 	}
 }
